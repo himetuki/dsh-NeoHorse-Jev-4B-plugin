@@ -7,7 +7,8 @@ import type { ButtonHTMLAttributes } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { ConfigForm, ConfigFormSnapshot } from '@deepseek-ai/dsh-client-ui-settings/client'
 import { JevPage, type JevConfigValues, type JevPageRemote } from '../src/client/JevPage.tsx'
-import { en, type JevLocaleKey } from '../src/client/locales.ts'
+import { en, zh, type JevLocaleKey } from '../src/client/locales.ts'
+import type { SelectionConfigValues } from '../src/selection-types.ts'
 import type { JevRecordDetail, JevRecordSummary } from '../src/types.ts'
 
 // The published primitive barrel imports optional DSH libraries that the Host
@@ -51,6 +52,38 @@ function formStub(accept = true) {
   return { form, mutate }
 }
 
+function selectionFormStub(options: { accept?: boolean; initial?: SelectionConfigValues; loading?: boolean } = {}) {
+  let snapshot: ConfigFormSnapshot<SelectionConfigValues> = {
+    status: options.loading ? 'loading' : 'ready',
+    value: options.loading ? undefined : options.initial ?? { skillLimit: 5, fileCandidates: 40, fileLimit: 12 },
+    base: {}, user: {}, revision: 4, writable: true, mode: 'host',
+  }
+  const listeners = new Set<() => void>()
+  const publish = () => { for (const listener of listeners) listener() }
+  const mutate = vi.fn(async (ops: readonly { op: string; path: readonly string[]; value?: unknown }[], expectedRevision?: number) => {
+    if (options.accept === false || expectedRevision !== snapshot.revision || snapshot.value === undefined) return false
+    const value = { ...snapshot.value }
+    for (const op of ops) {
+      if (op.op === 'set') Object.assign(value, { [op.path[0]!]: op.value })
+    }
+    snapshot = { ...snapshot, value, revision: snapshot.revision! + 1 }
+    publish()
+    return true
+  })
+  const form: ConfigForm<SelectionConfigValues> = {
+    getSnapshot: () => snapshot,
+    subscribe: listener => { listeners.add(listener); return () => { listeners.delete(listener) } },
+    mutate,
+    set: async () => false,
+    unset: async () => false,
+  }
+  return {
+    form, mutate,
+    load: (value: SelectionConfigValues) => { snapshot = { ...snapshot, status: 'ready', value }; publish() },
+    getValue: () => snapshot.value,
+  }
+}
+
 function remoteStub(): JevPageRemote {
   return {
     listFeatures: vi.fn(async () => []),
@@ -62,8 +95,8 @@ function remoteStub(): JevPageRemote {
   }
 }
 
-function renderPage(form: ConfigForm<JevConfigValues>, jev: JevPageRemote) {
-  return render(<JevPage view="page" form={form} jev={jev} notifySuccess={() => {}} t={(key: JevLocaleKey) => en[key]} />)
+function renderPage(form: ConfigForm<JevConfigValues>, jev: JevPageRemote, selectionForm?: ConfigForm<SelectionConfigValues>, notifySuccess: (message: string) => void = () => {}) {
+  return render(<JevPage view="page" form={form} selectionForm={selectionForm} jev={jev} notifySuccess={notifySuccess} t={(key: JevLocaleKey) => en[key]} />)
 }
 
 describe('Jev bundle page', () => {
@@ -183,5 +216,99 @@ describe('Jev bundle page', () => {
     expect(jev.listRecords).toHaveBeenLastCalledWith({ featureId: 'former-feature', limit: 25 })
     settle({ ...summary, link: {}, attemptRecords: [], receipts: [] })
     await waitFor(() => { expect(screen.queryByRole('button', { name: en.closeDetails })).toBeNull() })
+  })
+})
+
+describe('Jev selection counts', () => {
+  it('describes the glob bypass threshold and ranked display count', () => {
+    const { form } = formStub()
+    const selection = selectionFormStub()
+    renderPage(form, remoteStub(), selection.form)
+    expect(screen.getByText(en.selectionCountsHint)).toBeTruthy()
+    expect(en.selectionCountsHint).toContain('more files')
+    expect(en.selectionCountsHint).toContain('original glob result')
+    expect(zh.selectionCountsHint).toContain('超过排序上限')
+    expect(zh.selectionCountsHint).toContain('跳过 Jev')
+    expect(en.rankedPathCount).toBe('Ranked paths shown')
+    expect(zh.rankedPathCount).toBe('展示的已排序路径数')
+  })
+
+  it('shows saved profile values after the selection form loads', async () => {
+    const { form } = formStub()
+    const selection = selectionFormStub({ loading: true })
+    renderPage(form, remoteStub(), selection.form)
+    expect(screen.queryByLabelText(en.skillSummaryCount)).toBeNull()
+    selection.load({ skillLimit: 8, fileCandidates: 60, fileLimit: 16 })
+    await waitFor(() => { expect((screen.getByLabelText(en.skillSummaryCount) as HTMLInputElement).value).toBe('8') })
+    expect((screen.getByLabelText(en.fileRankingMaximum) as HTMLInputElement).value).toBe('60')
+    expect((screen.getByLabelText(en.rankedPathCount) as HTMLInputElement).value).toBe('16')
+  })
+
+  it('saves all three counts in one revision-aware mutation', async () => {
+    const { form } = formStub()
+    const selection = selectionFormStub()
+    const notifySuccess = vi.fn()
+    renderPage(form, remoteStub(), selection.form, notifySuccess)
+    await waitFor(() => { expect((screen.getByLabelText(en.skillSummaryCount) as HTMLInputElement).value).toBe('5') })
+    fireEvent.change(screen.getByLabelText(en.skillSummaryCount), { target: { value: '9' } })
+    fireEvent.change(screen.getByLabelText(en.fileRankingMaximum), { target: { value: '50' } })
+    fireEvent.change(screen.getByLabelText(en.rankedPathCount), { target: { value: '18' } })
+    fireEvent.click(screen.getByRole('button', { name: en.saveSelectionCounts }))
+    await waitFor(() => { expect(selection.mutate).toHaveBeenCalledTimes(1) })
+    expect(selection.mutate).toHaveBeenCalledWith([
+      { op: 'set', path: ['skillLimit'], value: 9 },
+      { op: 'set', path: ['fileCandidates'], value: 50 },
+      { op: 'set', path: ['fileLimit'], value: 18 },
+    ], 4)
+    expect(selection.getValue()).toEqual({ skillLimit: 9, fileCandidates: 50, fileLimit: 18 })
+    expect(notifySuccess).toHaveBeenCalledWith(en.selectionCountSaved)
+  })
+
+  it('rejects empty, zero, negative, fractional, and unsafe counts without a write', async () => {
+    const { form } = formStub()
+    const selection = selectionFormStub()
+    renderPage(form, remoteStub(), selection.form)
+    await waitFor(() => { expect((screen.getByLabelText(en.skillSummaryCount) as HTMLInputElement).value).toBe('5') })
+    for (const value of ['', '0', '-1', '1.5', '9007199254740992']) {
+      fireEvent.change(screen.getByLabelText(en.skillSummaryCount), { target: { value } })
+      fireEvent.click(screen.getByRole('button', { name: en.saveSelectionCounts }))
+      expect(screen.getByLabelText(en.skillSummaryCount).getAttribute('aria-invalid')).toBe('true')
+      expect(selection.mutate).not.toHaveBeenCalled()
+    }
+    expect(selection.getValue()).toEqual({ skillLimit: 5, fileCandidates: 40, fileLimit: 12 })
+  })
+
+  it('keeps edits and saved values when the form refuses a revision write', async () => {
+    const { form } = formStub()
+    const selection = selectionFormStub({ accept: false })
+    renderPage(form, remoteStub(), selection.form)
+    await waitFor(() => { expect((screen.getByLabelText(en.fileRankingMaximum) as HTMLInputElement).value).toBe('40') })
+    fireEvent.change(screen.getByLabelText(en.fileRankingMaximum), { target: { value: '45' } })
+    fireEvent.click(screen.getByRole('button', { name: en.saveSelectionCounts }))
+    expect(await screen.findByText(en.selectionCountSaveFailed)).toBeTruthy()
+    expect((screen.getByLabelText(en.fileRankingMaximum) as HTMLInputElement).value).toBe('45')
+    expect(selection.getValue()?.fileCandidates).toBe(40)
+    expect(selection.mutate).toHaveBeenCalledWith(expect.any(Array), 4)
+  })
+
+  it('preserves unsaved selection and connection edits across writes to the other form', async () => {
+    const publicForm = formStub()
+    const selection = selectionFormStub()
+    const jev = remoteStub()
+    jev.listFeatures = vi.fn(async () => [{ id: 'example', name: 'Example', description: 'Test feature', enabled: false }])
+    renderPage(publicForm.form, jev, selection.form)
+    expect(await screen.findByText('Example')).toBeTruthy()
+    await waitFor(() => { expect((screen.getByLabelText(en.skillSummaryCount) as HTMLInputElement).value).toBe('5') })
+    fireEvent.change(screen.getByLabelText(en.skillSummaryCount), { target: { value: '7' } })
+    fireEvent.change(screen.getByLabelText(en.baseUrl), { target: { value: 'https://draft.invalid' } })
+    fireEvent.click(screen.getByRole('switch', { name: `${en.enable} Example` }))
+    await waitFor(() => { expect(screen.getByRole('switch', { name: `${en.disable} Example` })).toBeTruthy() })
+    expect((screen.getByLabelText(en.skillSummaryCount) as HTMLInputElement).value).toBe('7')
+    fireEvent.click(screen.getByRole('button', { name: en.saveSelectionCounts }))
+    await waitFor(() => { expect(selection.getValue()?.skillLimit).toBe(7) })
+    expect((screen.getByLabelText(en.baseUrl) as HTMLInputElement).value).toBe('https://draft.invalid')
+    expect(publicForm.form.getSnapshot().value?.baseUrl).toBe('https://example.invalid')
+    expect(publicForm.form.getSnapshot().value?.features.example).toBe(true)
+    expect(publicForm.mutate).toHaveBeenCalledTimes(1)
   })
 })

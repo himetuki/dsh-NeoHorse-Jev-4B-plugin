@@ -1,3 +1,5 @@
 packages:
   - packages/*
   - '!packages/typert-protocol-reference'
+allowBuilds:
+  esbuild: true

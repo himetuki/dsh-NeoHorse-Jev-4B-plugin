@@ -2,3 +2,5 @@
 - insert:
     - id: jev
       name: '@dsh-jev/plugin'
+    - id: jev-selection
+      name: '@dsh-jev/plugin/selection'

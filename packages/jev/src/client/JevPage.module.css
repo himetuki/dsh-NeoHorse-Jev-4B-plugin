@@ -66,7 +66,7 @@
   min-width: 0;
 }
 
-.field > span:first-child { font-weight: 500; }
+.field > span:first-child, .field > label { font-weight: 500; }
 .field input, .field select {
   width: 100%;
   box-sizing: border-box;
@@ -83,6 +83,8 @@
   outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
   outline-offset: 1px;
 }
+
+.field input[aria-invalid='true'] { border-color: var(--dsw-alias-state-error-primary); }
 
 .notice {
   color: var(--dsw-alias-state-error-primary);

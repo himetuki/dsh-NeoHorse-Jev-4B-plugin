@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore }
 import { Button, SegmentedTabs, StateDot, Switch } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { SelectionConfigValues } from '../selection-types.ts'
 import type {
   JevActionStatus, JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail,
   JevRecordFilter, JevRecordPage, JevRecordStatus, JevRecordSummary,
@@ -33,6 +34,7 @@ export interface JevPageRemote {
 /** Data and commands injected by the bundle registration. */
 export interface JevPageFace {
   form: ConfigForm<JevConfigValues>
+  selectionForm?: ConfigForm<SelectionConfigValues>
   jev: JevPageRemote
   notifySuccess: (message: string) => void
 }
@@ -94,13 +96,111 @@ export function JevPage(props: JevPageProps) {
         className={css.tabs}
       />
       {tab === 'settings'
-        ? <div id="jev-settings-panel" role="tabpanel" aria-labelledby="jev-settings-tab"><SettingsPanel form={props.form} jev={props.jev} notifySuccess={props.notifySuccess} t={t} /></div>
+        ? <div id="jev-settings-panel" role="tabpanel" aria-labelledby="jev-settings-tab" className={css.panel}>
+          <SettingsPanel form={props.form} jev={props.jev} notifySuccess={props.notifySuccess} t={t} />
+          {props.selectionForm && <SelectionSettings form={props.selectionForm} notifySuccess={props.notifySuccess} t={t} />}
+        </div>
         : <div id="jev-records-panel" role="tabpanel" aria-labelledby="jev-records-tab"><RecordsPanel jev={props.jev} t={t} /></div>}
     </div>
   )
 }
 
 interface PanelProps { form: ConfigForm<JevConfigValues>; jev: JevPageRemote; notifySuccess: (message: string) => void; t: Translate }
+
+type SelectionField = keyof SelectionConfigValues
+const SELECTION_FIELDS: readonly { key: SelectionField; label: JevLocaleKey }[] = [
+  { key: 'skillLimit', label: 'skillSummaryCount' },
+  { key: 'fileCandidates', label: 'fileRankingMaximum' },
+  { key: 'fileLimit', label: 'rankedPathCount' },
+]
+
+function parsePositiveInteger(value: string): number | null {
+  if (!/^[1-9]\d*$/.test(value)) return null
+  const parsed = Number(value)
+  return Number.isSafeInteger(parsed) ? parsed : null
+}
+
+function SelectionSettings({ form, notifySuccess, t }: {
+  form: ConfigForm<SelectionConfigValues>; notifySuccess: (message: string) => void; t: Translate
+}) {
+  const subscribe = useCallback((listener: () => void) => form.subscribe(listener), [form])
+  const getSnapshot = useCallback(() => form.getSnapshot(), [form])
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+  const [draft, setDraft] = useState<Record<SelectionField, string>>({ skillLimit: '', fileCandidates: '', fileLimit: '' })
+  const [errors, setErrors] = useState<Partial<Record<SelectionField, boolean>>>({})
+  const [saveError, setSaveError] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+  const edited = useRef(false)
+  const observed = useRef('')
+
+  useEffect(() => {
+    if (snapshot.value === undefined) return
+    const next = {
+      skillLimit: String(snapshot.value.skillLimit),
+      fileCandidates: String(snapshot.value.fileCandidates),
+      fileLimit: String(snapshot.value.fileLimit),
+    }
+    const signature = JSON.stringify(next)
+    if (signature === observed.current) return
+    observed.current = signature
+    if (!edited.current) setDraft(next)
+    setHydrated(true)
+  }, [snapshot.value])
+
+  const current = snapshot.value
+  const dirty = hydrated && current !== undefined && SELECTION_FIELDS.some(({ key }) => draft[key] !== String(current[key]))
+
+  useEffect(() => { if (!dirty) edited.current = false }, [dirty])
+
+  const edit = (key: SelectionField, value: string) => {
+    edited.current = true
+    setDraft(previous => ({ ...previous, [key]: value }))
+    setErrors(previous => ({ ...previous, [key]: false }))
+    setSaveError(false)
+  }
+
+  const save = async () => {
+    const parsed = {} as SelectionConfigValues
+    const nextErrors: Partial<Record<SelectionField, boolean>> = {}
+    for (const { key } of SELECTION_FIELDS) {
+      const value = parsePositiveInteger(draft[key])
+      if (value === null) nextErrors[key] = true
+      else parsed[key] = value
+    }
+    if (Object.keys(nextErrors).length > 0) { setErrors(nextErrors); return }
+    setSaving(true)
+    setSaveError(false)
+    try {
+      const accepted = await form.mutate(SELECTION_FIELDS.map(({ key }) => ({ op: 'set' as const, path: [key], value: parsed[key] })), snapshot.revision)
+      if (accepted) {
+        const saved = form.getSnapshot().value
+        if (saved !== undefined) {
+          setDraft({ skillLimit: String(saved.skillLimit), fileCandidates: String(saved.fileCandidates), fileLimit: String(saved.fileLimit) })
+          edited.current = false
+        }
+        notifySuccess(t('selectionCountSaved'))
+      } else setSaveError(true)
+    } catch { setSaveError(true) }
+    finally { setSaving(false) }
+  }
+
+  return <section className={css.section} aria-label={t('selectionCounts')}>
+    <h3 className={css.heading}>{t('selectionCounts')}</h3>
+    <p className={css.hint}>{t('selectionCountsHint')}</p>
+    {snapshot.status === 'loading' && current === undefined && <Loading label={t('loading')} />}
+    {snapshot.status === 'unavailable' && <p className={css.notice}>{t('unavailable')}</p>}
+    {current !== undefined && <div className={css.form}>
+      <div className={css.filters}>{SELECTION_FIELDS.map(({ key, label }) => <div className={css.field} key={key}>
+        <label htmlFor={`jev-selection-${key}`}>{t(label)}</label>
+        <input id={`jev-selection-${key}`} type="text" inputMode="numeric" value={draft[key]} aria-invalid={errors[key] || undefined} aria-describedby={errors[key] ? `jev-selection-${key}-error` : undefined} disabled={!snapshot.writable || saving} onChange={event => { edit(key, event.target.value) }} />
+        {errors[key] && <span id={`jev-selection-${key}-error`} role="alert" className={css.notice}>{t('selectionCountInvalid')}</span>}
+      </div>)}</div>
+      <div className={css.actions}><Button variant="primary" disabled={!snapshot.writable || saving || !dirty} onClick={() => { void save() }}>{saving ? t('saving') : t('saveSelectionCounts')}</Button>{!snapshot.writable && <span className={css.hint}>{t('readOnly')}</span>}</div>
+      {saveError && <p role="alert" className={css.notice}>{t('selectionCountSaveFailed')}</p>}
+    </div>}
+  </section>
+}
 
 function SettingsPanel({ form, jev, notifySuccess, t }: PanelProps) {
   const subscribe = useCallback((listener: () => void) => form.subscribe(listener), [form])
