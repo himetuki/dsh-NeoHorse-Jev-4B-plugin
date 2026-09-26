@@ -1,0 +1,4 @@
+# One Host row owns Jev's service, Remote methods, and matching Web Client half.
+- insert:
+    - id: jev
+      name: '@dsh-jev/plugin'

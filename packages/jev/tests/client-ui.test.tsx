@@ -1,0 +1,187 @@
+// @vitest-environment jsdom
+/** Jev page behavior at the Host configuration and Remote seams. */
+
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import type { ButtonHTMLAttributes } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { ConfigForm, ConfigFormSnapshot } from '@deepseek-ai/dsh-client-ui-settings/client'
+import { JevPage, type JevConfigValues, type JevPageRemote } from '../src/client/JevPage.tsx'
+import { en, type JevLocaleKey } from '../src/client/locales.ts'
+import type { JevRecordDetail, JevRecordSummary } from '../src/types.ts'
+
+// The published primitive barrel imports optional DSH libraries that the Host
+// module table supplies at runtime. These narrow atoms keep component tests
+// focused on Jev's state and accessibility wiring.
+vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
+  Button: ({ children, variant: _variant, size: _size, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string }) => <button type="button" {...props}>{children}</button>,
+  SegmentedTabs: ({ items, value, onChange, label }: { items: readonly { value: string; label: string; id: string; panelId: string }[]; value: string; onChange: (value: 'settings' | 'records') => void; label: string }) => <div role="tablist" aria-label={label}>{items.map(item => <button type="button" role="tab" key={item.value} aria-selected={value === item.value} onClick={() => { onChange(item.value as 'settings' | 'records') }}>{item.label}</button>)}</div>,
+  StateDot: () => <span aria-hidden="true" />,
+  Switch: ({ checked, onChange, label, disabled }: { checked: boolean; onChange: (value: boolean) => void; label: string; disabled?: boolean }) => <button type="button" role="switch" aria-label={label} aria-checked={checked} disabled={disabled} onClick={() => { onChange(!checked) }} />,
+}))
+
+afterEach(() => { document.body.innerHTML = '' })
+
+function formStub(accept = true) {
+  let snapshot: ConfigFormSnapshot<JevConfigValues> = {
+    status: 'ready',
+    value: { baseUrl: 'https://example.invalid', model: 'test-model', credentialRef: 'JEV_API_KEY', timeoutMs: 30000, features: {} },
+    base: {}, user: {}, revision: 1, writable: true, mode: 'host',
+  }
+  const listeners = new Set<() => void>()
+  const mutate = vi.fn(async (ops: readonly { op: string; path: readonly string[]; value?: unknown }[], expectedRevision?: number) => {
+    if (!accept || expectedRevision !== snapshot.revision) return false
+    const value = structuredClone(snapshot.value!)
+    for (const op of ops) {
+      if (op.op !== 'set') continue
+      if (op.path[0] === 'features') value.features[op.path[1]!] = Boolean(op.value)
+      else Object.assign(value, { [op.path[0]!]: op.value })
+    }
+    snapshot = { ...snapshot, value, revision: snapshot.revision! + 1 }
+    for (const listener of listeners) listener()
+    return true
+  })
+  const form: ConfigForm<JevConfigValues> = {
+    getSnapshot: () => snapshot,
+    subscribe: listener => { listeners.add(listener); return () => { listeners.delete(listener) } },
+    mutate,
+    set: async () => false,
+    unset: async () => false,
+  }
+  return { form, mutate }
+}
+
+function remoteStub(): JevPageRemote {
+  return {
+    listFeatures: vi.fn(async () => []),
+    listRecords: vi.fn(async () => ({ items: [] })),
+    getRecord: vi.fn(async () => null),
+    testConnection: vi.fn(async () => ({ ok: true, latencyMs: 18, recordId: 'probe-1' })),
+    getCredentialStatus: vi.fn(async () => ({ configured: true, writable: true, source: 'file' })),
+    setCredential: vi.fn(async () => ({ configured: true, writable: true, source: 'file' })),
+  }
+}
+
+function renderPage(form: ConfigForm<JevConfigValues>, jev: JevPageRemote) {
+  return render(<JevPage view="page" form={form} jev={jev} notifySuccess={() => {}} t={(key: JevLocaleKey) => en[key]} />)
+}
+
+describe('Jev bundle page', () => {
+  it('shows only credential status, writes a replacement, and runs one explicit diagnostic', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    renderPage(form, jev)
+    expect(await screen.findByText(en.noFeatures)).toBeTruthy()
+    expect(screen.getByText(new RegExp(en.configured))).toBeTruthy()
+    expect(screen.queryByDisplayValue('saved-secret')).toBeNull()
+
+    fireEvent.change(screen.getByLabelText(new RegExp(en.apiKey)), { target: { value: 'new-secret' } })
+    fireEvent.click(screen.getByRole('button', { name: en.replaceKey }))
+    await waitFor(() => { expect(jev.setCredential).toHaveBeenCalledWith('new-secret') })
+    expect(screen.queryByDisplayValue('new-secret')).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: en.testConnection }))
+    await waitFor(() => { expect(jev.testConnection).toHaveBeenCalledTimes(1) })
+    expect(await screen.findByText(new RegExp(en.testSucceeded))).toBeTruthy()
+  })
+
+  it('checks a refused revision write and keeps a newly registered feature off', async () => {
+    const { form, mutate } = formStub(false)
+    const jev = remoteStub()
+    jev.listFeatures = vi.fn(async () => [{ id: 'example', name: 'Example', description: 'Test feature', enabled: false }])
+    renderPage(form, jev)
+    expect(await screen.findByText('Example')).toBeTruthy()
+    const toggle = screen.getByRole('switch', { name: `${en.enable} Example` })
+    fireEvent.click(toggle)
+    await waitFor(() => { expect(screen.getByText(en.featureSaveFailed, { exact: false })).toBeTruthy() })
+    expect(toggle.getAttribute('aria-checked')).toBe('false')
+    expect(mutate).toHaveBeenCalledWith([{ op: 'set', path: ['features', 'example'], value: true }], 1)
+  })
+
+  it('preserves an unsaved connection edit when a feature switch changes the configuration revision', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    jev.listFeatures = vi.fn(async () => [{ id: 'example', name: 'Example', description: 'Test feature', enabled: false }])
+    renderPage(form, jev)
+    expect(await screen.findByText('Example')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText(en.baseUrl), { target: { value: 'https://draft.invalid' } })
+    fireEvent.click(screen.getByRole('switch', { name: `${en.enable} Example` }))
+    await waitFor(() => { expect(screen.getByRole('switch', { name: `${en.disable} Example` })).toBeTruthy() })
+    expect((screen.getByLabelText(en.baseUrl) as HTMLInputElement).value).toBe('https://draft.invalid')
+  })
+
+  it('refreshes the feature catalogue after a business plugin registers', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    let registered = false
+    jev.listFeatures = vi.fn(async () => registered ? [{ id: 'later', name: 'Later feature', description: 'Arrived after the page opened', enabled: false }] : [])
+    renderPage(form, jev)
+    expect(await screen.findByText(en.noFeatures)).toBeTruthy()
+    registered = true
+    fireEvent.click(screen.getByRole('button', { name: en.refreshFeatures }))
+    expect(await screen.findByText('Later feature')).toBeTruthy()
+  })
+
+  it('keeps accepted rows after refresh fails and opens attempt and action details', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    const summary: JevRecordSummary = {
+      id: 'record-1', featureId: 'example', sessionId: 'session-1', status: 'succeeded',
+      startedAt: '2026-09-26T00:00:00.000Z', updatedAt: '2026-09-26T00:00:01.000Z',
+      attempts: 1, actionStatus: 'executed', diagnostic: false,
+    }
+    const detail: JevRecordDetail = {
+      ...summary, link: { sessionId: 'session-1' },
+      attemptRecords: [{
+        id: 'attempt-1', startedAt: summary.startedAt, status: 'succeeded', latencyMs: 18,
+        connection: { baseUrl: 'https://example.invalid', model: 'test-model', credentialRef: 'JEV_API_KEY' },
+        request: { state: null, questions: [{ id: 'q1', kind: 'noul', prompt: 'Ready?' }] },
+        rawResponse: { output: 'raw-answer' },
+        response: { answers: [{ id: 'q1', kind: 'noul', probability: 0.9 }] },
+        usage: { inputTokens: 4, outputTokens: 2 },
+      }],
+      receipts: [{ id: 'receipt-1', status: 'executed', at: summary.updatedAt }],
+    }
+    let calls = 0
+    jev.listRecords = vi.fn(async () => {
+      calls++
+      if (calls > 1) throw new Error('temporary outage')
+      return { items: [summary] }
+    })
+    jev.getRecord = vi.fn(async () => detail)
+    renderPage(form, jev)
+    fireEvent.click(screen.getByRole('tab', { name: en.records }))
+    expect(await screen.findByText(/record-1|session-1/)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: en.refresh }))
+    expect(await screen.findByText(new RegExp(en.recordsFailed))).toBeTruthy()
+    expect(screen.getByText(/session-1/)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: en.details }))
+    expect(await screen.findByText('null')).toBeTruthy()
+    expect(screen.getByText(/raw-answer/)).toBeTruthy()
+    expect(screen.getByText(/inputTokens/)).toBeTruthy()
+    expect(screen.getByText(/test-model/)).toBeTruthy()
+    expect(screen.getByText(/receipt-1/)).toBeTruthy()
+  })
+
+  it('drops a late detail response after changing record filters', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    const summary: JevRecordSummary = {
+      id: 'record-1', featureId: 'example', status: 'succeeded',
+      startedAt: '2026-09-26T00:00:00.000Z', updatedAt: '2026-09-26T00:00:01.000Z',
+      attempts: 1, diagnostic: false,
+    }
+    jev.listRecords = vi.fn(async () => ({ items: [summary] }))
+    let settle: (detail: JevRecordDetail | null) => void = () => {}
+    jev.getRecord = vi.fn(() => new Promise<JevRecordDetail | null>(resolve => { settle = resolve }))
+    renderPage(form, jev)
+    fireEvent.click(screen.getByRole('tab', { name: en.records }))
+    expect(await screen.findByText('example')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: en.details }))
+    fireEvent.change(screen.getByLabelText(en.feature), { target: { value: 'former-feature' } })
+    fireEvent.click(screen.getByRole('button', { name: en.applyFilters }))
+    expect(jev.listRecords).toHaveBeenLastCalledWith({ featureId: 'former-feature', limit: 25 })
+    settle({ ...summary, link: {}, attemptRecords: [], receipts: [] })
+    await waitFor(() => { expect(screen.queryByRole('button', { name: en.closeDetails })).toBeNull() })
+  })
+})

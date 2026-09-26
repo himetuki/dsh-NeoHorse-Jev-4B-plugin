@@ -1,0 +1,56 @@
+/** Copy for the Jev configuration and decision-record pages. */
+
+/** Dictionary keys rendered by the Jev page. */
+export type JevLocaleKey =
+  | 'tabs' | 'settings' | 'records' | 'connection' | 'features' | 'noFeatures'
+  | 'baseUrl' | 'model' | 'credentialRef' | 'timeoutMs' | 'apiKey' | 'apiKeyHint'
+  | 'configured' | 'missing' | 'readOnly' | 'unavailable' | 'loading'
+  | 'saveConnection' | 'saveFirst' | 'saving' | 'saveFailed' | 'saveSuccess' | 'invalidTimeout'
+  | 'replaceKey' | 'saveKey' | 'keySaved' | 'keySaveFailed' | 'testConnection'
+  | 'testing' | 'testSucceeded' | 'testFailed' | 'latency' | 'enable' | 'disable' | 'refreshFeatures'
+  | 'featureSaveFailed' | 'featureLoadFailed' | 'retry' | 'allFeatures'
+  | 'allStatuses' | 'sessionId' | 'applyFilters' | 'refresh' | 'noRecords'
+  | 'recordsFailed' | 'loadMore' | 'details' | 'closeDetails' | 'detailFailed'
+  | 'operation' | 'attempts' | 'receipts' | 'input' | 'questions'
+  | 'answer' | 'rawAnswer' | 'connectionIdentity' | 'usage' | 'failure' | 'interpretation' | 'actualAction' | 'time'
+  | 'status' | 'feature' | 'kind' | 'noDetail' | 'diagnostic'
+  | 'pending' | 'waiting' | 'succeeded' | 'failed' | 'cancelled'
+  | 'interrupted' | 'unconfirmed' | 'notAdopted' | 'executed' | 'executionFailed' | 'observed'
+
+/** English copy. */
+export const en: Record<JevLocaleKey, string> = {
+  tabs: 'Jev pages', settings: 'Settings and features', records: 'Decision records',
+  connection: 'Shared connection', features: 'Features', noFeatures: 'No features are registered yet.',
+  baseUrl: 'Service address', model: 'Model', credentialRef: 'Credential reference', timeoutMs: 'Timeout (ms)',
+  apiKey: 'API key', apiKeyHint: 'Saved in Host credentials. This field never shows the saved key.',
+  configured: 'Configured', missing: 'Missing', readOnly: 'Read-only', unavailable: 'Settings are unavailable.', loading: 'Loading…',
+  saveConnection: 'Save connection', saveFirst: 'Save the connection before changing its key or testing it.', saving: 'Saving…', saveFailed: 'Could not save these settings.', saveSuccess: 'Connection settings saved.', invalidTimeout: 'Enter a positive timeout in milliseconds.',
+  replaceKey: 'Replace key', saveKey: 'Save key', keySaved: 'Key saved.', keySaveFailed: 'Could not save the key.',
+  testConnection: 'Test connection', testing: 'Testing…', testSucceeded: 'Connection test passed.', testFailed: 'Connection test failed.', latency: 'Latency',
+  enable: 'Enable', disable: 'Disable', refreshFeatures: 'Refresh features', featureSaveFailed: 'Could not change this feature.', featureLoadFailed: 'Could not load features.', retry: 'Retry',
+  allFeatures: 'All features', allStatuses: 'All statuses', sessionId: 'Session ID', applyFilters: 'Apply filters', refresh: 'Refresh', noRecords: 'No decision records match these filters.',
+  recordsFailed: 'Could not refresh records. Existing records are still shown.', loadMore: 'Load more', details: 'Details', closeDetails: 'Close details', detailFailed: 'Could not load this record.',
+  operation: 'Operation', attempts: 'Attempts', receipts: 'Action receipts', input: 'Input state', questions: 'Questions', answer: 'Validated answer', rawAnswer: 'Raw response', connectionIdentity: 'Connection', usage: 'Reported usage', failure: 'Failure', interpretation: 'Interpretation', actualAction: 'Actual action', time: 'Time',
+  status: 'Status', feature: 'Feature', kind: 'Kind', noDetail: 'No details for this record.', diagnostic: 'Connection diagnostic',
+  pending: 'Pending', waiting: 'Waiting', succeeded: 'Succeeded', failed: 'Failed', cancelled: 'Cancelled',
+  interrupted: 'Interrupted', unconfirmed: 'Unconfirmed', notAdopted: 'Not adopted', executed: 'Executed', executionFailed: 'Execution failed', observed: 'Observed',
+}
+
+/** Simplified Chinese copy. */
+export const zh: Record<JevLocaleKey, string> = {
+  tabs: 'Jev 页面', settings: '设置与功能', records: '判断记录',
+  connection: '共用连接', features: '功能目录', noFeatures: '当前没有登记的功能',
+  baseUrl: '服务地址', model: '模型', credentialRef: '凭据引用', timeoutMs: '超时（毫秒）',
+  apiKey: 'API 密钥', apiKeyHint: '写入宿主凭据；这里不会读回已保存的密钥',
+  configured: '已配置', missing: '缺失', readOnly: '只读', unavailable: '设置暂不可用', loading: '加载中…',
+  saveConnection: '保存连接', saveFirst: '请先保存连接，再替换密钥或测试连接', saving: '保存中…', saveFailed: '无法保存这些设置', saveSuccess: '连接设置已保存', invalidTimeout: '请输入正整数毫秒数',
+  replaceKey: '替换密钥', saveKey: '保存密钥', keySaved: '密钥已保存', keySaveFailed: '无法保存密钥',
+  testConnection: '测试连接', testing: '测试中…', testSucceeded: '连接测试通过', testFailed: '连接测试失败', latency: '耗时',
+  enable: '启用', disable: '关闭', refreshFeatures: '刷新功能', featureSaveFailed: '无法修改此功能', featureLoadFailed: '无法加载功能目录', retry: '重试',
+  allFeatures: '全部功能', allStatuses: '全部状态', sessionId: '会话 ID', applyFilters: '应用筛选', refresh: '刷新', noRecords: '没有符合条件的判断记录',
+  recordsFailed: '无法刷新记录，已保留现有内容', loadMore: '加载更多', details: '详情', closeDetails: '关闭详情', detailFailed: '无法加载这条记录',
+  operation: '操作', attempts: '尝试', receipts: '动作回执', input: '输入状态', questions: '问题', answer: '已校验回答', rawAnswer: '原始响应', connectionIdentity: '连接身份', usage: '服务报告用量', failure: '失败原因', interpretation: '业务解释', actualAction: '实际动作', time: '时间',
+  status: '状态', feature: '功能', kind: '类型', noDetail: '这条记录没有详情', diagnostic: '连接诊断',
+  pending: '进行中', waiting: '等待处理', succeeded: '判断成功', failed: '失败', cancelled: '已取消',
+  interrupted: '已中断', unconfirmed: '未确认', notAdopted: '未采用', executed: '已执行', executionFailed: '执行失败', observed: '已观察',
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "types": ["node"],
+    "paths": {
+      "@deepseek-ai/dsh-typert-protocol": ["../typert-protocol-reference/src/index.d.ts"]
+    }
+  },
+  "include": ["src/*.ts"],
+  "exclude": ["src/client", "tests"]
+}
