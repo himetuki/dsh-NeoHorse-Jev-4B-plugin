@@ -147,3 +147,7 @@ New user requirements, target goal revisions, cancellation, and task completion 
 `ctx.jev.judgeOnce(options)` accepts the same `JevJudgeOptions` as `judge`, including `refresh`, `interpret`, `canAdopt`, and `signal`. It makes at most one attempt, opens no user question, and returns `ok`, `cancelled`, `not-adopted`, or `failed`. Only `ok` authorizes a consumer to consider adoption. `failed` contains a safe failure code and message; `operationId` is absent when the operation could not be created. A refresh failure records an operation-level failure without fabricating an HTTP attempt. Input-log failure sends no request, result-log failure returns no usable answer, and a failed receipt must not trigger repeated execution. The interactive `judge` retains manual Retry/Cancel behavior.
 
 `ctx.jev.isFeatureEnabled(id)` reads current profile enablement synchronously. `ctx.jev.onFeatureStateChange(listener)` returns an owned disposer and synchronously supplies an immutable feature snapshot after the owning Loader fiber commits changed feature values. It does not emit an initial snapshot or unchanged settings. Consumers register their disposer with `ctx.effect` and can read the initial state using `isFeatureEnabled`.
+
+## 验收记录
+
+四组执行检查 Hook 的测试、真实调用结果与已接受边界见 [2026-09-27 验收归档](../../docs/testing/2026-09-27-jev-hooks/README.md)。
