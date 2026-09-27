@@ -28,6 +28,10 @@ The following features are in `main`. **Every feature is independently disabled 
 | Test-log admission | Protects failures, summaries, named and slow tests while judging whether ordinary passing details are needed. |
 | Workspace approval | In `workspace-write`, can answer eligible native single-operation escalation requests; non-affirmative answers return to human approval. |
 
+![Jev settings page with independent feature switches for selection, supervision, corrections, and workspace approval](docs/images/jev-feature-toggles.png)
+
+*Example feature settings from an earlier build. The screenshot shows nine switches and user-selected states; current `main` includes the eleven features listed above, all disabled on a fresh installation.*
+
 All features share a connection, profile-scoped settings, decision records, and operation receipts. Most agent-facing features target live Web root sessions; correcting a child agent does not enable every feature inside that child.
 
 **Feature branches are not all included in `main`.** Tool-output filtering is included in `main`; `codex/jev-tool-output-admission` preserves its development snapshot. Native web execution is on `codex/jev-native-web-execution` and is **paused; ordinary-site effectiveness has not passed acceptance**. Historical split branches preserve earlier work. See [branch status](docs/branches.md) before switching branches; this table always describes `main`.
@@ -44,6 +48,10 @@ If you already use **DSH 0.1.7-rc.2 Web**, install directly from the GitHub repo
 ```text
 https://github.com/luobosibing2/deepseek-harness-jev
 ```
+
+![DSH Add plugin dialog with the deepseek-harness-jev GitHub repository URL entered](docs/images/install-from-github.jpg)
+
+*Paste the repository URL into “Package name or address”, then click Install.*
 
 **Enabling the package does not enable its 11 Jev features; they remain off by default.** Installation applies to the Host profile serving the current Web UI. The Host needs pnpm and access to GitHub. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication.
 
