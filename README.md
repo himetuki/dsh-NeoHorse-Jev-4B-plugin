@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 **Modular Jev-powered judgment plugins for DeepSeek Harness.**
 
-Connect [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) to Jev for skill and file selection, task supervision, shared-finding corrections, and single-operation approval assistance. Keep your main agent and native tools; enable only the judgments you want from one settings page.
+Connect [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) to Jev for skill and file selection, task supervision, shared-finding corrections, tool-log filtering, and single-operation approval assistance. Keep your main agent and native tools; enable only the judgments you want from one settings page.
 
 This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin tested with **DSH 0.1.7-rc.2**; its APIs and model judgments are not a correctness guarantee.
 
@@ -22,11 +22,13 @@ The following features are in `main`. **Every feature is independently disabled 
 | Instruction guidance | Reads current user instructions and applicable agent rules, then supplies a nonblocking reminder when needed. |
 | Interjection routing | Routes a running user's correction to the next step; queues other messages for a later turn. |
 | Shared-finding corrections | Compares reports and messages already shared, then sends corrections to affected recipients. |
+| Long-log admission | Can remove clearly unneeded progress or repeated notices after a command returns, with an original-output recovery reference. |
+| Test-log admission | Protects failures, summaries, named and slow tests while judging whether ordinary passing details are needed. |
 | Workspace approval | In `workspace-write`, can answer eligible native single-operation escalation requests; non-affirmative answers return to human approval. |
 
 All features share a connection, profile-scoped settings, decision records, and operation receipts. Most agent-facing features target live Web root sessions; correcting a child agent does not enable every feature inside that child.
 
-**Feature branches are not all included in `main`.** Tool-output filtering is on `codex/jev-tool-output-admission`. Native web execution is on `codex/jev-native-web-execution` and is **paused; ordinary-site effectiveness has not passed acceptance**. Historical split branches preserve earlier work. See [branch status](docs/branches.md) before switching branches; this table always describes `main`.
+**Feature branches are not all included in `main`.** Tool-output filtering is included in `main`; `codex/jev-tool-output-admission` preserves its development snapshot. Native web execution is on `codex/jev-native-web-execution` and is **paused; ordinary-site effectiveness has not passed acceptance**. Historical split branches preserve earlier work. See [branch status](docs/branches.md) before switching branches; this table always describes `main`.
 
 ## Requirements
 
@@ -78,6 +80,8 @@ The main agent's provider and the Jev judgment connection are separate. A creden
 
 Selection defaults are 5 skill summaries, at most 40 glob matches eligible for ranking, and 12 displayed ranked paths. A larger glob skips Jev rather than silently judging only the first 40. Supervision defaults are a drift check every 6 completed model steps and a pause after 3 native goal rounds without progress. These values can be changed without enabling the features.
 
+Long-log and test-log admission have independent switches, both off by default. Generic command logs start at 6,000 Unicode code points and recognized test logs at 4,000. The default omit-probability threshold is 0.8 and the judgment wait limit is 4 seconds. The settings page exposes these and the other admission budgets without enabling either feature.
+
 ## Behavior and limitations
 
 - **Reminders are advisory.** Drift and instruction guidance do not block or cancel tools, and do not force the main model to comply.
@@ -85,6 +89,7 @@ Selection defaults are 5 skill summaries, at most 40 glob matches eligible for r
 - **Approvals remain single-operation.** Workspace approval neither changes the session's sandbox mode nor overrides fixed host checks. `approve` can supply `allowed-once`; `unauthorized` or `unknown` returns to the original human approval flow. Technical failures retain manual Retry/Cancel.
 - **Shared corrections have a limited scope.** They process already-shared reports and messages, not every agent's private exploration. Automatic delivery targets the live root agent and its active, continuable direct children. Duplicate corrections can still arise when the same finding appears in different report forms.
 - **Judgment success is not action success.** The ledger distinguishes an answer, its adoption, permission issuance, and execution results.
+- **Log admission keeps an original reference.** It changes only eligible model-visible tool text after execution; DSH's immediate spill, tool output limits, and later context compaction still apply. An isolated real-profile build reduced one 8,510-character log by 75.7%. A neutral 180-test run reached the test-log judge but stayed complete because its omit probabilities were below 0.8; that run does not establish test-log reduction effectiveness. See the [tool-output admission report](docs/reports/2026-09-27-tool-output-admission.md).
 - **Validation is scoped.** Deterministic tests establish integration. Limited real-service examples do not establish general semantic accuracy. See [validation notes](docs/validation.md).
 
 Enabled features send the relevant task context or operation data to the configured judgment endpoint. Exact judgment inputs and answers are stored in the profile's local plugin records; model-visible effects use normal DSH session records. Keep runtime records and credentials private. Public source history excludes personal QA screenshots and raw session captures.
@@ -108,6 +113,7 @@ Run the focused tests for the feature you change. Do not enable real-provider ex
 - [Package reference and consumer API](packages/jev/README.md)
 - [Workspace-approval integration tests](packages/jev/tests/workspace-approval.test.ts)
 - [Workspace-approval QA cases](packages/jev/tests/workspace-approval-qa.md)
+- [Tool-output admission report](docs/reports/2026-09-27-tool-output-admission.md)
 - [Branch status](docs/branches.md)
 - [Validation notes](docs/validation.md)
 

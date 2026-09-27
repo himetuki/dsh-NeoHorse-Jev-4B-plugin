@@ -4,7 +4,7 @@
 
 **为 DeepSeek Harness 提供可独立启用的 Jev 判断能力。**
 
-把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 与 Jev 连接起来，用于技能与文件选择、任务监督、共享发现纠正和单次操作审批。主 Agent 和原生工具继续工作，你可以在同一个设置页按需开启功能。
+把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 与 Jev 连接起来，用于技能与文件选择、任务监督、共享发现纠正、工具日志筛选和单次操作审批。主 Agent 和原生工具继续工作，你可以在同一个设置页按需开启功能。
 
 这是独立社区项目，并非 DeepSeek 或 Jev 官方发布。当前属于早期插件，已针对 **DSH 0.1.7-rc.2** 验证；接口和模型判断都不构成正确性保证。
 
@@ -22,11 +22,13 @@
 | 用户约束提醒 | 读取当前用户要求及适用的 Agent 规则，必要时发送非阻塞提醒。 |
 | 中途插话分流 | 把运行中的纠正消息送到下一步骤，其他消息留待后续轮次。 |
 | 共享发现纠正 | 比较已经共享的报告和消息，向受影响的接收者发送纠正。 |
+| 通用长日志准入 | 命令返回后可省略明确不需要的进度或重复提示，并提供原文恢复位置。 |
+| 测试日志准入 | 保护失败、摘要、点名和慢测试，再判断普通通过明细是否仍有用。 |
 | 工作区提权代审批 | 仅在 workspace-write 下参与适用的原生单次提权；非肯定判断回到原人工审批。 |
 
 所有功能共用连接、按 profile 保存的设置、判断记录与操作回执。多数 Agent 功能面向存活的 Web 主会话；向子 Agent 发送纠正，不等于子 Agent 自动拥有其他 Jev 增强。
 
-**功能分支不等于已合入 main。** 工具输出筛选在 `codex/jev-tool-output-admission`；原生网页执行在 `codex/jev-native-web-execution`，该方向目前**暂停，普通网站效果未通过验收**。其他历史分支保留早期实现。切换前请看[分支状态](docs/branches.md)，本表始终以 `main` 为准。
+**功能分支不等于已合入 main。** 工具输出筛选已进入 `main`；`codex/jev-tool-output-admission` 保留开发快照。原生网页执行在 `codex/jev-native-web-execution`，该方向目前**暂停，普通网站效果未通过验收**。其他历史分支保留早期实现。切换前请看[分支状态](docs/branches.md)，本表始终以 `main` 为准。
 
 ## 环境要求
 
@@ -78,6 +80,8 @@ dsh --profile jev
 
 选择功能默认取 5 个技能摘要，最多对 40 个 glob 命中排序，展示 12 条路径。超过上限时直接跳过 Jev，不会悄悄只判断前 40 个。监督功能默认每 6 个完成的模型步骤检查一次跑偏，连续 3 个原生目标轮次无进展则暂停。这些参数可调整，保存参数不会自动开启功能。
 
+通用长日志准入和测试日志准入有独立开关，均默认关闭。命令日志从 6,000 个 Unicode 码点、可识别测试日志从 4,000 个码点开始处理；默认省略概率门槛为 0.8，判断最多等待 4 秒。设置页可调整这些及其他准入预算，保存预算不会开启功能。
+
 ## 行为与限制
 
 - **提醒是建议。** 跑偏和约束提醒不会阻塞、取消工具，也不会强制主模型遵守。
@@ -85,6 +89,7 @@ dsh --profile jev
 - **审批只针对一次操作。** 不改变会话沙箱模式，不覆盖宿主固定检查。有效 approve 可返回 allowed-once，unauthorized 或 unknown 回原人工审批；技术故障保留人工 Retry/Cancel。
 - **共享纠正有明确范围。** 它只处理已经共享的报告和消息，不读取所有 Agent 的内部探索；自动投递限当前存活的主 Agent 及其活跃、可继续的直接子 Agent。同一发现以不同形式上报时，仍可能产生重复纠正。
 - **判断成功不等于执行成功。** 日志分别记录判断、采纳、许可发放和实际操作结果。
+- **日志准入保留原文入口。** 它只在工具执行后调整符合条件的模型可见文本；DSH 即时 spill、工具输出上限和之后的上下文压缩仍生效。隔离真实 profile 的一次构建将 8,510 字符日志缩短了 75.7%。一次中性措辞的 180 项测试触发了测试日志判断，但省略概率低于 0.8，因此完整保留；该次不证明测试日志已有实际缩减效果。见[工具输出准入报告](docs/reports/2026-09-27-tool-output-admission.zh-CN.md)。
 - **验证有范围。** 确定性测试证明集成流程，有限真实样例不能证明普遍语义准确率。详见[验证说明](docs/validation.md)。
 
 开启的功能会将相关任务上下文或操作内容发送到配置的判断服务。精确判断输入和回答保存在 profile 的本地插件记录中，主模型可见影响使用正常 DSH Session 记录。运行资料和凭据应保留为私有数据；公开源码历史不包含个人 QA 截图和原始会话抓取。
@@ -108,6 +113,7 @@ pnpm exec vitest run packages/jev/tests/host.test.ts packages/jev/tests/wire.tes
 - [包参考与消费者 API](packages/jev/README.md)
 - [工作区审批集成测试](packages/jev/tests/workspace-approval.test.ts)
 - [工作区审批 QA 用例](packages/jev/tests/workspace-approval-qa.md)
+- [工具输出准入报告](docs/reports/2026-09-27-tool-output-admission.zh-CN.md)
 - [分支状态](docs/branches.md)
 - [验证说明](docs/validation.md)
 

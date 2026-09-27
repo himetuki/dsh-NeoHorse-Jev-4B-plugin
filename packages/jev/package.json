@@ -51,6 +51,10 @@
     "./workspace-approval": {
       "types": "./lib/types/workspace-approval.d.ts",
       "default": "./lib/workspace-approval.js"
+    },
+    "./output-admission": {
+      "types": "./lib/types/output-admission.d.ts",
+      "default": "./lib/output-admission.js"
     }
   },
   "dsh": {
@@ -166,7 +170,9 @@
     "@deepseek-ai/dsh-tool-bash": "0.1.7-rc.2",
     "@deepseek-ai/dsh-tool-pwsh": "0.1.7-rc.2",
     "@deepseek-ai/dsh-shell": "0.1.7-rc.2",
-    "@deepseek-ai/dsh-shell-env": "0.1.7-rc.2"
+    "@deepseek-ai/dsh-shell-env": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-credentials-local": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-spill-policy": "0.1.7-rc.2"
   },
   "files": [
     "lib/*.js",

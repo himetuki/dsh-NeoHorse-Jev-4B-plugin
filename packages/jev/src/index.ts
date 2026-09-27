@@ -467,6 +467,20 @@ export class JevService extends TypertRemoteService {
     })
   }
 
+  /** Record one rules-only candidate result with zero model attempts. */
+  recordRuleObservation(featureId: string, link: JevOperationLink): Promise<JevRecordDetail> {
+    return this.runActive(undefined, async () => {
+      if (!this.features.has(featureId)) throw new JevError('UNKNOWN_FEATURE', 'Jev feature is not registered')
+      return this.records().createRuleObservation(featureId, link)
+    })
+  }
+
+  /** Attach a consumer fallback reason to an already failed or cancelled operation. */
+  async noteFailure(operationId: string, code: string, message: string): Promise<void> {
+    if (!/^[A-Z][A-Z0-9_]{0,63}$/.test(code) || !message.trim()) throw new JevError('INVALID_NOTE', 'A failure code and reason are required')
+    await this.records().noteFailure(operationId, { code, message })
+  }
+
   /** Persist one action receipt; a failed write leaves execution status unconfirmed. */
   async writeReceipt(operationId: string, receipt: JevActionReceipt): Promise<JevRecordDetail> {
     if (this.records().get(operationId) === null) throw new JevError('UNKNOWN_OPERATION', 'Jev operation is not in this profile')
