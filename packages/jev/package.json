@@ -47,6 +47,14 @@
     "./interjection": {
       "types": "./lib/types/interjection.d.ts",
       "default": "./lib/interjection.js"
+    },
+    "./output-admission": {
+      "types": "./lib/types/output-admission.d.ts",
+      "default": "./lib/output-admission.js"
+    },
+    "./workspace-approval": {
+      "types": "./lib/types/workspace-approval.d.ts",
+      "default": "./lib/workspace-approval.js"
     }
   },
   "dsh": {
@@ -98,7 +106,9 @@
     "@deepseek-ai/dsh-agent-instructions": "0.1.7-rc.2",
     "@deepseek-ai/dsh-subagent": "0.1.7-rc.2",
     "@deepseek-ai/dsh-agent-preset-registry": "0.1.7-rc.2",
-    "@deepseek-ai/dsh-scope": "0.1.7-rc.2"
+    "@deepseek-ai/dsh-scope": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-sandbox-policy": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-user-approval": "0.1.7-rc.2"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.4",
@@ -113,6 +123,7 @@
     "@deepseek-ai/dsh-ptc-runtime": "0.1.7-rc.2",
     "@deepseek-ai/dsh-tool-skill": "0.1.7-rc.2",
     "@deepseek-ai/dsh-tool-fs-search": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-tool-bash": "0.1.7-rc.2",
     "@deepseek-ai/dsh-tools": "0.1.7-rc.2",
     "@deepseek-ai/dsh-app-boot": "0.1.7-rc.2",
     "@deepseek-ai/dsh-api-remotes": "0.1.7-rc.2",
@@ -125,6 +136,7 @@
     "@deepseek-ai/dsh-client-ui-settings": "0.1.7-rc.2",
     "@deepseek-ai/dsh-client-ui-slots": "0.1.7-rc.2",
     "@deepseek-ai/dsh-credentials": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-credentials-local": "0.1.7-rc.2",
     "@deepseek-ai/dsh-llm": "0.1.7-rc.2",
     "@deepseek-ai/dsh-settings": "0.1.7-rc.2",
     "@deepseek-ai/dsh-storage": "0.1.7-rc.2",
@@ -152,7 +164,15 @@
     "@deepseek-ai/dsh-jobs-local": "0.1.7-rc.2",
     "@deepseek-ai/dsh-agent-preset-registry": "0.1.7-rc.2",
     "@deepseek-ai/dsh-scope": "0.1.7-rc.2",
-    "@deepseek-ai/dsh-session-persistence": "0.1.7-rc.2"
+    "@deepseek-ai/dsh-session-persistence": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-spill-policy": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-sandbox-policy": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-user-approval": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-fs-sandbox": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-tool-fs": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-tool-pwsh": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-shell": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-shell-env": "0.1.7-rc.2"
   },
   "files": [
     "lib/*.js",
