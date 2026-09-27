@@ -40,12 +40,12 @@
 4. 进入 **Jev** 页面配置服务地址、模型和 API Key，再按需开启功能。
 
 ```text
-https://github.com/luobosibing2/deepseek-jev
+https://github.com/luobosibing2/deepseek-harness-jev
 ```
 
 **插件启用与功能启用是两层开关：11 项 Jev 功能默认仍为关闭。** 安装作用于当前 Web 连接的 Host profile；Host 需可运行 pnpm 并访问 GitHub。仓库已包含可直接加载的插件入口和预构建文件，不会在用户机器上编译源码，也不要求发布 npm 包。
 
-当前 GitHub 入口提供 `main` 的功能，不包含实验分支。历史 [v0.1.0 安装包](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0)不含新合入的日志筛选功能；需要自行修改代码时再看下面的源码构建步骤。
+当前 GitHub 入口提供 `main` 的功能，不包含实验分支。历史 [v0.1.0 安装包](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0)不含新合入的日志筛选功能；需要自行修改代码时再看下面的源码构建步骤。
 
 ## 从源码安装（开发者）
 
@@ -69,8 +69,8 @@ npm install --global pnpm@11.7.0 @deepseek-ai/dsh@0.1.7-rc.2
 从源码构建 `.tgz`，再使用网页端或官方 CLI 安装。
 
 ```sh
-git clone https://github.com/luobosibing2/deepseek-jev.git
-cd deepseek-jev
+git clone https://github.com/luobosibing2/deepseek-harness-jev.git
+cd deepseek-harness-jev
 pnpm install --frozen-lockfile --ignore-scripts
 pnpm run build
 mkdir -p dist

@@ -40,12 +40,12 @@ If you already use **DSH 0.1.7-rc.2 Web**, install directly from the GitHub repo
 4. Open **Jev**, configure the endpoint, model, and API key, then enable the individual features you need.
 
 ```text
-https://github.com/luobosibing2/deepseek-jev
+https://github.com/luobosibing2/deepseek-harness-jev
 ```
 
 **Enabling the package does not enable its 11 Jev features; they remain off by default.** Installation applies to the Host profile serving the current Web UI. The Host needs pnpm and access to GitHub. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication.
 
-The GitHub entry provides the `main` features, not experimental branches. The older [v0.1.0 release](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0) does not include the newly integrated log filters. Build from source below only when changing or building the code yourself.
+The GitHub entry provides the `main` features, not experimental branches. The older [v0.1.0 release](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0) does not include the newly integrated log filters. Build from source below only when changing or building the code yourself.
 
 ## Install from source (developers)
 
@@ -69,8 +69,8 @@ npm install --global pnpm@11.7.0 @deepseek-ai/dsh@0.1.7-rc.2
 Build a `.tgz` from source, then install it through the Web UI or official CLI.
 
 ```sh
-git clone https://github.com/luobosibing2/deepseek-jev.git
-cd deepseek-jev
+git clone https://github.com/luobosibing2/deepseek-harness-jev.git
+cd deepseek-harness-jev
 pnpm install --frozen-lockfile --ignore-scripts
 pnpm run build
 mkdir -p dist

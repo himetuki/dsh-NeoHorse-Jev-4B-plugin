@@ -195,12 +195,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luobosibing2/deepseek-jev.git",
+    "url": "git+https://github.com/luobosibing2/deepseek-harness-jev.git",
     "directory": "packages/jev"
   },
-  "homepage": "https://github.com/luobosibing2/deepseek-jev#readme",
+  "homepage": "https://github.com/luobosibing2/deepseek-harness-jev#readme",
   "bugs": {
-    "url": "https://github.com/luobosibing2/deepseek-jev/issues"
+    "url": "https://github.com/luobosibing2/deepseek-harness-jev/issues"
   },
   "keywords": [
     "deepseek",
