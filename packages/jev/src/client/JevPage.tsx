@@ -6,6 +6,7 @@ import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SupervisionConfigValues } from '../supervision-types.ts'
 import type { SelectionConfigValues } from '../selection-types.ts'
+import type { OutputAdmissionConfigValues } from '../output-admission-types.ts'
 import type {
   JevActionStatus, JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail,
   JevRecordFilter, JevRecordPage, JevRecordStatus, JevRecordSummary,
@@ -36,6 +37,7 @@ export interface JevPageRemote {
 export interface JevPageFace {
   form: ConfigForm<JevConfigValues>
   selectionForm?: ConfigForm<SelectionConfigValues>
+  outputAdmissionForm?: ConfigForm<OutputAdmissionConfigValues>
   supervisionForm?: ConfigForm<SupervisionConfigValues>
   jev: JevPageRemote
   notifySuccess: (message: string) => void
@@ -102,6 +104,7 @@ export function JevPage(props: JevPageProps) {
           <SettingsPanel form={props.form} jev={props.jev} notifySuccess={props.notifySuccess} t={t} />
           {props.supervisionForm && <SupervisionSettings form={props.supervisionForm} notifySuccess={props.notifySuccess} t={t} />}
           {props.selectionForm && <SelectionSettings form={props.selectionForm} notifySuccess={props.notifySuccess} t={t} />}
+          {props.outputAdmissionForm && <OutputAdmissionSettings form={props.outputAdmissionForm} notifySuccess={props.notifySuccess} t={t} />}
         </div>
         : <div id="jev-records-panel" role="tabpanel" aria-labelledby="jev-records-tab"><RecordsPanel jev={props.jev} t={t} /></div>}
     </div>
@@ -121,6 +124,78 @@ function parsePositiveInteger(value: string): number | null {
   if (!/^[1-9]\d*$/.test(value)) return null
   const parsed = Number(value)
   return Number.isSafeInteger(parsed) ? parsed : null
+}
+
+type OutputField = keyof OutputAdmissionConfigValues
+const OUTPUT_FIELDS: readonly { key: OutputField; label: JevLocaleKey; ratio?: true }[] = [
+  { key: 'generalMinChars', label: 'generalMinChars' }, { key: 'testMinChars', label: 'testMinChars' },
+  { key: 'generalBlockChars', label: 'generalBlockChars' }, { key: 'maxGeneralBlocks', label: 'maxGeneralBlocks' },
+  { key: 'maxTestCandidates', label: 'maxTestCandidates' }, { key: 'maxRequestChars', label: 'maxRequestChars' },
+  { key: 'maxTaskChars', label: 'maxTaskChars' }, { key: 'waitMs', label: 'admissionWaitMs' },
+  { key: 'omitProbability', label: 'omitProbability', ratio: true }, { key: 'minSavedChars', label: 'minSavedChars' },
+  { key: 'minSavedRatio', label: 'minSavedRatio', ratio: true }, { key: 'slowTestMs', label: 'slowTestMs' },
+  { key: 'duplicateMinLines', label: 'duplicateMinLines' }, { key: 'duplicateMinChars', label: 'duplicateMinChars' },
+]
+
+function OutputAdmissionSettings({ form, notifySuccess, t }: {
+  form: ConfigForm<OutputAdmissionConfigValues>; notifySuccess: (message: string) => void; t: Translate
+}) {
+  const subscribe = useCallback((listener: () => void) => form.subscribe(listener), [form])
+  const getSnapshot = useCallback(() => form.getSnapshot(), [form])
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+  const [draft, setDraft] = useState<Partial<Record<OutputField, string>>>({})
+  const [invalid, setInvalid] = useState<OutputField[]>([])
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
+  const edited = useRef(false)
+  const observed = useRef('')
+  useEffect(() => {
+    if (snapshot.value === undefined) return
+    const values = Object.fromEntries(OUTPUT_FIELDS.map(({ key }) => [key, String(snapshot.value![key])])) as Record<OutputField, string>
+    const signature = JSON.stringify(values)
+    if (signature === observed.current) return
+    observed.current = signature
+    if (!edited.current) setDraft(values)
+  }, [snapshot.value])
+  const current = snapshot.value
+  const dirty = current !== undefined && OUTPUT_FIELDS.some(({ key }) => draft[key] !== undefined && draft[key] !== String(current[key]))
+  useEffect(() => { if (!dirty) edited.current = false }, [dirty])
+  const save = async () => {
+    const errors: OutputField[] = []
+    const values: Partial<OutputAdmissionConfigValues> = {}
+    for (const { key, ratio } of OUTPUT_FIELDS) {
+      const raw = draft[key] ?? ''
+      const value = ratio ? Number(raw) : parsePositiveInteger(raw)
+      if (raw.trim() === '' || value === null || !Number.isFinite(value) || ratio && (value < 0 || value > 1)) errors.push(key)
+      else values[key] = value
+    }
+    if (errors.length) { setInvalid(errors); return }
+    setSaving(true)
+    setSaveError(false)
+    try {
+      const accepted = await form.mutate(OUTPUT_FIELDS.map(({ key }) => ({ op: 'set' as const, path: [key], value: values[key]! })), snapshot.revision)
+      if (!accepted) setSaveError(true)
+      else { edited.current = false; notifySuccess(t('outputAdmissionSaved')) }
+    } catch { setSaveError(true) }
+    finally { setSaving(false) }
+  }
+  return <section className={css.section} aria-label={t('outputAdmissionSettings')}>
+    <h3 className={css.heading}>{t('outputAdmissionSettings')}</h3>
+    <p className={css.hint}>{t('outputAdmissionHint')}</p>
+    {snapshot.status === 'loading' && current === undefined && <Loading label={t('loading')} />}
+    {snapshot.status === 'unavailable' && <p className={css.notice}>{t('unavailable')}</p>}
+    {current !== undefined && <div className={css.form}>
+      <div className={css.filters}>{OUTPUT_FIELDS.map(({ key, label, ratio }) => <div className={css.field} key={key}>
+        <label htmlFor={`jev-output-${key}`}>{t(label)}</label>
+        <input id={`jev-output-${key}`} type="number" min={ratio ? '0' : '1'} max={ratio ? '1' : undefined}
+          step={ratio ? 'any' : '1'} value={draft[key] ?? String(current[key])} aria-invalid={invalid.includes(key) || undefined}
+          disabled={!snapshot.writable || saving} onChange={event => { edited.current = true; setDraft(previous => ({ ...previous, [key]: event.target.value })); setInvalid(previous => previous.filter(item => item !== key)) }} />
+        {invalid.includes(key) && <span role="alert" className={css.notice}>{t('outputAdmissionInvalid')}</span>}
+      </div>)}</div>
+      <div className={css.actions}><Button variant="primary" disabled={!snapshot.writable || saving || !dirty} onClick={() => { void save() }}>{saving ? t('saving') : t('saveOutputAdmission')}</Button></div>
+      {saveError && <p role="alert" className={css.notice}>{t('outputAdmissionSaveFailed')}</p>}
+    </div>}
+  </section>
 }
 
 function SelectionSettings({ form, notifySuccess, t }: {

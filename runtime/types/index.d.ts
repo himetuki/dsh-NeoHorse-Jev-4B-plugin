@@ -123,6 +123,10 @@ export declare class JevService extends TypertRemoteService {
     private tryOnce;
     /** Record interrupted input without a model call, human question, or attempt; stable message links are idempotent. */
     recordInterrupted(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>;
+    /** Record one rules-only candidate result with zero model attempts. */
+    recordRuleObservation(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>;
+    /** Attach a consumer fallback reason to an already failed or cancelled operation. */
+    noteFailure(operationId: string, code: string, message: string): Promise<void>;
     /** Persist one action receipt; a failed write leaves execution status unconfirmed. */
     writeReceipt(operationId: string, receipt: JevActionReceipt): Promise<JevRecordDetail>;
 }

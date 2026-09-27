@@ -20,6 +20,8 @@ export declare class JevLedger {
     /** Mark calls and waits left by an earlier Host process as interrupted. */
     private markInterrupted;
     create(featureId: string, link: JevOperationLink, diagnostic?: boolean): Promise<JevRecordDetail>;
+    /** Record a rules-only result without inventing a model attempt or usage. */
+    createRuleObservation(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>;
     /** Write one stable zero-attempt recovery record in a single durable operation. */
     createInterrupted(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>;
     get(id: string): JevRecordDetail | null;
@@ -28,6 +30,11 @@ export declare class JevLedger {
     setStatus(operationId: string, status: JevRecordStatus): Promise<void>;
     /** Preserve a pre-attempt or ledger-stage failure without inventing an HTTP attempt. */
     failOperation(operationId: string, failure: {
+        code: string;
+        message: string;
+    }): Promise<void>;
+    /** Explain a settled, unusable operation without inventing an action or model attempt. */
+    noteFailure(operationId: string, failure: {
         code: string;
         message: string;
     }): Promise<void>;

@@ -6146,34 +6146,34 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			document.head.appendChild(element);
 		}
 		var JevPage_module_css_default = {
-			"detailLabel": "_1tsnea_detailLabel",
-			"panel": "_1tsnea_panel",
-			"feature": "_1tsnea_feature",
-			"detail": "_1tsnea_detail",
-			"meta": "_1tsnea_meta",
-			"field": "_1tsnea_field",
 			"form": "_1tsnea_form",
-			"notice": "_1tsnea_notice",
-			"featureTitle": "_1tsnea_featureTitle",
+			"page": "_1tsnea_page",
 			"hint": "_1tsnea_hint",
-			"toolbar": "_1tsnea_toolbar",
-			"list": "_1tsnea_list",
+			"field": "_1tsnea_field",
+			"filters": "_1tsnea_filters",
+			"description": "_1tsnea_description",
 			"featureBody": "_1tsnea_featureBody",
 			"heading": "_1tsnea_heading",
+			"feature": "_1tsnea_feature",
+			"featureTitle": "_1tsnea_featureTitle",
+			"toolbar": "_1tsnea_toolbar",
+			"detailLabel": "_1tsnea_detailLabel",
+			"detail": "_1tsnea_detail",
 			"tabs": "_1tsnea_tabs",
-			"row": "_1tsnea_row",
-			"filters": "_1tsnea_filters",
-			"empty": "_1tsnea_empty",
 			"record": "_1tsnea_record",
-			"loading": "_1tsnea_loading",
-			"page": "_1tsnea_page",
-			"code": "_1tsnea_code",
-			"detailBlock": "_1tsnea_detailBlock",
-			"recordHead": "_1tsnea_recordHead",
+			"row": "_1tsnea_row",
+			"panel": "_1tsnea_panel",
 			"section": "_1tsnea_section",
 			"actions": "_1tsnea_actions",
-			"description": "_1tsnea_description",
-			"success": "_1tsnea_success"
+			"recordHead": "_1tsnea_recordHead",
+			"empty": "_1tsnea_empty",
+			"loading": "_1tsnea_loading",
+			"success": "_1tsnea_success",
+			"code": "_1tsnea_code",
+			"notice": "_1tsnea_notice",
+			"list": "_1tsnea_list",
+			"meta": "_1tsnea_meta",
+			"detailBlock": "_1tsnea_detailBlock"
 		};
 		//#endregion
 		//#region src/client/JevPage.tsx
@@ -6275,6 +6275,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							form: props.selectionForm,
 							notifySuccess: props.notifySuccess,
 							t
+						}),
+						props.outputAdmissionForm && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(OutputAdmissionSettings, {
+							form: props.outputAdmissionForm,
+							notifySuccess: props.notifySuccess,
+							t
 						})
 					]
 				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
@@ -6306,6 +6311,196 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!/^[1-9]\d*$/.test(value)) return null;
 			const parsed = Number(value);
 			return Number.isSafeInteger(parsed) ? parsed : null;
+		}
+		const OUTPUT_FIELDS = [
+			{
+				key: "generalMinChars",
+				label: "generalMinChars"
+			},
+			{
+				key: "testMinChars",
+				label: "testMinChars"
+			},
+			{
+				key: "generalBlockChars",
+				label: "generalBlockChars"
+			},
+			{
+				key: "maxGeneralBlocks",
+				label: "maxGeneralBlocks"
+			},
+			{
+				key: "maxTestCandidates",
+				label: "maxTestCandidates"
+			},
+			{
+				key: "maxRequestChars",
+				label: "maxRequestChars"
+			},
+			{
+				key: "maxTaskChars",
+				label: "maxTaskChars"
+			},
+			{
+				key: "waitMs",
+				label: "admissionWaitMs"
+			},
+			{
+				key: "omitProbability",
+				label: "omitProbability",
+				ratio: true
+			},
+			{
+				key: "minSavedChars",
+				label: "minSavedChars"
+			},
+			{
+				key: "minSavedRatio",
+				label: "minSavedRatio",
+				ratio: true
+			},
+			{
+				key: "slowTestMs",
+				label: "slowTestMs"
+			},
+			{
+				key: "duplicateMinLines",
+				label: "duplicateMinLines"
+			},
+			{
+				key: "duplicateMinChars",
+				label: "duplicateMinChars"
+			}
+		];
+		function OutputAdmissionSettings({ form, notifySuccess, t }) {
+			const subscribe = (0, react.useCallback)((listener) => form.subscribe(listener), [form]);
+			const getSnapshot = (0, react.useCallback)(() => form.getSnapshot(), [form]);
+			const snapshot = (0, react.useSyncExternalStore)(subscribe, getSnapshot, getSnapshot);
+			const [draft, setDraft] = (0, react.useState)({});
+			const [invalid, setInvalid] = (0, react.useState)([]);
+			const [saving, setSaving] = (0, react.useState)(false);
+			const [saveError, setSaveError] = (0, react.useState)(false);
+			const edited = (0, react.useRef)(false);
+			const observed = (0, react.useRef)("");
+			(0, react.useEffect)(() => {
+				if (snapshot.value === void 0) return;
+				const values = Object.fromEntries(OUTPUT_FIELDS.map(({ key }) => [key, String(snapshot.value[key])]));
+				const signature = JSON.stringify(values);
+				if (signature === observed.current) return;
+				observed.current = signature;
+				if (!edited.current) setDraft(values);
+			}, [snapshot.value]);
+			const current = snapshot.value;
+			const dirty = current !== void 0 && OUTPUT_FIELDS.some(({ key }) => draft[key] !== void 0 && draft[key] !== String(current[key]));
+			(0, react.useEffect)(() => {
+				if (!dirty) edited.current = false;
+			}, [dirty]);
+			const save = async () => {
+				const errors = [];
+				const values = {};
+				for (const { key, ratio } of OUTPUT_FIELDS) {
+					const raw = draft[key] ?? "";
+					const value = ratio ? Number(raw) : parsePositiveInteger(raw);
+					if (raw.trim() === "" || value === null || !Number.isFinite(value) || ratio && (value < 0 || value > 1)) errors.push(key);
+					else values[key] = value;
+				}
+				if (errors.length) {
+					setInvalid(errors);
+					return;
+				}
+				setSaving(true);
+				setSaveError(false);
+				try {
+					if (!await form.mutate(OUTPUT_FIELDS.map(({ key }) => ({
+						op: "set",
+						path: [key],
+						value: values[key]
+					})), snapshot.revision)) setSaveError(true);
+					else {
+						edited.current = false;
+						notifySuccess(t("outputAdmissionSaved"));
+					}
+				} catch {
+					setSaveError(true);
+				} finally {
+					setSaving(false);
+				}
+			};
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+				className: JevPage_module_css_default.section,
+				"aria-label": t("outputAdmissionSettings"),
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", {
+						className: JevPage_module_css_default.heading,
+						children: t("outputAdmissionSettings")
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: JevPage_module_css_default.hint,
+						children: t("outputAdmissionHint")
+					}),
+					snapshot.status === "loading" && current === void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Loading, { label: t("loading") }),
+					snapshot.status === "unavailable" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: JevPage_module_css_default.notice,
+						children: t("unavailable")
+					}),
+					current !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: JevPage_module_css_default.form,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: JevPage_module_css_default.filters,
+								children: OUTPUT_FIELDS.map(({ key, label, ratio }) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: JevPage_module_css_default.field,
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
+											htmlFor: `jev-output-${key}`,
+											children: t(label)
+										}),
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+											id: `jev-output-${key}`,
+											type: "number",
+											min: ratio ? "0" : "1",
+											max: ratio ? "1" : void 0,
+											step: ratio ? "any" : "1",
+											value: draft[key] ?? String(current[key]),
+											"aria-invalid": invalid.includes(key) || void 0,
+											disabled: !snapshot.writable || saving,
+											onChange: (event) => {
+												edited.current = true;
+												setDraft((previous) => ({
+													...previous,
+													[key]: event.target.value
+												}));
+												setInvalid((previous) => previous.filter((item) => item !== key));
+											}
+										}),
+										invalid.includes(key) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											role: "alert",
+											className: JevPage_module_css_default.notice,
+											children: t("outputAdmissionInvalid")
+										})
+									]
+								}, key))
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: JevPage_module_css_default.actions,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									variant: "primary",
+									disabled: !snapshot.writable || saving || !dirty,
+									onClick: () => {
+										save();
+									},
+									children: saving ? t("saving") : t("saveOutputAdmission")
+								})
+							}),
+							saveError && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+								role: "alert",
+								className: JevPage_module_css_default.notice,
+								children: t("outputAdmissionSaveFailed")
+							})
+						]
+					})
+				]
+			});
 		}
 		function SelectionSettings({ form, notifySuccess, t }) {
 			const subscribe = (0, react.useCallback)((listener) => form.subscribe(listener), [form]);
@@ -7443,6 +7638,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			saveSelectionCounts: "Save selection counts",
 			selectionCountSaved: "Selection counts saved.",
 			selectionCountSaveFailed: "Could not save selection counts.",
+			outputAdmissionSettings: "Tool log admission limits",
+			outputAdmissionHint: "These limits apply to the next eligible tool result. The two feature switches above remain independent and off by default.",
+			outputAdmissionInvalid: "Enter a valid positive number, or a probability between 0 and 1.",
+			saveOutputAdmission: "Save log limits",
+			outputAdmissionSaved: "Log limits saved.",
+			outputAdmissionSaveFailed: "Could not save log limits.",
+			generalMinChars: "Minimum command log characters",
+			testMinChars: "Minimum test log characters",
+			generalBlockChars: "Candidate block characters",
+			maxGeneralBlocks: "Maximum command blocks",
+			maxTestCandidates: "Maximum test candidates",
+			maxRequestChars: "Judgment request characters",
+			maxTaskChars: "Task context characters",
+			admissionWaitMs: "Judgment wait (ms)",
+			omitProbability: "Minimum omit probability",
+			minSavedChars: "Minimum saved characters",
+			minSavedRatio: "Minimum saved fraction",
+			slowTestMs: "Slow test threshold (ms)",
+			duplicateMinLines: "Duplicate failure minimum lines",
+			duplicateMinChars: "Duplicate failure minimum characters",
 			evidenceChars: "Evidence character budget",
 			supervisionCounts: "Supervision counts",
 			driftInterval: "Completed model steps between drift checks",
@@ -7544,6 +7759,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			saveSelectionCounts: "保存筛选数量",
 			selectionCountSaved: "筛选数量已保存",
 			selectionCountSaveFailed: "无法保存筛选数量",
+			outputAdmissionSettings: "工具日志准入预算",
+			outputAdmissionHint: "这些预算从下一次合格工具结果开始生效；上方两个功能开关互相独立，默认关闭。",
+			outputAdmissionInvalid: "请输入有效正数；概率或比例须在 0 到 1 之间",
+			saveOutputAdmission: "保存日志预算",
+			outputAdmissionSaved: "日志预算已保存",
+			outputAdmissionSaveFailed: "无法保存日志预算",
+			generalMinChars: "命令日志最小字符数",
+			testMinChars: "测试日志最小字符数",
+			generalBlockChars: "候选块字符数",
+			maxGeneralBlocks: "命令块数量上限",
+			maxTestCandidates: "测试候选数量上限",
+			maxRequestChars: "判断请求字符预算",
+			maxTaskChars: "任务依据字符预算",
+			admissionWaitMs: "判断等待毫秒数",
+			omitProbability: "省略概率门槛",
+			minSavedChars: "最小净省字符数",
+			minSavedRatio: "最小净省比例",
+			slowTestMs: "慢测试门槛（毫秒）",
+			duplicateMinLines: "重复失败详情最少行数",
+			duplicateMinChars: "重复失败详情最少字符数",
 			evidenceChars: "已有证据字符预算",
 			supervisionCounts: "执行监督次数",
 			driftInterval: "跑偏检查间隔（已完成模型步骤）",
@@ -7636,6 +7871,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const PACKAGE = "@dsh-jev/plugin";
 		const ENTRY = "jev";
 		const SELECTION_ENTRY = "jev-selection";
+		const OUTPUT_ENTRY = "jev-output-admission";
 		/** Services needed after the generated Jev Remote contribution mounts. */
 		const inject = [
 			"remote",
@@ -7650,6 +7886,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}));
 			const form = ctx.configForms.get(ENTRY);
 			const selectionForm = ctx.configForms.get(SELECTION_ENTRY);
+			const outputAdmissionForm = ctx.configForms.get(OUTPUT_ENTRY);
 			const supervisionForm = ctx.configForms.get("jev-supervision");
 			const toast = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)(null);
 			let sequence = 0;
@@ -7666,6 +7903,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				form,
 				selectionForm,
 				supervisionForm,
+				outputAdmissionForm,
 				jev: jevPageRemote(ctx.remote.jev),
 				notifySuccess
 			};

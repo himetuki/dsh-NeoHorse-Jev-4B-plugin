@@ -155,6 +155,17 @@ export class JevLedger {
         await this.domain.table('operations').put(detail.id, detail);
         return detail;
     }
+    /** Record a rules-only result without inventing a model attempt or usage. */
+    async createRuleObservation(featureId, link) {
+        const at = new Date().toISOString();
+        const detail = {
+            id: randomUUID(), featureId, link, ...link.sessionId === undefined ? {} : { sessionId: link.sessionId },
+            diagnostic: false, status: 'succeeded', startedAt: at, updatedAt: at,
+            attempts: 0, attemptRecords: [], receipts: [],
+        };
+        await this.domain.table('operations').put(detail.id, detail);
+        return detail;
+    }
     /** Write one stable zero-attempt recovery record in a single durable operation. */
     async createInterrupted(featureId, link) {
         const id = 'interrupted-' + createHash('sha256').update(JSON.stringify([featureId, link.sessionId, link.inputVersion])).digest('hex');
@@ -201,6 +212,14 @@ export class JevLedger {
     /** Preserve a pre-attempt or ledger-stage failure without inventing an HTTP attempt. */
     async failOperation(operationId, failure) {
         await this.domain.table('operations').update(operationId, current => ({ ...current, status: 'failed', failure, updatedAt: new Date().toISOString() }));
+    }
+    /** Explain a settled, unusable operation without inventing an action or model attempt. */
+    async noteFailure(operationId, failure) {
+        await this.domain.table('operations').update(operationId, current => {
+            if (current.status !== 'failed' && current.status !== 'cancelled')
+                throw new Error('Jev operation is not failed or cancelled');
+            return { ...current, failure, updatedAt: new Date().toISOString() };
+        });
     }
     async receipt(operationId, receipt) {
         return this.domain.table('operations').update(operationId, current => {

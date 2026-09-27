@@ -3,6 +3,7 @@ import type { ConfigForm } from '@deepseek-ai/dsh-client-ui-settings/client';
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots';
 import type { SupervisionConfigValues } from '../supervision-types.ts';
 import type { SelectionConfigValues } from '../selection-types.ts';
+import type { OutputAdmissionConfigValues } from '../output-admission-types.ts';
 import type { JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail, JevRecordFilter, JevRecordPage } from '../types.ts';
 /** Settings section exposed by the Jev Host plugin. */
 export interface JevConfigValues {
@@ -25,6 +26,7 @@ export interface JevPageRemote {
 export interface JevPageFace {
     form: ConfigForm<JevConfigValues>;
     selectionForm?: ConfigForm<SelectionConfigValues>;
+    outputAdmissionForm?: ConfigForm<OutputAdmissionConfigValues>;
     supervisionForm?: ConfigForm<SupervisionConfigValues>;
     jev: JevPageRemote;
     notifySuccess: (message: string) => void;

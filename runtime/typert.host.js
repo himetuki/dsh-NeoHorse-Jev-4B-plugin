@@ -386,6 +386,20 @@ export const TYPERT = {
           },
           {
             "kind": "method",
+            "name": "recordRuleObservation",
+            "signature": "recordRuleObservation(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>",
+            "summary": "Record one rules-only candidate result with zero model attempts.",
+            "jsDoc": "/** Record one rules-only candidate result with zero model attempts. */"
+          },
+          {
+            "kind": "method",
+            "name": "noteFailure",
+            "signature": "async noteFailure(operationId: string, code: string, message: string): Promise<void>",
+            "summary": "Attach a consumer fallback reason to an already failed or cancelled operation.",
+            "jsDoc": "/** Attach a consumer fallback reason to an already failed or cancelled operation. */"
+          },
+          {
+            "kind": "method",
             "name": "writeReceipt",
             "signature": "async writeReceipt(operationId: string, receipt: JevActionReceipt): Promise<JevRecordDetail>",
             "summary": "Persist one action receipt; a failed write leaves execution status unconfirmed.",

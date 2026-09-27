@@ -8,7 +8,7 @@
 
 | Branch | Status / 状态 |
 | --- | --- |
-| `main` | Shared service, skill/glob, six supervision/correction features, workspace approval / 公共能力、技能与glob、六项监督纠正、工作区审批 |
+| `main` | Shared service, skill/glob, six supervision/correction features, workspace approval, tool-output admission / 公共能力、技能与glob、六项监督纠正、工作区审批、工具输出准入 |
 | `codex/jev-common-foundation` | Historical foundation snapshot, integrated in main / 已集成的公共能力历史快照 |
 | `codex/jev-skill-file-selection` | Historical selection snapshot, integrated in main / 已集成的选择模块历史快照 |
 | `codex/jev-execution-supervision` | Historical split implementation; superseded by main integration / 历史拆分实现，以main整合版为准 |
@@ -17,7 +17,7 @@
 | `codex/jev-shared-findings` | Historical split implementation; superseded by main integration / 历史拆分实现，以main整合版为准 |
 | `codex/jev-task-execution-checks` | Historical integrated hook snapshot / 监督纠正历史整合快照 |
 | `codex/jev-workspace-approval` | Accepted approval implementation, integrated in main / 已验收并合入的审批实现 |
-| `codex/jev-tool-output-admission` | Output/test-log filtering work, not merged; includes an approval integration snapshot / 输出与测试日志筛选未合并，含审批集成快照 |
+| `codex/jev-tool-output-admission` | Historical output/test-log filtering snapshot, integrated in main; includes an approval integration snapshot / 输出与测试日志筛选历史快照，已集成到main，含审批集成快照 |
 | `codex/jev-native-web-execution` | Paused experiment; ordinary-site effectiveness not accepted / 已暂停实验，正常网站效果未验收 |
 | `codex/jev-desktop-install-validation` | Historical validation baseline; no additional product implementation / 历史验证基线，无新增产品实现 |
 | `codex/jev-open-source-release` | Publication documentation and packaging metadata / 公开发布文档与打包元数据 |

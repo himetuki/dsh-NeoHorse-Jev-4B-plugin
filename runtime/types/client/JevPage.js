@@ -40,7 +40,7 @@ export function JevPage(props) {
                     { value: 'settings', label: t('settings'), id: 'jev-settings-tab', panelId: 'jev-settings-panel' },
                     { value: 'records', label: t('records'), id: 'jev-records-tab', panelId: 'jev-records-panel' },
                 ], value: tab, onChange: setTab, className: css.tabs }), tab === 'settings'
-                ? _jsxs("div", { id: "jev-settings-panel", role: "tabpanel", "aria-labelledby": "jev-settings-tab", className: css.panel, children: [_jsx(SettingsPanel, { form: props.form, jev: props.jev, notifySuccess: props.notifySuccess, t: t }), props.supervisionForm && _jsx(SupervisionSettings, { form: props.supervisionForm, notifySuccess: props.notifySuccess, t: t }), props.selectionForm && _jsx(SelectionSettings, { form: props.selectionForm, notifySuccess: props.notifySuccess, t: t })] })
+                ? _jsxs("div", { id: "jev-settings-panel", role: "tabpanel", "aria-labelledby": "jev-settings-tab", className: css.panel, children: [_jsx(SettingsPanel, { form: props.form, jev: props.jev, notifySuccess: props.notifySuccess, t: t }), props.supervisionForm && _jsx(SupervisionSettings, { form: props.supervisionForm, notifySuccess: props.notifySuccess, t: t }), props.selectionForm && _jsx(SelectionSettings, { form: props.selectionForm, notifySuccess: props.notifySuccess, t: t }), props.outputAdmissionForm && _jsx(OutputAdmissionSettings, { form: props.outputAdmissionForm, notifySuccess: props.notifySuccess, t: t })] })
                 : _jsx("div", { id: "jev-records-panel", role: "tabpanel", "aria-labelledby": "jev-records-tab", children: _jsx(RecordsPanel, { jev: props.jev, t: t }) })] }));
 }
 const SELECTION_FIELDS = [
@@ -53,6 +53,75 @@ function parsePositiveInteger(value) {
         return null;
     const parsed = Number(value);
     return Number.isSafeInteger(parsed) ? parsed : null;
+}
+const OUTPUT_FIELDS = [
+    { key: 'generalMinChars', label: 'generalMinChars' }, { key: 'testMinChars', label: 'testMinChars' },
+    { key: 'generalBlockChars', label: 'generalBlockChars' }, { key: 'maxGeneralBlocks', label: 'maxGeneralBlocks' },
+    { key: 'maxTestCandidates', label: 'maxTestCandidates' }, { key: 'maxRequestChars', label: 'maxRequestChars' },
+    { key: 'maxTaskChars', label: 'maxTaskChars' }, { key: 'waitMs', label: 'admissionWaitMs' },
+    { key: 'omitProbability', label: 'omitProbability', ratio: true }, { key: 'minSavedChars', label: 'minSavedChars' },
+    { key: 'minSavedRatio', label: 'minSavedRatio', ratio: true }, { key: 'slowTestMs', label: 'slowTestMs' },
+    { key: 'duplicateMinLines', label: 'duplicateMinLines' }, { key: 'duplicateMinChars', label: 'duplicateMinChars' },
+];
+function OutputAdmissionSettings({ form, notifySuccess, t }) {
+    const subscribe = useCallback((listener) => form.subscribe(listener), [form]);
+    const getSnapshot = useCallback(() => form.getSnapshot(), [form]);
+    const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+    const [draft, setDraft] = useState({});
+    const [invalid, setInvalid] = useState([]);
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState(false);
+    const edited = useRef(false);
+    const observed = useRef('');
+    useEffect(() => {
+        if (snapshot.value === undefined)
+            return;
+        const values = Object.fromEntries(OUTPUT_FIELDS.map(({ key }) => [key, String(snapshot.value[key])]));
+        const signature = JSON.stringify(values);
+        if (signature === observed.current)
+            return;
+        observed.current = signature;
+        if (!edited.current)
+            setDraft(values);
+    }, [snapshot.value]);
+    const current = snapshot.value;
+    const dirty = current !== undefined && OUTPUT_FIELDS.some(({ key }) => draft[key] !== undefined && draft[key] !== String(current[key]));
+    useEffect(() => { if (!dirty)
+        edited.current = false; }, [dirty]);
+    const save = async () => {
+        const errors = [];
+        const values = {};
+        for (const { key, ratio } of OUTPUT_FIELDS) {
+            const raw = draft[key] ?? '';
+            const value = ratio ? Number(raw) : parsePositiveInteger(raw);
+            if (raw.trim() === '' || value === null || !Number.isFinite(value) || ratio && (value < 0 || value > 1))
+                errors.push(key);
+            else
+                values[key] = value;
+        }
+        if (errors.length) {
+            setInvalid(errors);
+            return;
+        }
+        setSaving(true);
+        setSaveError(false);
+        try {
+            const accepted = await form.mutate(OUTPUT_FIELDS.map(({ key }) => ({ op: 'set', path: [key], value: values[key] })), snapshot.revision);
+            if (!accepted)
+                setSaveError(true);
+            else {
+                edited.current = false;
+                notifySuccess(t('outputAdmissionSaved'));
+            }
+        }
+        catch {
+            setSaveError(true);
+        }
+        finally {
+            setSaving(false);
+        }
+    };
+    return _jsxs("section", { className: css.section, "aria-label": t('outputAdmissionSettings'), children: [_jsx("h3", { className: css.heading, children: t('outputAdmissionSettings') }), _jsx("p", { className: css.hint, children: t('outputAdmissionHint') }), snapshot.status === 'loading' && current === undefined && _jsx(Loading, { label: t('loading') }), snapshot.status === 'unavailable' && _jsx("p", { className: css.notice, children: t('unavailable') }), current !== undefined && _jsxs("div", { className: css.form, children: [_jsx("div", { className: css.filters, children: OUTPUT_FIELDS.map(({ key, label, ratio }) => _jsxs("div", { className: css.field, children: [_jsx("label", { htmlFor: `jev-output-${key}`, children: t(label) }), _jsx("input", { id: `jev-output-${key}`, type: "number", min: ratio ? '0' : '1', max: ratio ? '1' : undefined, step: ratio ? 'any' : '1', value: draft[key] ?? String(current[key]), "aria-invalid": invalid.includes(key) || undefined, disabled: !snapshot.writable || saving, onChange: event => { edited.current = true; setDraft(previous => ({ ...previous, [key]: event.target.value })); setInvalid(previous => previous.filter(item => item !== key)); } }), invalid.includes(key) && _jsx("span", { role: "alert", className: css.notice, children: t('outputAdmissionInvalid') })] }, key)) }), _jsx("div", { className: css.actions, children: _jsx(Button, { variant: "primary", disabled: !snapshot.writable || saving || !dirty, onClick: () => { void save(); }, children: saving ? t('saving') : t('saveOutputAdmission') }) }), saveError && _jsx("p", { role: "alert", className: css.notice, children: t('outputAdmissionSaveFailed') })] })] });
 }
 function SelectionSettings({ form, notifySuccess, t }) {
     const subscribe = useCallback((listener) => form.subscribe(listener), [form]);

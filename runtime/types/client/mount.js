@@ -8,18 +8,20 @@ const NS = 'jev.plugin';
 const PACKAGE = '@dsh-jev/plugin';
 const ENTRY = 'jev';
 const SELECTION_ENTRY = 'jev-selection';
+const OUTPUT_ENTRY = 'jev-output-admission';
 /** Services needed after the generated Jev Remote contribution mounts. */
 export const inject = ['remote', 'slots', 'locale', 'configForms'];
 function registerUi(ctx) {
     ctx.effect(() => ctx.locale.register(NS, { zh, en }));
     const form = ctx.configForms.get(ENTRY);
     const selectionForm = ctx.configForms.get(SELECTION_ENTRY);
+    const outputAdmissionForm = ctx.configForms.get(OUTPUT_ENTRY);
     const supervisionForm = ctx.configForms.get('jev-supervision');
     const toast = createSnapshotStore(null);
     let sequence = 0;
     const dismiss = () => { toast.set(null); };
     const notifySuccess = (message) => { toast.set({ sequence: ++sequence, text: message }); };
-    const face = { form, selectionForm, supervisionForm, jev: jevPageRemote(ctx.remote.jev), notifySuccess };
+    const face = { form, selectionForm, supervisionForm, outputAdmissionForm, jev: jevPageRemote(ctx.remote.jev), notifySuccess };
     ctx.slots.inject('shell.overlay', () => ctx.slots.register({
         name: 'shell.overlay', id: 'jev.feedback', inject: () => ({ hooks: { jevToast: toast }, dismiss }),
     }, JevToast));
