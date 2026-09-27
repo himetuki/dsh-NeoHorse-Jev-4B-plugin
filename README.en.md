@@ -30,27 +30,24 @@ All features share a connection, profile-scoped settings, decision records, and 
 
 ## Install through the Web UI (recommended)
 
-If you already use **DSH 0.1.7-rc.2 Web**, install the prebuilt package from its plugin manager without cloning or compiling this repository. Installation applies to the Host profile serving the current Web UI; that Host still needs pnpm available. This package comes from `main` and contains the 9 features above, not the experimental branches.
+If you already use **DSH 0.1.7-rc.2 Web**, install directly from the GitHub repository URL. No source checkout, manual packaging, or npm login is required.
 
-1. Open DSH and select **Plugins in the sidebar → Add plugin**.
-2. Paste the package URL below into **Package name or address**.
-3. Click **Install**, wait for **Installed**, then click **Enable now**.
-4. If DSH says the package will load on the next start, restart the current profile; otherwise open the Jev page directly.
-5. Configure the endpoint, model, and API key on the **Jev** page, then enable the individual features you need.
+1. Open **Plugins in the sidebar → Add plugin**.
+2. Paste the GitHub URL below into **Package name or address**, then click **Install**.
+3. Click **Enable now** after installation. Restart the current profile only if DSH says it will load on the next start.
+4. Open **Jev**, configure the endpoint, model, and API key, then enable the individual features you need.
 
 ```text
-https://github.com/luobosibing2/deepseek-jev/releases/download/v0.1.0/dsh-jev-plugin-0.1.0.tgz
+https://github.com/luobosibing2/deepseek-jev
 ```
 
-[View the v0.1.0 prerelease and checksums](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0)
+**Enabling the package does not enable its 9 Jev features; they remain off by default.** Installation applies to the Host profile serving the current Web UI. The Host needs pnpm and access to GitHub. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication.
 
-**Enable now activates the package, not its 9 independently disabled Jev features.** The package is not on npm: do not enter `@dsh-jev/plugin` as a registry package or use the repository homepage URL. The repository root is a development workspace; the installer needs the built `.tgz` provided here.
-
-If the Host cannot download GitHub assets, download the same package to the **machine running the DSH Host**, then paste its **absolute filesystem path** into Package name or address. This is not a browser file upload: a remote Host cannot read your browser computer's Downloads folder. Continue with the same install and enable steps.
+The GitHub entry provides the `main` features, not experimental branches. The [prebuilt release](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0) remains a fallback. Build from source below only when changing or building the code yourself.
 
 ## Install from source (developers)
 
-Use the following steps when modifying or building the plugin yourself. Existing DSH Web users can use the prebuilt package above.
+Use the following steps when modifying or building the plugin yourself. Existing DSH Web users can install using the GitHub URL above.
 
 ### Build requirements
 
@@ -75,7 +72,7 @@ cd deepseek-jev
 pnpm install --frozen-lockfile --ignore-scripts
 pnpm run build
 mkdir -p dist
-pnpm --filter @dsh-jev/plugin pack --pack-destination "$PWD/dist"
+pnpm -C packages/jev pack --pack-destination "$PWD/dist"
 ```
 
 ### Create a separate trial profile with the CLI
@@ -124,6 +121,8 @@ For an existing profile, rebuild and pack, then install the new tarball with `ds
 Disable individual features in the Jev page. For package removal, consult `dsh plugin --help` for the CLI version you have installed. Removing or switching the package can remove branch-specific features; keep a profile backup before replacing an experimental branch build.
 
 ## Development
+
+The repository root is the GitHub install entry; `packages/jev` retains development sources. `pnpm run build` also regenerates `runtime/`; commit these generated files when releasing source changes.
 
 ```sh
 pnpm run typecheck

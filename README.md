@@ -30,27 +30,24 @@
 
 ## 网页端安装（推荐）
 
-如果已经在使用 **DSH 0.1.7-rc.2 Web**，可以直接通过网页插件管理器安装预构建包，无需克隆仓库或编译源码。安装作用于当前 Web 所连接的 Host profile，Host 仍需能够运行 pnpm。当前安装包来自 `main`，包含上表的 9 项功能，不含实验分支。
+已经在使用 **DSH 0.1.7-rc.2 Web** 的用户，直接填写 GitHub 仓库地址即可，无需克隆源码、手动打包或登录 npm。
 
-1. 打开 DSH，进入**侧边栏「插件」→「添加插件」**。
-2. 在**「包名或地址」**中粘贴下面的安装包直链。
-3. 点击**「安装」**，等待显示「已安装」，再点击**「立即启用」**。
-4. 如果界面提示「已安装，下次启动后加载」，重启当前 DSH profile；否则可直接进入 Jev 页面。
-5. 在 **Jev** 页面配置服务地址、模型和 API Key，再按需开启具体功能。
+1. 打开 **侧边栏「插件」→「添加插件」**。
+2. 在 **「包名或地址」** 中粘贴下面的 GitHub 地址，点击 **「安装」**。
+3. 安装完成后点击 **「立即启用」**；若提示下次启动后加载，重启当前 DSH profile。
+4. 进入 **Jev** 页面配置服务地址、模型和 API Key，再按需开启功能。
 
 ```text
-https://github.com/luobosibing2/deepseek-jev/releases/download/v0.1.0/dsh-jev-plugin-0.1.0.tgz
+https://github.com/luobosibing2/deepseek-jev
 ```
 
-[查看 v0.1.0 预发布与校验值](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0)
+**插件启用与功能启用是两层开关：9 项 Jev 功能默认仍为关闭。** 安装作用于当前 Web 连接的 Host profile；Host 需可运行 pnpm 并访问 GitHub。仓库已包含可直接加载的插件入口和预构建文件，不会在用户机器上编译源码，也不要求发布 npm 包。
 
-**「立即启用」只启用插件包，9 项 Jev 功能仍默认关闭。** 当前未发布 npm 包，不要把 `@dsh-jev/plugin` 当成可直接从 npm 安装的包名，也不要填仓库首页地址；仓库根目录是开发工作区，安装器需要这里提供的已构建 `.tgz`。
-
-若 Host 无法下载 GitHub 附件，可将同一安装包下载到**运行 DSH Host 的机器**，然后把安装包的**完整绝对路径**填入「包名或地址」。这不是网页上传操作；远程 Host 无法读取你浏览器所在电脑的本地下载路径。安装和启用步骤相同。
+当前 GitHub 入口提供 `main` 的功能，不包含实验分支。[预构建安装包](https://github.com/luobosibing2/deepseek-jev/releases/tag/v0.1.0)可作为备用；需要自行修改代码时再看下面的源码构建步骤。
 
 ## 从源码安装（开发者）
 
-需要修改代码或自行构建时，再使用以下步骤。已有 DSH Web 的普通用户可以直接使用上面的预构建包。
+需要修改代码或自行构建时，再使用以下步骤。已有 DSH Web 的普通用户直接使用上面的 GitHub 地址安装即可。
 
 ### 构建环境
 
@@ -75,7 +72,7 @@ cd deepseek-jev
 pnpm install --frozen-lockfile --ignore-scripts
 pnpm run build
 mkdir -p dist
-pnpm --filter @dsh-jev/plugin pack --pack-destination "$PWD/dist"
+pnpm -C packages/jev pack --pack-destination "$PWD/dist"
 ```
 
 ### 使用 CLI 创建独立试用 profile
@@ -124,6 +121,8 @@ dsh --profile jev
 单项功能可在 Jev 页面关闭。移除整个包时，以当前 CLI 的 `dsh plugin --help` 为准。替换实验分支安装包可能移除该分支特有功能，替换前保留 profile 备份。
 
 ## 开发
+
+仓库根目录是 GitHub 安装入口，`packages/jev` 保留开发源码；`pnpm run build` 会同步生成 `runtime/`，发布源码改动时应一并提交这些生成文件。
 
 ```sh
 pnpm run typecheck
