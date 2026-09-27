@@ -1,6 +1,6 @@
 # Validation / 验证说明
 
-[简体中文](../README.md) · [English](../README.en.md)
+[English](../README.md) · [简体中文](../README.zh-CN.md)
 
 The checked-in source and tests are public. Raw live-session captures, personal screenshots, credentials, runtime installations, and machine-specific experiments are not part of the public source history.
 

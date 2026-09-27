@@ -1,7 +1,7 @@
 {
   "name": "@dsh-jev/plugin",
   "version": "0.1.0",
-  "description": "Modular Jev judgments for DeepSeek Harness: selection, supervision, corrections, and native approvals",
+  "description": "deepseek-harness-jev: native DeepSeek Harness (DSH) plugin integrating TypeSafe Jev / System One for selection, supervision, corrections, tool-output filtering, and approvals",
   "type": "module",
   "main": "./runtime/index.js",
   "types": "./runtime/types/index.d.ts",
@@ -190,6 +190,7 @@
     "packages/jev/cordis.patch.yml",
     "README.md",
     "README.en.md",
+    "README.zh-CN.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],
@@ -207,12 +208,16 @@
     "url": "https://github.com/luobosibing2/deepseek-harness-jev/issues"
   },
   "keywords": [
-    "deepseek",
     "deepseek-harness",
+    "dsh",
     "jev",
-    "agent",
-    "plugin",
-    "system-one"
+    "typesafe-ai",
+    "system-one",
+    "agent-harness",
+    "dsh-plugin",
+    "agent-supervision",
+    "skill-selection",
+    "tool-output-filtering"
   ],
   "private": true,
   "packageManager": "pnpm@11.7.0",

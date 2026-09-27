@@ -1,6 +1,6 @@
 # Branches / 分支
 
-[简体中文](../README.md) · [English](../README.en.md)
+[English](../README.md) · [简体中文](../README.zh-CN.md)
 
 `main` contains the accepted integration baseline. Feature branches preserve worktree source snapshots; they are not promises of production readiness. The public export excludes private runtime evidence while the original local engineering history is retained privately. Public commit IDs therefore differ from the original local commits.
 
