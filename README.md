@@ -1,6 +1,6 @@
 # deepseek-harness-jev
 
-English | [简体中文](README.zh-CN.md) | [中文功能与实测网站](https://luobosibing2.github.io/deepseek-harness-jev/)
+English | [简体中文](README.zh-CN.md) | [中文功能与实测网站](https://luobosibing2.github.io/dsh-jev-plugin/)
 
 **Native DeepSeek Harness (DSH) plugin integrating TypeSafe Jev as a System One decision layer.**
 
