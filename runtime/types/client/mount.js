@@ -2,9 +2,13 @@
 import { createSnapshotStore } from '@deepseek-ai/dsh-client-store';
 import { JevPage } from "./JevPage.js";
 import { JevToast } from "./JevToast.js";
+import { StageNavigation } from "./StageNavigation.js";
+import { watchStageView } from "./stage-registration.js";
+import { stageEn, stageZh } from "./stage-locales.js";
 import { en, zh } from "./locales.js";
-import { jevPageRemote } from "./remote-adapter.js";
+import { jevPageRemote, jevStageRemote } from "./remote-adapter.js";
 const NS = 'jev.plugin';
+const STAGE_NS = 'jev.stage';
 const PACKAGE = '@dsh-jev/plugin';
 const ENTRY = 'jev';
 const SELECTION_ENTRY = 'jev-selection';
@@ -13,15 +17,17 @@ const OUTPUT_ENTRY = 'jev-output-admission';
 export const inject = ['remote', 'slots', 'locale', 'configForms'];
 function registerUi(ctx) {
     ctx.effect(() => ctx.locale.register(NS, { zh, en }));
+    ctx.effect(() => ctx.locale.register(STAGE_NS, { zh: stageZh, en: stageEn }));
     const form = ctx.configForms.get(ENTRY);
     const selectionForm = ctx.configForms.get(SELECTION_ENTRY);
     const outputAdmissionForm = ctx.configForms.get(OUTPUT_ENTRY);
     const supervisionForm = ctx.configForms.get('jev-supervision');
+    const stageNavigationForm = ctx.configForms.get('jev-stage-navigation');
     const toast = createSnapshotStore(null);
     let sequence = 0;
     const dismiss = () => { toast.set(null); };
     const notifySuccess = (message) => { toast.set({ sequence: ++sequence, text: message }); };
-    const face = { form, selectionForm, supervisionForm, outputAdmissionForm, jev: jevPageRemote(ctx.remote.jev), notifySuccess };
+    const face = { form, selectionForm, supervisionForm, outputAdmissionForm, stageNavigationForm, jev: jevPageRemote(ctx.remote.jev), notifySuccess };
     ctx.slots.inject('shell.overlay', () => ctx.slots.register({
         name: 'shell.overlay', id: 'jev.feedback', inject: () => ({ hooks: { jevToast: toast }, dismiss }),
     }, JevToast));
@@ -31,6 +37,13 @@ function registerUi(ctx) {
         locale: NS,
         inject: () => face,
     }, JevPage))));
+    const stageT = ctx.locale.bind(STAGE_NS);
+    const stageRemote = jevStageRemote(ctx.remote.jev);
+    ctx.effect(() => watchStageView(form, () => ctx.slots.inject('conversation.view', () => ctx.slots.register({
+        name: 'conversation.view', id: 'jev-stage-navigation', order: 20,
+        locale: STAGE_NS, label: () => stageT('title'),
+        inject: (sessionId) => ({ sessionId, jev: stageRemote }),
+    }, StageNavigation))));
 }
 /**
  * Mount Jev's generated Remote first, then register the bundle page while its settings entry is served.

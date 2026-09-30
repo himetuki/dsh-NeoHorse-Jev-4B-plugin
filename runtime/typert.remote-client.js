@@ -3,6 +3,12 @@ import { z } from 'zod'
 
 let JsonRemoteCodec$schema$value
 const JsonRemoteCodec$schema = () => (JsonRemoteCodec$schema$value ??= z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema())).readonly()]))
+let JsonRemoteCodec$schema2$value
+const JsonRemoteCodec$schema2 = () => (JsonRemoteCodec$schema2$value ??= z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]))
+let _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value
+const _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema = () => (_dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value ??= z.string())
+let _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value
+const _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema = () => (_dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value ??= z.void())
 let _dsh_jev_plugin_jev_getCredentialStatus_result$schema$value
 const _dsh_jev_plugin_jev_getCredentialStatus_result$schema = () => (_dsh_jev_plugin_jev_getCredentialStatus_result$schema$value ??= z.object({
   'configured': z.boolean(),
@@ -112,6 +118,385 @@ const _dsh_jev_plugin_jev_getRecord_result$schema = () => (_dsh_jev_plugin_jev_g
   'actionStatus': z.union([z.undefined(), z.literal("cancelled"), z.literal("unconfirmed"), z.literal("not-adopted"), z.literal("executed"), z.literal("execution-failed"), z.literal("observed")]).optional(),
   'diagnostic': z.boolean(),
 })]))
+let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value
+const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema = () => (_dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value ??= z.string())
+let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value
+const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema = () => (_dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value ??= z.string())
+let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value
+const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema = () => (_dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value ??= z.union([z.undefined(), z.string()]))
+let _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value
+const _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema = () => (_dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value ??= z.union([z.literal(null), z.object({
+  'id': z.string(),
+  'sessionId': z.string(),
+  'stepId': z.string(),
+  'revision': z.number(),
+  'sourceFingerprint': z.string(),
+  'ruleVersion': z.string(),
+  'request': z.union([z.undefined(), z.object({
+  'state': z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]),
+  'questions': z.array(z.union([z.object({
+  'id': z.string(),
+  'kind': z.literal("choice"),
+  'prompt': z.union([z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]),
+  'options': z.array(z.object({
+  'id': z.string(),
+  'description': z.union([z.literal(null), z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]),
+})),
+}), z.object({
+  'id': z.string(),
+  'kind': z.literal("score"),
+  'prompt': z.union([z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]),
+  'levels': z.array(z.union([z.literal(null), z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()])),
+}), z.object({
+  'id': z.string(),
+  'kind': z.literal("noul"),
+  'prompt': z.union([z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]),
+  'criteria': z.union([z.undefined(), z.object({
+  'true': z.union([z.undefined(), z.literal(null), z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]).optional(),
+  'false': z.union([z.undefined(), z.literal(null), z.string(), z.array(z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])), z.record(z.string(), z.union([z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()])).readonly()]).optional(),
+})]).optional(),
+})])),
+})]).optional(),
+  'response': z.union([z.undefined(), z.object({
+  'answers': z.array(z.union([z.object({
+  'id': z.string(),
+  'kind': z.literal("choice"),
+  'optionId': z.string(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'legend': z.union([z.undefined(), z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]).optional(),
+}), z.object({
+  'id': z.string(),
+  'kind': z.literal("score"),
+  'value': z.number(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'legend': z.union([z.undefined(), z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]).optional(),
+}), z.object({
+  'id': z.string(),
+  'kind': z.literal("noul"),
+  'probability': z.number(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'legend': z.union([z.undefined(), z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]).optional(),
+})])),
+})]).optional(),
+  'rawResponse': z.union([z.undefined(), z.literal(null), z.string(), z.number(), z.literal(false), z.literal(true), z.array(z.lazy(() => JsonRemoteCodec$schema2())), z.record(z.string(), z.lazy(() => JsonRemoteCodec$schema2())).readonly()]).optional(),
+  'status': z.union([z.literal("pending"), z.literal("succeeded"), z.literal("failed"), z.literal("cancelled"), z.literal("interrupted"), z.literal("unanalysed"), z.literal("stale"), z.literal("unavailable")]),
+  'label': z.union([z.undefined(), z.literal("input_parsing"), z.literal("problem_understanding"), z.literal("solution_planning"), z.literal("implementation"), z.literal("review_validation"), z.literal("delivery_finalization"), z.literal("mixed"), z.literal("unknown")]).optional(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'model': z.union([z.undefined(), z.string()]).optional(),
+  'configuredModel': z.union([z.undefined(), z.string()]).optional(),
+  'recordId': z.union([z.undefined(), z.string()]).optional(),
+  'operationId': z.union([z.undefined(), z.string()]).optional(),
+  'failure': z.union([z.undefined(), z.object({
+  'code': z.string(),
+  'message': z.string(),
+})]).optional(),
+  'updatedAt': z.union([z.undefined(), z.string()]).optional(),
+  'previousResult': z.union([z.undefined(), z.object({
+  'recordId': z.string(),
+  'label': z.union([z.literal("input_parsing"), z.literal("problem_understanding"), z.literal("solution_planning"), z.literal("implementation"), z.literal("review_validation"), z.literal("delivery_finalization"), z.literal("mixed"), z.literal("unknown")]),
+  'stale': z.boolean(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'model': z.union([z.undefined(), z.string()]).optional(),
+  'configuredModel': z.union([z.undefined(), z.string()]).optional(),
+  'updatedAt': z.union([z.undefined(), z.string()]).optional(),
+})]).optional(),
+})]))
+let _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value
+const _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema = () => (_dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value ??= z.string())
+let _dsh_jev_plugin_jev_getStageNavigation_result$schema$value
+const _dsh_jev_plugin_jev_getStageNavigation_result$schema = () => (_dsh_jev_plugin_jev_getStageNavigation_result$schema$value ??= z.object({
+  'sessionId': z.string(),
+  'cursor': z.number(),
+  'featureEnabled': z.boolean(),
+  'turns': z.array(z.object({
+  'id': z.string(),
+  'turn': z.number(),
+  'startSeq': z.number(),
+  'endSeq': z.union([z.undefined(), z.number()]).optional(),
+  'reason': z.union([z.undefined(), z.object({
+  'kind': z.literal("interrupted"),
+}), z.object({
+  'kind': z.literal("completed"),
+}), z.object({
+  'kind': z.literal("aborted"),
+  'reason': z.union([z.object({
+  'kind': z.literal("user").readonly(),
+}), z.object({
+  'kind': z.literal("parent").readonly(),
+}), z.object({
+  'kind': z.literal("hook").readonly(),
+  'reason': z.string().readonly(),
+}), z.object({
+  'kind': z.literal("disposed").readonly(),
+}), z.object({
+  'kind': z.literal("legacy").readonly(),
+})]),
+}), z.object({
+  'kind': z.literal("blocked"),
+}), z.object({
+  'kind': z.literal("error"),
+  'error': z.object({
+  'message': z.string().readonly(),
+  'code': z.string().readonly(),
+  'status': z.union([z.undefined(), z.number()]).readonly().optional(),
+  'providerRetryAfterMs': z.union([z.undefined(), z.number()]).readonly().optional(),
+  'requestId': z.union([z.undefined(), z.intersection(z.string(), z.unknown())]).readonly().optional(),
+  'offloadImages': z.union([z.undefined(), z.number()]).readonly().optional(),
+}),
+}), z.object({
+  'kind': z.literal("max-tokens"),
+}), z.object({
+  'kind': z.literal("forked"),
+})]).optional(),
+  'requests': z.array(z.object({
+  'seq': z.number(),
+  'content': z.array(z.union([z.object({
+  'type': z.literal("text"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("reasoning"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("image"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'mediaType': z.union([z.literal("image/png"), z.literal("image/jpeg"), z.literal("image/webp"), z.literal("image/gif")]),
+  'bytes': z.number(),
+  'width': z.number(),
+  'height': z.number(),
+  'name': z.union([z.undefined(), z.string()]).optional(),
+  'originalDimensions': z.union([z.undefined(), z.object({
+  'width': z.number(),
+  'height': z.number(),
+})]).optional(),
+}),
+  'offloaded': z.union([z.undefined(), z.literal(true)]).optional(),
+}), z.object({
+  'type': z.literal("file"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'bytes': z.number(),
+}),
+}), z.object({
+  'type': z.literal("tool-call"),
+  'id': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'arguments': z.string(),
+}), z.object({
+  'type': z.literal("tool-addition"),
+  'toolName': z.string(),
+  'tool': z.undefined().optional(),
+}), z.object({
+  'type': z.literal("tool-removal"),
+  'toolName': z.string(),
+})])),
+})),
+  'steps': z.array(z.object({
+  'id': z.string(),
+  'turn': z.number(),
+  'step': z.number(),
+  'startSeq': z.number(),
+  'endSeq': z.union([z.undefined(), z.number()]).optional(),
+  'status': z.union([z.literal("complete"), z.literal("terminal-partial"), z.literal("in-progress")]),
+  'classifiable': z.boolean(),
+  'materialStatus': z.union([z.literal("ready"), z.literal("IN_PROGRESS"), z.literal("NO_MATERIAL"), z.literal("MATERIAL_TOO_LARGE")]),
+  'assistant': z.union([z.undefined(), z.intersection(z.object({
+  'seq': z.number(),
+  'content': z.array(z.union([z.object({
+  'type': z.literal("text"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("reasoning"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("image"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'mediaType': z.union([z.literal("image/png"), z.literal("image/jpeg"), z.literal("image/webp"), z.literal("image/gif")]),
+  'bytes': z.number(),
+  'width': z.number(),
+  'height': z.number(),
+  'name': z.union([z.undefined(), z.string()]).optional(),
+  'originalDimensions': z.union([z.undefined(), z.object({
+  'width': z.number(),
+  'height': z.number(),
+})]).optional(),
+}),
+  'offloaded': z.union([z.undefined(), z.literal(true)]).optional(),
+}), z.object({
+  'type': z.literal("file"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'bytes': z.number(),
+}),
+}), z.object({
+  'type': z.literal("tool-call"),
+  'id': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'arguments': z.string(),
+}), z.object({
+  'type': z.literal("tool-addition"),
+  'toolName': z.string(),
+  'tool': z.undefined().optional(),
+}), z.object({
+  'type': z.literal("tool-removal"),
+  'toolName': z.string(),
+})])),
+}), z.object({
+  'interrupted': z.boolean(),
+}))]).optional(),
+  'messages': z.array(z.intersection(z.object({
+  'seq': z.number(),
+  'content': z.array(z.union([z.object({
+  'type': z.literal("text"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("reasoning"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("image"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'mediaType': z.union([z.literal("image/png"), z.literal("image/jpeg"), z.literal("image/webp"), z.literal("image/gif")]),
+  'bytes': z.number(),
+  'width': z.number(),
+  'height': z.number(),
+  'name': z.union([z.undefined(), z.string()]).optional(),
+  'originalDimensions': z.union([z.undefined(), z.object({
+  'width': z.number(),
+  'height': z.number(),
+})]).optional(),
+}),
+  'offloaded': z.union([z.undefined(), z.literal(true)]).optional(),
+}), z.object({
+  'type': z.literal("file"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'bytes': z.number(),
+}),
+}), z.object({
+  'type': z.literal("tool-call"),
+  'id': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'arguments': z.string(),
+}), z.object({
+  'type': z.literal("tool-addition"),
+  'toolName': z.string(),
+  'tool': z.undefined().optional(),
+}), z.object({
+  'type': z.literal("tool-removal"),
+  'toolName': z.string(),
+})])),
+}), z.object({
+  'interrupted': z.boolean(),
+}))),
+  'tools': z.array(z.object({
+  'callId': z.string(),
+  'name': z.string(),
+  'arguments': z.string(),
+  'seq': z.number(),
+  'dispatched': z.boolean(),
+  'result': z.union([z.undefined(), z.intersection(z.object({
+  'seq': z.number(),
+  'content': z.array(z.union([z.object({
+  'type': z.literal("text"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("reasoning"),
+  'text': z.string(),
+}), z.object({
+  'type': z.literal("image"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'mediaType': z.union([z.literal("image/png"), z.literal("image/jpeg"), z.literal("image/webp"), z.literal("image/gif")]),
+  'bytes': z.number(),
+  'width': z.number(),
+  'height': z.number(),
+  'name': z.union([z.undefined(), z.string()]).optional(),
+  'originalDimensions': z.union([z.undefined(), z.object({
+  'width': z.number(),
+  'height': z.number(),
+})]).optional(),
+}),
+  'offloaded': z.union([z.undefined(), z.literal(true)]).optional(),
+}), z.object({
+  'type': z.literal("file"),
+  'attachment': z.object({
+  'attachmentId': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'bytes': z.number(),
+}),
+}), z.object({
+  'type': z.literal("tool-call"),
+  'id': z.intersection(z.string(), z.unknown()),
+  'name': z.string(),
+  'arguments': z.string(),
+}), z.object({
+  'type': z.literal("tool-addition"),
+  'toolName': z.string(),
+  'tool': z.undefined().optional(),
+}), z.object({
+  'type': z.literal("tool-removal"),
+  'toolName': z.string(),
+})])),
+}), z.object({
+  'isError': z.boolean(),
+  'error': z.union([z.undefined(), z.object({
+  'name': z.string(),
+  'code': z.string(),
+  'reason': z.union([z.undefined(), z.string()]).optional(),
+})]).optional(),
+}))]).optional(),
+})),
+  'attemptSeqs': z.array(z.number()),
+  'analysis': z.object({
+  'status': z.union([z.literal("pending"), z.literal("succeeded"), z.literal("failed"), z.literal("cancelled"), z.literal("interrupted"), z.literal("unanalysed"), z.literal("stale"), z.literal("unavailable")]),
+  'label': z.union([z.undefined(), z.literal("input_parsing"), z.literal("problem_understanding"), z.literal("solution_planning"), z.literal("implementation"), z.literal("review_validation"), z.literal("delivery_finalization"), z.literal("mixed"), z.literal("unknown")]).optional(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'model': z.union([z.undefined(), z.string()]).optional(),
+  'configuredModel': z.union([z.undefined(), z.string()]).optional(),
+  'recordId': z.union([z.undefined(), z.string()]).optional(),
+  'operationId': z.union([z.undefined(), z.string()]).optional(),
+  'failure': z.union([z.undefined(), z.object({
+  'code': z.string(),
+  'message': z.string(),
+})]).optional(),
+  'updatedAt': z.union([z.undefined(), z.string()]).optional(),
+  'previousResult': z.union([z.undefined(), z.object({
+  'recordId': z.string(),
+  'label': z.union([z.literal("input_parsing"), z.literal("problem_understanding"), z.literal("solution_planning"), z.literal("implementation"), z.literal("review_validation"), z.literal("delivery_finalization"), z.literal("mixed"), z.literal("unknown")]),
+  'stale': z.boolean(),
+  'confidence': z.union([z.undefined(), z.number()]).optional(),
+  'probabilities': z.union([z.undefined(), z.record(z.string(), z.number())]).optional(),
+  'model': z.union([z.undefined(), z.string()]).optional(),
+  'configuredModel': z.union([z.undefined(), z.string()]).optional(),
+  'updatedAt': z.union([z.undefined(), z.string()]).optional(),
+})]).optional(),
+}),
+})),
+})),
+  'batch': z.union([z.undefined(), z.object({
+  'id': z.string(),
+  'sessionId': z.string(),
+  'status': z.union([z.literal("failed"), z.literal("cancelled"), z.literal("completed"), z.literal("running")]),
+  'total': z.number(),
+  'completed': z.number(),
+  'failed': z.number(),
+  'cancelled': z.number(),
+  'failure': z.union([z.undefined(), z.object({
+  'code': z.string(),
+  'message': z.string(),
+})]).optional(),
+})]).optional(),
+}))
 let _dsh_jev_plugin_jev_listFeatures_result$schema$value
 const _dsh_jev_plugin_jev_listFeatures_result$schema = () => (_dsh_jev_plugin_jev_listFeatures_result$schema$value ??= z.array(z.object({
   'enabled': z.boolean(),
@@ -151,6 +536,31 @@ const _dsh_jev_plugin_jev_setCredential_result$schema = () => (_dsh_jev_plugin_j
   'writable': z.boolean(),
   'source': z.union([z.undefined(), z.string()]).optional(),
 }))
+let _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value
+const _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema = () => (_dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value ??= z.object({
+  'sessionId': z.string(),
+  'scope': z.union([z.object({
+  'kind': z.literal("turn"),
+  'turn': z.number(),
+}), z.object({
+  'kind': z.literal("all"),
+})]),
+  'mode': z.union([z.literal("missing"), z.literal("retry-failed"), z.literal("refresh")]),
+}))
+let _dsh_jev_plugin_jev_startStageAnalysis_result$schema$value
+const _dsh_jev_plugin_jev_startStageAnalysis_result$schema = () => (_dsh_jev_plugin_jev_startStageAnalysis_result$schema$value ??= z.object({
+  'id': z.string(),
+  'sessionId': z.string(),
+  'status': z.union([z.literal("failed"), z.literal("cancelled"), z.literal("completed"), z.literal("running")]),
+  'total': z.number(),
+  'completed': z.number(),
+  'failed': z.number(),
+  'cancelled': z.number(),
+  'failure': z.union([z.undefined(), z.object({
+  'code': z.string(),
+  'message': z.string(),
+})]).optional(),
+}))
 let _dsh_jev_plugin_jev_testConnection_result$schema$value
 const _dsh_jev_plugin_jev_testConnection_result$schema = () => (_dsh_jev_plugin_jev_testConnection_result$schema$value ??= z.object({
   'ok': z.boolean(),
@@ -166,6 +576,31 @@ export const TYPERT_REMOTE = {
   package: '@dsh-jev/plugin',
   descriptors: [
     {
+      id: '@dsh-jev/plugin#jev/cancelStageAnalysis',
+      service: 'jev',
+      namespace: 'jev',
+      method: 'cancelStageAnalysis',
+      invocation: { kind: 'direct' },
+      parameters: [
+        {
+          name: 'batchId',
+          wire: 'batchId',
+          source: 'json',
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin#jev/cancelStageAnalysis:batchId',
+            create: _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema,
+          },
+        },
+      ],
+      result: {
+        mode: 'strict',
+        typeSymbol: '@dsh-jev/plugin#jev/cancelStageAnalysis:result',
+        create: _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema,
+      },
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":205,"column":3},
+    },
+    {
       id: '@dsh-jev/plugin#jev/getCredentialStatus',
       service: 'jev',
       namespace: 'jev',
@@ -178,7 +613,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevCredentialStatus',
         create: _dsh_jev_plugin_jev_getCredentialStatus_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":174,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":215,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/getRecord',
@@ -203,7 +638,79 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/getRecord:result',
         create: _dsh_jev_plugin_jev_getRecord_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":170,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":177,"column":9},
+    },
+    {
+      id: '@dsh-jev/plugin#jev/getStageAnalysisRecord',
+      service: 'jev',
+      namespace: 'jev',
+      method: 'getStageAnalysisRecord',
+      invocation: { kind: 'direct' },
+      parameters: [
+        {
+          name: 'sessionId',
+          wire: 'sessionId',
+          source: 'json',
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin#jev/getStageAnalysisRecord:sessionId',
+            create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema,
+          },
+        },
+        {
+          name: 'stepId',
+          wire: 'stepId',
+          source: 'json',
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin#jev/getStageAnalysisRecord:stepId',
+            create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema,
+          },
+        },
+        {
+          name: 'recordId',
+          wire: 'recordId',
+          source: 'json',
+          acceptsUndefined: true,
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin#jev/getStageAnalysisRecord:recordId',
+            create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema,
+          },
+        },
+      ],
+      result: {
+        mode: 'strict',
+        typeSymbol: '@dsh-jev/plugin#jev/getStageAnalysisRecord:result',
+        create: _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema,
+      },
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":209,"column":3},
+    },
+    {
+      id: '@dsh-jev/plugin#jev/getStageNavigation',
+      service: 'jev',
+      namespace: 'jev',
+      method: 'getStageNavigation',
+      invocation: { kind: 'direct' },
+      parameters: [
+        {
+          name: 'sessionId',
+          wire: 'sessionId',
+          source: 'json',
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin#jev/getStageNavigation:sessionId',
+            create: _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema,
+          },
+        },
+      ],
+      cancellation: { parameter: 'signal' },
+      result: {
+        mode: 'strict',
+        typeSymbol: '@dsh-jev/plugin/stage-types#StageNavigationSnapshot',
+        create: _dsh_jev_plugin_jev_getStageNavigation_result$schema,
+      },
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":193,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/listFeatures',
@@ -218,7 +725,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/listFeatures:result',
         create: _dsh_jev_plugin_jev_listFeatures_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":154,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":161,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/listRecords',
@@ -243,7 +750,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevRecordPage',
         create: _dsh_jev_plugin_jev_listRecords_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":161,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":168,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/setCredential',
@@ -268,7 +775,32 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevCredentialStatus',
         create: _dsh_jev_plugin_jev_setCredential_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":181,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":222,"column":9},
+    },
+    {
+      id: '@dsh-jev/plugin#jev/startStageAnalysis',
+      service: 'jev',
+      namespace: 'jev',
+      method: 'startStageAnalysis',
+      invocation: { kind: 'direct' },
+      parameters: [
+        {
+          name: 'request',
+          wire: 'request',
+          source: 'json',
+          codec: {
+            mode: 'strict',
+            typeSymbol: '@dsh-jev/plugin/stage-types#StageAnalysisRequest',
+            create: _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema,
+          },
+        },
+      ],
+      result: {
+        mode: 'strict',
+        typeSymbol: '@dsh-jev/plugin/stage-types#StageBatchState',
+        create: _dsh_jev_plugin_jev_startStageAnalysis_result$schema,
+      },
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":199,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/testConnection',
@@ -284,7 +816,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevProbeResult',
         create: _dsh_jev_plugin_jev_testConnection_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":189,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":230,"column":9},
     },
   ],
 }

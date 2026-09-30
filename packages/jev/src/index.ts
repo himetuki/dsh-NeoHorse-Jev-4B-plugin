@@ -12,6 +12,8 @@ import type {} from '@deepseek-ai/dsh-user-questions'
 import { JevAdapter, JEV_PROVIDER, type JevConnection } from './adapter.ts'
 import { JevLedger } from './ledger.ts'
 import { parseWireResponse, validateRequest } from './wire.ts'
+import type { StageNavigationManager } from './stage-navigation.ts'
+import type { StageAnalysisRecord, StageAnalysisRequest, StageBatchState, StageNavigationSnapshot } from './stage-types.ts'
 import type {
   JevActionReceipt, JevCredentialStatus, JevFeatureDefinition, JevFeatureView,
   JevOperationLink, JevProbeResult, JevRecordDetail, JevRecordFilter, JevRecordPage,
@@ -19,6 +21,7 @@ import type {
 } from './types.ts'
 
 export type * from './types.ts'
+export type * from './stage-types.ts'
 export { JEV_PROVIDER } from './adapter.ts'
 
 /** Current-profile configuration. Every field is editable through DSH configForms. */
@@ -48,6 +51,9 @@ export interface JevJudgeOptions {
   canAdopt?: (response: JevResponse, signal: AbortSignal) => true | string | Promise<true | string>
   signal?: AbortSignal
 }
+
+/** Single-attempt consumers may read historical data without a running Agent. */
+export type JevJudgeOnceOptions = Omit<JevJudgeOptions, 'agent'> & { agent?: Agent }
 
 /** A completed judgment is safe to consider only while `kind` is `ok`. */
 export type JevJudgeResult =
@@ -108,6 +114,7 @@ export class JevService extends TypertRemoteService {
   private readonly controllers = new Set<AbortController>()
   private disposing = false
   private readonly featureListeners = new Set<(features: Readonly<Record<string, boolean>>) => void>()
+  private stageNavigation?: StageNavigationManager
 
   constructor(ctx: Context, private readonly config: Config) {
     super(ctx, 'jev')
@@ -169,6 +176,40 @@ export class JevService extends TypertRemoteService {
   @Remote('getRecord')
   async getRecord(id: string): Promise<JevRecordDetail | null> { return this.records().get(id) }
 
+  /** Bind the optional Host stage consumer while its plugin row is active. */
+  registerStageNavigation(manager: StageNavigationManager): () => void {
+    if (this.stageNavigation !== undefined) throw new JevError('DUPLICATE_FEATURE', 'Stage navigation is already registered')
+    this.stageNavigation = manager
+    return () => { if (this.stageNavigation === manager) this.stageNavigation = undefined }
+  }
+
+  private stages(): StageNavigationManager {
+    if (this.stageNavigation === undefined) throw new JevError('UNAVAILABLE', 'Stage navigation is unavailable')
+    return this.stageNavigation
+  }
+
+  /** Read one complete authorized Session cut and its auxiliary stage results. */
+  @Remote('getStageNavigation')
+  getStageNavigation(sessionId: string, signal: AbortSignal): Promise<StageNavigationSnapshot> {
+    return this.stages().read(sessionId, signal)
+  }
+
+  /** Start only a user-requested batch; returning does not await model calls. */
+  @Remote('startStageAnalysis')
+  startStageAnalysis(request: StageAnalysisRequest): Promise<StageBatchState> {
+    return this.stages().start(request)
+  }
+
+  /** Cancel auxiliary requests without cancelling the native Agent. */
+  @Remote('cancelStageAnalysis')
+  cancelStageAnalysis(batchId: string): Promise<void> { return this.stages().cancel(batchId) }
+
+  /** Load exact persisted input and raw Jev answer for one selected step. */
+  @Remote('getStageAnalysisRecord')
+  getStageAnalysisRecord(sessionId: string, stepId: string, recordId?: string): Promise<StageAnalysisRecord | null> {
+    return this.stages().detail(sessionId, stepId, recordId)
+  }
+
   /** Report credential presence, source, and writability without its value. */
   @Remote('getCredentialStatus')
   async getCredentialStatus(): Promise<JevCredentialStatus> {
@@ -214,7 +255,7 @@ export class JevService extends TypertRemoteService {
   }
 
   /** Make one logged attempt without human waiting or automatic retry. Only `ok` permits adoption. */
-  judgeOnce(options: JevJudgeOptions): Promise<JevJudgeOnceResult> {
+  judgeOnce(options: JevJudgeOnceOptions): Promise<JevJudgeOnceResult> {
     return this.runActive<JevJudgeOnceResult>(options.signal, async lifetime => {
       let operationId: string | undefined
       try {
@@ -368,6 +409,11 @@ export class JevService extends TypertRemoteService {
       if ((url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password && !url.search && !url.hash) safeUrl = url.toString()
     } catch { /* An empty or malformed address is reported without storing its contents. */ }
     return { baseUrl: safeUrl, model, credentialRef: ref, timeoutMs: this.config.timeoutMs.get() }
+  }
+
+  /** Stable non-secret connection settings used to decide whether an old stage result is current. */
+  stageConnectionIdentity(): { baseUrl: string; model: string; credentialRef: string; timeoutMs: number } {
+    return this.connectionIdentity()
   }
 
   private async tryOnce(

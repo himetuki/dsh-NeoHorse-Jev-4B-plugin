@@ -3,8 +3,11 @@ import { Service, type Context, type Volatile } from '@deepseek-ai/cordis';
 import s from '@deepseek-ai/schemastery';
 import { TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol';
 import type { Agent } from '@deepseek-ai/dsh-agent/types';
+import type { StageNavigationManager } from './stage-navigation.ts';
+import type { StageAnalysisRecord, StageAnalysisRequest, StageBatchState, StageNavigationSnapshot } from './stage-types.ts';
 import type { JevActionReceipt, JevCredentialStatus, JevFeatureDefinition, JevFeatureView, JevOperationLink, JevProbeResult, JevRecordDetail, JevRecordFilter, JevRecordPage, JevRequest, JevResponse } from './types.ts';
 export type * from './types.ts';
+export type * from './stage-types.ts';
 export { JEV_PROVIDER } from './adapter.ts';
 /** Current-profile configuration. Every field is editable through DSH configForms. */
 export interface Config {
@@ -41,6 +44,10 @@ export interface JevJudgeOptions {
     canAdopt?: (response: JevResponse, signal: AbortSignal) => true | string | Promise<true | string>;
     signal?: AbortSignal;
 }
+/** Single-attempt consumers may read historical data without a running Agent. */
+export type JevJudgeOnceOptions = Omit<JevJudgeOptions, 'agent'> & {
+    agent?: Agent;
+};
 /** A completed judgment is safe to consider only while `kind` is `ok`. */
 export type JevJudgeResult = {
     kind: 'ok';
@@ -88,6 +95,7 @@ export declare class JevService extends TypertRemoteService {
     private readonly controllers;
     private disposing;
     private readonly featureListeners;
+    private stageNavigation?;
     constructor(ctx: Context, config: Config);
     protected [Service.init](): Promise<void>;
     private records;
@@ -99,6 +107,17 @@ export declare class JevService extends TypertRemoteService {
     listRecords(filter: JevRecordFilter): Promise<JevRecordPage>;
     /** Read one current-profile operation after the list has identified it. */
     getRecord(id: string): Promise<JevRecordDetail | null>;
+    /** Bind the optional Host stage consumer while its plugin row is active. */
+    registerStageNavigation(manager: StageNavigationManager): () => void;
+    private stages;
+    /** Read one complete authorized Session cut and its auxiliary stage results. */
+    getStageNavigation(sessionId: string, signal: AbortSignal): Promise<StageNavigationSnapshot>;
+    /** Start only a user-requested batch; returning does not await model calls. */
+    startStageAnalysis(request: StageAnalysisRequest): Promise<StageBatchState>;
+    /** Cancel auxiliary requests without cancelling the native Agent. */
+    cancelStageAnalysis(batchId: string): Promise<void>;
+    /** Load exact persisted input and raw Jev answer for one selected step. */
+    getStageAnalysisRecord(sessionId: string, stepId: string, recordId?: string): Promise<StageAnalysisRecord | null>;
     /** Report credential presence, source, and writability without its value. */
     getCredentialStatus(): Promise<JevCredentialStatus>;
     /** Save or replace the current profile's configured credential reference. */
@@ -108,7 +127,7 @@ export declare class JevService extends TypertRemoteService {
     /** Judge one dependent operation; only a human retry invokes `refresh` again. */
     judge(options: JevJudgeOptions): Promise<JevJudgeResult>;
     /** Make one logged attempt without human waiting or automatic retry. Only `ok` permits adoption. */
-    judgeOnce(options: JevJudgeOptions): Promise<JevJudgeOnceResult>;
+    judgeOnce(options: JevJudgeOnceOptions): Promise<JevJudgeOnceResult>;
     private runActive;
     private untilAbort;
     private judgeOwned;
@@ -120,6 +139,13 @@ export declare class JevService extends TypertRemoteService {
     onFeatureStateChange(listener: (features: Readonly<Record<string, boolean>>) => void): () => void;
     private ask;
     private connectionIdentity;
+    /** Stable non-secret connection settings used to decide whether an old stage result is current. */
+    stageConnectionIdentity(): {
+        baseUrl: string;
+        model: string;
+        credentialRef: string;
+        timeoutMs: number;
+    };
     private tryOnce;
     /** Record interrupted input without a model call, human question, or attempt; stable message links are idempotent. */
     recordInterrupted(featureId: string, link: JevOperationLink): Promise<JevRecordDetail>;

@@ -5,6 +5,7 @@ import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type {} from '@dsh-jev/plugin/remote'
 import type { JevPageRemote } from './JevPage.tsx'
+import type { StageNavigationRemote } from './StageNavigation.tsx'
 
 /** Generated Jev namespace as installed on the shared Client Remote. */
 export type JevWireRemote = Context['remote']['jev']
@@ -27,5 +28,17 @@ export function jevPageRemote(remote: JevWireRemote): JevPageRemote {
     testConnection: async signal => unwrap(await remote.testConnection(signal)),
     getCredentialStatus: async () => unwrap(await remote.getCredentialStatus()),
     setCredential: async value => unwrap(await remote.setCredential(value)),
+  }
+}
+
+/** Adapt the Session stage commands while retaining their Host authorization. */
+export function jevStageRemote(remote: JevWireRemote): StageNavigationRemote {
+  return {
+    getStageNavigation: async (sessionId, signal) => unwrap(await remote.getStageNavigation(sessionId, signal)),
+    startStageAnalysis: async request => unwrap(await remote.startStageAnalysis(request)),
+    cancelStageAnalysis: async batchId => unwrap(await remote.cancelStageAnalysis(batchId)),
+    getStageAnalysisRecord: async (sessionId, stepId, recordId) => unwrap(await (recordId === undefined
+      ? remote.getStageAnalysisRecord(sessionId, stepId)
+      : remote.getStageAnalysisRecord(sessionId, stepId, recordId))),
   }
 }

@@ -10,6 +10,7 @@ import { JevPage, type JevConfigValues, type JevPageRemote } from '../src/client
 import { en, zh, type JevLocaleKey } from '../src/client/locales.ts'
 import type { SupervisionConfigValues } from '../src/supervision-types.ts'
 import type { SelectionConfigValues } from '../src/selection-types.ts'
+import type { StageNavigationConfigValues } from '../src/stage-types.ts'
 import type { JevRecordDetail, JevRecordSummary } from '../src/types.ts'
 
 // The published primitive barrel imports optional DSH libraries that the Host
@@ -133,6 +134,43 @@ function renderPage(form: ConfigForm<JevConfigValues>, jev: JevPageRemote, selec
 }
 
 describe('Jev bundle page', () => {
+  it('edits bounded stage limits without changing the independent feature switch', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    const value: StageNavigationConfigValues = { previousSteps: 2, previousChars: 700, maxRequestChars: 48000, concurrency: 1 }
+    const snapshot: ConfigFormSnapshot<StageNavigationConfigValues> = {
+      status: 'ready', value, base: {}, user: {}, revision: 4, writable: true, mode: 'host',
+    }
+    const mutate = vi.fn(async () => true)
+    const stageNavigationForm: ConfigForm<StageNavigationConfigValues> = {
+      getSnapshot: () => snapshot, subscribe: () => () => {}, mutate,
+      set: async () => false, unset: async () => false,
+    }
+    render(<JevPage view="page" form={form} jev={jev} stageNavigationForm={stageNavigationForm} notifySuccess={() => {}} t={(key: JevLocaleKey) => en[key]} />)
+    expect(await screen.findByText(en.stageSettingsHint)).toBeTruthy()
+    fireEvent.change(screen.getByLabelText(en.stageConcurrency), { target: { value: '9' } })
+    fireEvent.click(screen.getByRole('button', { name: en.saveStageSettings }))
+    expect(screen.getByText(en.stageInvalid)).toBeTruthy()
+    expect(mutate).not.toHaveBeenCalled()
+    fireEvent.change(screen.getByLabelText(en.stageConcurrency), { target: { value: '2' } })
+    fireEvent.change(screen.getByLabelText(en.previousSteps), { target: { value: '0' } })
+    fireEvent.click(screen.getByRole('button', { name: en.saveStageSettings }))
+    await waitFor(() => { expect(mutate).toHaveBeenCalledWith(expect.arrayContaining([
+      { op: 'set', path: ['previousSteps'], value: 0 }, { op: 'set', path: ['concurrency'], value: 2 },
+    ]), 4) })
+    expect(form.getSnapshot().value?.features['stage-navigation']).toBeUndefined()
+  })
+
+  it('localizes the independent stage navigation feature in settings', async () => {
+    const { form } = formStub()
+    const jev = remoteStub()
+    jev.listFeatures = vi.fn(async () => [{ id: 'stage-navigation', name: 'Stage navigation', description: 'Host description', enabled: false }])
+    render(<JevPage view="page" form={form} jev={jev} notifySuccess={() => {}} t={(key: JevLocaleKey) => zh[key]} />)
+    expect(await screen.findByText(zh.stageNavigationName)).toBeTruthy()
+    expect(screen.getByText(zh.stageNavigationDescription)).toBeTruthy()
+    expect(screen.getByRole('switch', { name: `${zh.enable} ${zh.stageNavigationName}` }).getAttribute('aria-checked')).toBe('false')
+  })
+
   it('shows only credential status, writes a replacement, and runs one explicit diagnostic', async () => {
     const { form } = formStub()
     const jev = remoteStub()

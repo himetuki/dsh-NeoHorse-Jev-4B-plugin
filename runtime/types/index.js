@@ -80,6 +80,10 @@ let JevService = (() => {
     let _listFeatures_decorators;
     let _listRecords_decorators;
     let _getRecord_decorators;
+    let _getStageNavigation_decorators;
+    let _startStageAnalysis_decorators;
+    let _cancelStageAnalysis_decorators;
+    let _getStageAnalysisRecord_decorators;
     let _getCredentialStatus_decorators;
     let _setCredential_decorators;
     let _testConnection_decorators;
@@ -89,12 +93,20 @@ let JevService = (() => {
             _listFeatures_decorators = [Remote('listFeatures')];
             _listRecords_decorators = [Remote('listRecords')];
             _getRecord_decorators = [Remote('getRecord')];
+            _getStageNavigation_decorators = [Remote('getStageNavigation')];
+            _startStageAnalysis_decorators = [Remote('startStageAnalysis')];
+            _cancelStageAnalysis_decorators = [Remote('cancelStageAnalysis')];
+            _getStageAnalysisRecord_decorators = [Remote('getStageAnalysisRecord')];
             _getCredentialStatus_decorators = [Remote('getCredentialStatus')];
             _setCredential_decorators = [Remote('setCredential')];
             _testConnection_decorators = [Remote('testConnection')];
             __esDecorate(this, null, _listFeatures_decorators, { kind: "method", name: "listFeatures", static: false, private: false, access: { has: obj => "listFeatures" in obj, get: obj => obj.listFeatures }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _listRecords_decorators, { kind: "method", name: "listRecords", static: false, private: false, access: { has: obj => "listRecords" in obj, get: obj => obj.listRecords }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _getRecord_decorators, { kind: "method", name: "getRecord", static: false, private: false, access: { has: obj => "getRecord" in obj, get: obj => obj.getRecord }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _getStageNavigation_decorators, { kind: "method", name: "getStageNavigation", static: false, private: false, access: { has: obj => "getStageNavigation" in obj, get: obj => obj.getStageNavigation }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _startStageAnalysis_decorators, { kind: "method", name: "startStageAnalysis", static: false, private: false, access: { has: obj => "startStageAnalysis" in obj, get: obj => obj.startStageAnalysis }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _cancelStageAnalysis_decorators, { kind: "method", name: "cancelStageAnalysis", static: false, private: false, access: { has: obj => "cancelStageAnalysis" in obj, get: obj => obj.cancelStageAnalysis }, metadata: _metadata }, null, _instanceExtraInitializers);
+            __esDecorate(this, null, _getStageAnalysisRecord_decorators, { kind: "method", name: "getStageAnalysisRecord", static: false, private: false, access: { has: obj => "getStageAnalysisRecord" in obj, get: obj => obj.getStageAnalysisRecord }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _getCredentialStatus_decorators, { kind: "method", name: "getCredentialStatus", static: false, private: false, access: { has: obj => "getCredentialStatus" in obj, get: obj => obj.getCredentialStatus }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _setCredential_decorators, { kind: "method", name: "setCredential", static: false, private: false, access: { has: obj => "setCredential" in obj, get: obj => obj.setCredential }, metadata: _metadata }, null, _instanceExtraInitializers);
             __esDecorate(this, null, _testConnection_decorators, { kind: "method", name: "testConnection", static: false, private: false, access: { has: obj => "testConnection" in obj, get: obj => obj.testConnection }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -110,6 +122,7 @@ let JevService = (() => {
         controllers = new Set();
         disposing = false;
         featureListeners = new Set();
+        stageNavigation;
         constructor(ctx, config) {
             super(ctx, 'jev');
             this.config = config;
@@ -167,6 +180,33 @@ let JevService = (() => {
         }
         /** Read one current-profile operation after the list has identified it. */
         async getRecord(id) { return this.records().get(id); }
+        /** Bind the optional Host stage consumer while its plugin row is active. */
+        registerStageNavigation(manager) {
+            if (this.stageNavigation !== undefined)
+                throw new JevError('DUPLICATE_FEATURE', 'Stage navigation is already registered');
+            this.stageNavigation = manager;
+            return () => { if (this.stageNavigation === manager)
+                this.stageNavigation = undefined; };
+        }
+        stages() {
+            if (this.stageNavigation === undefined)
+                throw new JevError('UNAVAILABLE', 'Stage navigation is unavailable');
+            return this.stageNavigation;
+        }
+        /** Read one complete authorized Session cut and its auxiliary stage results. */
+        getStageNavigation(sessionId, signal) {
+            return this.stages().read(sessionId, signal);
+        }
+        /** Start only a user-requested batch; returning does not await model calls. */
+        startStageAnalysis(request) {
+            return this.stages().start(request);
+        }
+        /** Cancel auxiliary requests without cancelling the native Agent. */
+        cancelStageAnalysis(batchId) { return this.stages().cancel(batchId); }
+        /** Load exact persisted input and raw Jev answer for one selected step. */
+        getStageAnalysisRecord(sessionId, stepId, recordId) {
+            return this.stages().detail(sessionId, stepId, recordId);
+        }
         /** Report credential presence, source, and writability without its value. */
         async getCredentialStatus() {
             const info = await this.ctx.credentials.describe(credentialRef(this.config.credentialRef.get()));
@@ -383,6 +423,10 @@ let JevService = (() => {
             }
             catch { /* An empty or malformed address is reported without storing its contents. */ }
             return { baseUrl: safeUrl, model, credentialRef: ref, timeoutMs: this.config.timeoutMs.get() };
+        }
+        /** Stable non-secret connection settings used to decide whether an old stage result is current. */
+        stageConnectionIdentity() {
+            return this.connectionIdentity();
         }
         async tryOnce(operationId, request, interpret, outerSignal, featureId) {
             let snapshot;

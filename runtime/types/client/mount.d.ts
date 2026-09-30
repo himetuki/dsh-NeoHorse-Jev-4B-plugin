@@ -1,11 +1,14 @@
 /** Browser lifecycle for the Jev Remote contribution and plugin-owned pages. */
 import type { Context } from '@deepseek-ai/cordis';
 import type { TypertRemoteContribution } from '@deepseek-ai/dsh-typert-protocol';
+import { type StageLocaleKey } from './stage-locales.ts';
 import { type JevLocaleKey } from './locales.ts';
 declare module '@deepseek-ai/dsh-client-ui-slots' {
     interface LocaleNamespaceMap {
         /** Jev settings and record-browser copy. */
         'jev.plugin': JevLocaleKey;
+        /** Session stage navigation copy. */
+        'jev.stage': StageLocaleKey;
     }
 }
 /** Services needed after the generated Jev Remote contribution mounts. */
