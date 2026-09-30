@@ -2,7 +2,8 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import { RemoteError, type RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
-import { jevPageRemote, type JevWireRemote } from '../src/client/remote-adapter.ts'
+import { jevPageRemote, jevStageRemote, type JevWireRemote } from '../src/client/remote-adapter.ts'
+import type { StageNavigationSnapshot, StageBatchState, StageAnalysisRecord } from '../src/stage-types.ts'
 import type {
   JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail, JevRecordPage,
 } from '../src/types.ts'
@@ -19,6 +20,8 @@ const detail: JevRecordDetail = {
 }
 const credential: JevCredentialStatus = { configured: true, writable: false, source: 'environment' }
 const probe: JevProbeResult = { ok: true, latencyMs: 12, recordId: 'probe' }
+const stageSnapshot: StageNavigationSnapshot = { sessionId: 'session-1', cursor: 0, featureEnabled: true, turns: [] }
+const batch: StageBatchState = { id: 'batch-1', sessionId: 'session-1', status: 'completed', total: 0, completed: 0, failed: 0, cancelled: 0 }
 
 function wire(): JevWireRemote {
   return {
@@ -28,6 +31,10 @@ function wire(): JevWireRemote {
     testConnection: vi.fn(async () => ok(probe)),
     getCredentialStatus: vi.fn(async () => ok(credential)),
     setCredential: vi.fn(async () => ok(credential)),
+    getStageNavigation: vi.fn(async () => ok(stageSnapshot)),
+    startStageAnalysis: vi.fn(async () => ok(batch)),
+    cancelStageAnalysis: vi.fn(async () => ok(undefined)),
+    getStageAnalysisRecord: vi.fn(async () => ok(null)),
   }
 }
 
@@ -59,6 +66,10 @@ describe('Jev Remote page adapter', () => {
       testConnection: async () => failed<JevProbeResult>(error),
       getCredentialStatus: async () => failed<JevCredentialStatus>(error),
       setCredential: async () => failed<JevCredentialStatus>(error),
+      getStageNavigation: async () => failed<StageNavigationSnapshot>(error),
+      startStageAnalysis: async () => failed<StageBatchState>(error),
+      cancelStageAnalysis: async () => failed<void>(error),
+      getStageAnalysisRecord: async () => failed<StageAnalysisRecord | null>(error),
     }
     const adapted = jevPageRemote(remote)
 
@@ -68,5 +79,25 @@ describe('Jev Remote page adapter', () => {
     await expect(adapted.testConnection(new AbortController().signal)).rejects.toBe(error)
     await expect(adapted.getCredentialStatus()).rejects.toBe(error)
     await expect(adapted.setCredential('new-secret')).rejects.toBe(error)
+    const stage = jevStageRemote(remote)
+    await expect(stage.getStageNavigation('session-1', new AbortController().signal)).rejects.toBe(error)
+    await expect(stage.startStageAnalysis({ sessionId: 'session-1', scope: { kind: 'all' }, mode: 'missing' })).rejects.toBe(error)
+    await expect(stage.cancelStageAnalysis('batch-1')).rejects.toBe(error)
+    await expect(stage.getStageAnalysisRecord('session-1', 'step-1')).rejects.toBe(error)
+  })
+
+  it('forwards Session stage scope and cancellation through typed envelopes', async () => {
+    const remote = wire()
+    const adapted = jevStageRemote(remote)
+    const signal = new AbortController().signal
+    const request = { sessionId: 'session-1', scope: { kind: 'turn' as const, turn: 8 }, mode: 'missing' as const }
+    expect(await adapted.getStageNavigation('session-1', signal)).toBe(stageSnapshot)
+    expect(await adapted.startStageAnalysis(request)).toBe(batch)
+    expect(await adapted.cancelStageAnalysis('batch-1')).toBeUndefined()
+    expect(await adapted.getStageAnalysisRecord('session-1', 'step-1')).toBeNull()
+    expect(remote.getStageNavigation).toHaveBeenCalledWith('session-1', signal)
+    expect(remote.startStageAnalysis).toHaveBeenCalledWith(request)
+    expect(remote.cancelStageAnalysis).toHaveBeenCalledWith('batch-1')
+    expect(remote.getStageAnalysisRecord).toHaveBeenCalledWith('session-1', 'step-1')
   })
 })

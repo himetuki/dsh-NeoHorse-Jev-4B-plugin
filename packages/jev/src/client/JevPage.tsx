@@ -7,6 +7,7 @@ import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-cli
 import type { SupervisionConfigValues } from '../supervision-types.ts'
 import type { SelectionConfigValues } from '../selection-types.ts'
 import type { OutputAdmissionConfigValues } from '../output-admission-types.ts'
+import type { StageNavigationConfigValues } from '../stage-types.ts'
 import type {
   JevActionStatus, JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail,
   JevRecordFilter, JevRecordPage, JevRecordStatus, JevRecordSummary,
@@ -39,6 +40,7 @@ export interface JevPageFace {
   selectionForm?: ConfigForm<SelectionConfigValues>
   outputAdmissionForm?: ConfigForm<OutputAdmissionConfigValues>
   supervisionForm?: ConfigForm<SupervisionConfigValues>
+  stageNavigationForm?: ConfigForm<StageNavigationConfigValues>
   jev: JevPageRemote
   notifySuccess: (message: string) => void
 }
@@ -48,6 +50,23 @@ export type JevPageProps = PropsRuntime<'plugins.bundle.config'> & PropsLocale<'
 
 type Translate = (key: JevLocaleKey) => string
 type Tab = 'settings' | 'records'
+
+function featureName(feature: Pick<JevFeatureView, 'id' | 'name'>, t: Translate): string {
+  if (feature.id === 'shared-findings') return t('sharedFindingsName')
+  if (feature.id === 'stage-navigation') return t('stageNavigationName')
+  return feature.name
+}
+
+function featureDescription(feature: JevFeatureView, t: Translate): string {
+  if (feature.id === 'shared-findings') return t('sharedFindingsDescription')
+  if (feature.id === 'stage-navigation') return t('stageNavigationDescription')
+  return feature.description
+}
+
+function recordFeatureName(features: readonly JevFeatureView[], featureId: string, t: Translate): string {
+  const feature = features.find(entry => entry.id === featureId)
+  return feature ? featureName(feature, t) : featureId
+}
 
 const STATUSES: readonly JevRecordStatus[] = ['pending', 'waiting', 'succeeded', 'failed', 'cancelled', 'interrupted']
 const PAGE_SIZE = 25
@@ -105,6 +124,7 @@ export function JevPage(props: JevPageProps) {
           {props.supervisionForm && <SupervisionSettings form={props.supervisionForm} notifySuccess={props.notifySuccess} t={t} />}
           {props.selectionForm && <SelectionSettings form={props.selectionForm} notifySuccess={props.notifySuccess} t={t} />}
           {props.outputAdmissionForm && <OutputAdmissionSettings form={props.outputAdmissionForm} notifySuccess={props.notifySuccess} t={t} />}
+          {props.stageNavigationForm && <StageNavigationSettings form={props.stageNavigationForm} notifySuccess={props.notifySuccess} t={t} />}
         </div>
         : <div id="jev-records-panel" role="tabpanel" aria-labelledby="jev-records-tab"><RecordsPanel jev={props.jev} t={t} /></div>}
     </div>
@@ -194,6 +214,78 @@ function OutputAdmissionSettings({ form, notifySuccess, t }: {
       </div>)}</div>
       <div className={css.actions}><Button variant="primary" disabled={!snapshot.writable || saving || !dirty} onClick={() => { void save() }}>{saving ? t('saving') : t('saveOutputAdmission')}</Button></div>
       {saveError && <p role="alert" className={css.notice}>{t('outputAdmissionSaveFailed')}</p>}
+    </div>}
+  </section>
+}
+
+type StageField = keyof StageNavigationConfigValues
+const STAGE_FIELDS: readonly { key: StageField; label: JevLocaleKey; min: number; max: number }[] = [
+  { key: 'previousSteps', label: 'previousSteps', min: 0, max: 20 },
+  { key: 'previousChars', label: 'previousChars', min: 0, max: 100_000 },
+  { key: 'maxRequestChars', label: 'stageMaxRequestChars', min: 2048, max: 10_000_000 },
+  { key: 'concurrency', label: 'stageConcurrency', min: 1, max: 8 },
+]
+
+function StageNavigationSettings({ form, notifySuccess, t }: {
+  form: ConfigForm<StageNavigationConfigValues>; notifySuccess: (message: string) => void; t: Translate
+}) {
+  const subscribe = useCallback((listener: () => void) => form.subscribe(listener), [form])
+  const getSnapshot = useCallback(() => form.getSnapshot(), [form])
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+  const [draft, setDraft] = useState<Partial<Record<StageField, string>>>({})
+  const [invalid, setInvalid] = useState<StageField[]>([])
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
+  const edited = useRef(false)
+  const observed = useRef('')
+  useEffect(() => {
+    if (snapshot.value === undefined) return
+    const values = {
+      previousSteps: String(snapshot.value.previousSteps), previousChars: String(snapshot.value.previousChars),
+      maxRequestChars: String(snapshot.value.maxRequestChars), concurrency: String(snapshot.value.concurrency),
+    }
+    const signature = JSON.stringify(values)
+    if (signature === observed.current) return
+    observed.current = signature
+    if (!edited.current) setDraft(values)
+  }, [snapshot.value])
+  const current = snapshot.value
+  const dirty = current !== undefined && STAGE_FIELDS.some(({ key }) => draft[key] !== undefined && draft[key] !== String(current[key]))
+  useEffect(() => { if (!dirty) edited.current = false }, [dirty])
+  const save = async () => {
+    const errors: StageField[] = []
+    const values: Partial<StageNavigationConfigValues> = {}
+    for (const { key, min, max } of STAGE_FIELDS) {
+      const raw = draft[key] ?? ''
+      const value = Number(raw)
+      if (!/^\d+$/.test(raw) || !Number.isSafeInteger(value) || value < min || value > max) errors.push(key)
+      else values[key] = value
+    }
+    if (errors.length > 0) { setInvalid(errors); return }
+    setSaving(true)
+    setSaveError(false)
+    try {
+      const accepted = await form.mutate(STAGE_FIELDS.map(({ key }) => ({ op: 'set' as const, path: [key], value: values[key]! })), snapshot.revision)
+      if (!accepted) setSaveError(true)
+      else { edited.current = false; notifySuccess(t('stageSaved')) }
+    } catch { setSaveError(true) }
+    finally { setSaving(false) }
+  }
+  return <section className={css.section} aria-label={t('stageSettings')}>
+    <h3 className={css.heading}>{t('stageSettings')}</h3>
+    <p className={css.hint}>{t('stageSettingsHint')}</p>
+    {snapshot.status === 'loading' && current === undefined && <Loading label={t('loading')} />}
+    {snapshot.status === 'unavailable' && <p className={css.notice}>{t('unavailable')}</p>}
+    {current !== undefined && <div className={css.form}>
+      <div className={css.filters}>{STAGE_FIELDS.map(({ key, label, min, max }) => <div className={css.field} key={key}>
+        <label htmlFor={`jev-stage-${key}`}>{t(label)}</label>
+        <input id={`jev-stage-${key}`} type="number" min={min} max={max} step="1" value={draft[key] ?? String(current[key])}
+          aria-invalid={invalid.includes(key) || undefined} disabled={!snapshot.writable || saving}
+          onChange={event => { edited.current = true; setDraft(previous => ({ ...previous, [key]: event.target.value })); setInvalid(previous => previous.filter(item => item !== key)) }} />
+        {invalid.includes(key) && <span role="alert" className={css.notice}>{t('stageInvalid')}</span>}
+      </div>)}</div>
+      <div className={css.actions}><Button variant="primary" disabled={!snapshot.writable || saving || !dirty} onClick={() => { void save() }}>{saving ? t('saving') : t('saveStageSettings')}</Button></div>
+      {saveError && <p role="alert" className={css.notice}>{t('stageSaveFailed')}</p>}
     </div>}
   </section>
 }
@@ -522,7 +614,7 @@ function SettingsPanel({ form, jev, notifySuccess, t }: PanelProps) {
         {!featureLoading && !featureError && features.length === 0 && <p className={css.empty}>{t('noFeatures')}</p>}
         <div className={css.list}>{features.map(feature => {
           const enabled = current?.features?.[feature.id] ?? feature.enabled
-          return <div className={css.feature} key={feature.id}><div className={css.featureBody}><span className={css.featureTitle}>{feature.id === 'shared-findings' ? t('sharedFindingsName') : feature.name}</span><span className={css.description}>{feature.id === 'shared-findings' ? t('sharedFindingsDescription') : feature.description}</span>{feature.settingsDescription && <span className={css.hint}>{feature.settingsDescription}</span>}</div><Switch checked={enabled} label={`${enabled ? t('disable') : t('enable')} ${feature.id === 'shared-findings' ? t('sharedFindingsName') : feature.name}`} disabled={!snapshot.writable || featureBusy !== ''} onChange={next => { void toggleFeature(feature.id, next) }} /></div>
+          return <div className={css.feature} key={feature.id}><div className={css.featureBody}><span className={css.featureTitle}>{featureName(feature, t)}</span><span className={css.description}>{featureDescription(feature, t)}</span>{feature.settingsDescription && <span className={css.hint}>{feature.settingsDescription}</span>}</div><Switch checked={enabled} label={`${enabled ? t('disable') : t('enable')} ${featureName(feature, t)}`} disabled={!snapshot.writable || featureBusy !== ''} onChange={next => { void toggleFeature(feature.id, next) }} /></div>
         })}</div>
       </section>
     </div>
@@ -597,7 +689,7 @@ function RecordsPanel({ jev, t }: RecordsProps) {
   return <div className={css.panel}>
     <section className={css.section} aria-label={t('records')}>
       <div className={css.filters}>
-        <label className={css.field}><span>{t('feature')}</span><input list="jev-feature-suggestions" placeholder={t('allFeatures')} value={featureId} onChange={event => { setFeatureId(event.target.value) }} /><datalist id="jev-feature-suggestions">{features.map(feature => <option value={feature.id} key={feature.id} label={feature.id === 'shared-findings' ? t('sharedFindingsName') : feature.name} />)}</datalist></label>
+        <label className={css.field}><span>{t('feature')}</span><input list="jev-feature-suggestions" placeholder={t('allFeatures')} value={featureId} onChange={event => { setFeatureId(event.target.value) }} /><datalist id="jev-feature-suggestions">{features.map(feature => <option value={feature.id} key={feature.id} label={featureName(feature, t)} />)}</datalist></label>
         <label className={css.field}><span>{t('status')}</span><select value={status} onChange={event => { setStatus(event.target.value) }}><option value="">{t('allStatuses')}</option>{STATUSES.map(value => <option value={value} key={value}>{statusLabel(value, t)}</option>)}</select></label>
         <label className={css.field}><span>{t('sessionId')}</span><input value={sessionId} onChange={event => { setSessionId(event.target.value) }} /></label>
       </div>
@@ -606,7 +698,7 @@ function RecordsPanel({ jev, t }: RecordsProps) {
       {loading && items.length === 0 && <Loading label={t('loading')} />}
       {!loading && !error && items.length === 0 && <p className={css.empty}>{t('noRecords')}</p>}
       <div className={css.list}>{items.map(item => <article className={css.record} key={item.id}>
-        <div className={css.recordHead}><span className={css.featureTitle}>{item.diagnostic ? t('diagnostic') : features.find(feature => feature.id === item.featureId)?.name ?? item.featureId}</span><span className={css.meta}>{statusLabel(item.status, t)}</span></div>
+        <div className={css.recordHead}><span className={css.featureTitle}>{item.diagnostic ? t('diagnostic') : recordFeatureName(features, item.featureId, t)}</span><span className={css.meta}>{statusLabel(item.status, t)}</span></div>
         <span className={css.meta}>{t('time')}: {dateText(item.startedAt)} · {t('attempts')}: {item.attempts}{item.sessionId ? ` · ${t('sessionId')}: ${item.sessionId}` : ''}</span>
         <div><Button size="sm" onClick={() => { void openDetail(item.id) }}>{t('details')}</Button></div>
       </article>)}</div>

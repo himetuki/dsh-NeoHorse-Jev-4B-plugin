@@ -19,4 +19,15 @@ export function jevPageRemote(remote) {
         setCredential: async (value) => unwrap(await remote.setCredential(value)),
     };
 }
+/** Adapt the Session stage commands while retaining their Host authorization. */
+export function jevStageRemote(remote) {
+    return {
+        getStageNavigation: async (sessionId, signal) => unwrap(await remote.getStageNavigation(sessionId, signal)),
+        startStageAnalysis: async (request) => unwrap(await remote.startStageAnalysis(request)),
+        cancelStageAnalysis: async (batchId) => unwrap(await remote.cancelStageAnalysis(batchId)),
+        getStageAnalysisRecord: async (sessionId, stepId, recordId) => unwrap(await (recordId === undefined
+            ? remote.getStageAnalysisRecord(sessionId, stepId)
+            : remote.getStageAnalysisRecord(sessionId, stepId, recordId))),
+    };
+}
 //# sourceMappingURL=remote-adapter.js.map

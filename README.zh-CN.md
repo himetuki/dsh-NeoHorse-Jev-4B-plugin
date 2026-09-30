@@ -1,10 +1,10 @@
 # deepseek-harness-jev
 
-[English](README.md) | 简体中文 | [11 项功能与实测网站](https://luobosibing2.github.io/deepseek-harness-jev/)
+[English](README.md) | 简体中文 | [中文功能与实测网站](https://luobosibing2.github.io/deepseek-harness-jev/)
 
 **DeepSeek Harness（DSH）的原生 Jev 插件：按需接入 TypeSafe Jev / System One 判断。**
 
-`deepseek-harness-jev` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与 [TypeSafe AI 的 Jev](https://typesafe.ai/) 连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选和单次操作审批。11 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
+`deepseek-harness-jev` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与 [TypeSafe AI 的 Jev](https://typesafe.ai/) 连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选、单次操作审批和历史轨迹阶段导航。12 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
 
 主模型继续负责规划、生成回答和调用原生工具；插件在 DSH 的技能目录、Agent 生命周期、工具结果与审批等扩展点自动发起已启用的 Jev 判断，再按对应功能应用结果。主模型由 DSH 配置，Jev 连接单独配置。接入基于公开的 Cordis / DSH 插件接口，无需修改宿主源码。
 
@@ -29,14 +29,23 @@
 | 通用长日志准入（Tool-output filtering） | 命令返回后可省略明确不需要的进度或重复提示，并提供原文恢复位置。 |
 | 测试日志准入（Test-log filtering） | 保护失败、摘要、点名和慢测试，再判断普通通过明细是否仍有用。 |
 | 工作区提权代审批（Workspace approval） | 仅在 workspace-write 下参与适用的原生单次提权；非肯定判断回到原人工审批。 |
+| 阶段导航（Stage navigation） | 按需分类已记录的完整模型步骤，将连续阶段与轨迹原文关联。 |
 
 ![Jev 功能设置页：选择、监督、共享纠正和工作区审批等功能可分别开启](docs/images/jev-feature-toggles.png)
 
-*较早版本的功能设置示例。截图展示 9 个开关及用户自行选择的状态；当前 `main` 包含上表中的 11 项功能，新安装时默认全部关闭。*
+*较早版本的功能设置示例。截图展示 9 个开关及用户自行选择的状态；当前 `main` 包含上表中的 12 项功能，新安装时默认全部关闭。*
 
 所有功能共用连接、按 profile 保存的设置、判断记录与操作回执。多数 Agent 功能面向存活的 Web 主会话；向子 Agent 发送纠正，不等于子 Agent 自动拥有其他 Jev 增强。
 
 **功能分支不等于已合入 main。** 工具输出筛选已进入 `main`；`codex/jev-tool-output-admission` 保留开发快照。原生网页执行在 `codex/jev-native-web-execution`，该方向目前**暂停，普通网站效果未通过验收**。其他历史分支保留早期实现。切换前请看[分支状态](docs/branches.md)，本表始终以 `main` 为准。
+
+## 阶段导航
+
+网页客户端在“轨迹”后提供独立的**阶段导航**标签页。它读取已记录的轮次，不修改原始 Session。
+
+独立的**阶段导航**开关默认关闭，同时控制页面可见性：开启后才显示标签，开启本身不调用 Jev；关闭时隐藏页面、取消未完成的分类，并保留已保存结果。用户手动选择已结束轮，或选择本会话尚未分析的已结束轮后，才开始分析。
+
+每次分类覆盖一个完整 DSH 模型 step：已记录的 Think、正文、全部工具调用与配对结果。Jev 从六阶段及 `mixed`、`unknown` 中选一个；程序只在同一轮内合并连续相同标签。页面左侧保留多轮目录，右侧定位完整 step 原文，并可核对实际分类输入与回答。标签和 confidence 不表示工具成功或分类正确率。输入、保存与失败处理见[包参考](packages/jev/README.md#stage-navigation)。
 
 ## 网页端安装（推荐）
 
@@ -55,7 +64,7 @@ https://github.com/luobosibing2/deepseek-harness-jev
 
 *在「包名或地址」中粘贴仓库 URL，再点击「安装」。*
 
-**插件启用与功能启用是两层开关：11 项 Jev 功能默认仍为关闭。** 安装作用于当前 Web 连接的 Host profile；Host 需可运行 pnpm 并访问 GitHub。仓库已包含可直接加载的插件入口和预构建文件，不会在用户机器上编译源码，也不要求发布 npm 包。
+**插件启用与功能启用是两层开关：12 项 Jev 功能默认仍为关闭。** 安装作用于当前 Web 连接的 Host profile；Host 需可运行 pnpm 并访问 GitHub。仓库已包含可直接加载的插件入口和预构建文件，不会在用户机器上编译源码，也不要求发布 npm 包。
 
 当前 GitHub 入口提供 `main` 的功能，不包含实验分支。历史 [v0.1.0 安装包](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0)不含新合入的日志筛选功能；需要自行修改代码时再看下面的源码构建步骤。
 

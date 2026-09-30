@@ -16,3 +16,5 @@
       name: '@dsh-jev/plugin/output-admission'
     - id: jev-workspace-approval
       name: '@dsh-jev/plugin/workspace-approval'
+    - id: jev-stage-navigation
+      name: '@dsh-jev/plugin/stage-navigation'

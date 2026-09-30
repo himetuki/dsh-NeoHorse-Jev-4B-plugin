@@ -208,9 +208,19 @@ describe('supervision through real AgentLoop, goal driver, tools and HTTP Jev', 
 
   it('resets the consecutive count for new investigation evidence', async () => {
     const h = await harness(Array.from({ length: 6 }, () => text('investigation')), ['no-progress', 'no-progress', 'progress', 'no-progress', 'no-progress', 'no-progress'].map(value => answer(value)), { 'goal-supervision': true })
-    h.ctx.goals.create(h.agent, { objective: 'Find root cause', maxGoalRounds: 9 })
-    await vi.waitFor(() => expect(h.ctx.goals.get(h.agent)?.phase).toBe('paused'))
+    let resolvePaused!: () => void
+    const paused = new Promise<void>(resolve => { resolvePaused = resolve })
+    const unsubscribe = h.ctx.on('goal/changed', ({ agent, change }) => {
+      if (agent === h.agent && change.goal?.phase === 'paused') resolvePaused()
+    })
+    cleanups.push(async () => { unsubscribe() })
+    try {
+      h.ctx.goals.create(h.agent, { objective: 'Find root cause', maxGoalRounds: 9 })
+      await paused
+    } finally { unsubscribe() }
+    expect(h.ctx.goals.get(h.agent)?.phase).toBe('paused')
     expect(h.ctx.goals.get(h.agent)?.roundsStarted).toBe(6)
+    expect(h.requests).toHaveLength(6)
   })
 
   it('blocks the model complete tool but leaves native manual completion available', async () => {

@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md) | [中文功能与实测网站](https:
 
 **Native DeepSeek Harness (DSH) plugin integrating TypeSafe Jev as a System One decision layer.**
 
-`deepseek-harness-jev` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [Jev by TypeSafe AI](https://typesafe.ai/) for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, and single-operation approval assistance. Its 11 features are individually configurable from one Jev settings page and are all disabled by default.
+`deepseek-harness-jev` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [Jev by TypeSafe AI](https://typesafe.ai/) for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, single-operation approval assistance, and historical stage navigation. Its 12 features are individually configurable from one Jev settings page and are all disabled by default.
 
 The main model continues to plan, generate answers, and call native tools. The plugin automatically invokes enabled Jev judgments at DSH extension points for skill catalogs, agent lifecycle, tool results, and approvals, then applies results according to each feature. DSH configures the main model; Jev has a separate connection. Integration uses public Cordis / DSH plugin APIs without modifying the host source.
 
@@ -29,14 +29,23 @@ The following features are in `main`. **Every feature is independently disabled 
 | Long-log admission | Can remove clearly unneeded progress or repeated notices after a command returns, with an original-output recovery reference. |
 | Test-log admission | Protects failures, summaries, named and slow tests while judging whether ordinary passing details are needed. |
 | Workspace approval | In `workspace-write`, can answer eligible native single-operation escalation requests; non-affirmative answers return to human approval. |
+| Stage navigation | Classifies complete recorded model steps on request, then links consecutive stages to their original trajectory evidence. |
 
 ![Jev settings page with independent feature switches for selection, supervision, corrections, and workspace approval](docs/images/jev-feature-toggles.png)
 
-*Example feature settings from an earlier build. The screenshot shows nine switches and user-selected states; current `main` includes the eleven features listed above, all disabled on a fresh installation.*
+*Example feature settings from an earlier build. The screenshot shows nine switches and user-selected states; current `main` includes the twelve features listed above, all disabled on a fresh installation.*
 
 All features share a connection, profile-scoped settings, decision records, and operation receipts. Most agent-facing features target live Web root sessions; correcting a child agent does not enable every feature inside that child.
 
 **Feature branches are not all included in `main`.** Tool-output filtering is included in `main`; `codex/jev-tool-output-admission` preserves its development snapshot. Native web execution is on `codex/jev-native-web-execution` and is **paused; ordinary-site effectiveness has not passed acceptance**. Historical split branches preserve earlier work. See [branch status](docs/branches.md) before switching branches; this table always describes `main`.
+
+## Stage navigation
+
+The **Stage navigation** tab follows Trajectory in the Web client. It reads recorded turns without changing the original Session.
+
+The independent **Stage navigation** switch is off by default. It controls the tab's visibility: enabling shows the page without calling Jev, and disabling hides it, cancels unfinished classification, and retains saved results. Analysis starts only when the user selects a completed turn or requests the session's unanalyzed completed turns.
+
+Each classification covers one complete DSH model step: its recorded reasoning, text, all tool calls, and paired results. Jev selects one of six stages, `mixed`, or `unknown`; adjacent equal labels merge only within the same turn. The page keeps a multi-turn directory beside the original steps and exposes the actual classification input and answer. Labels and confidence do not establish tool success or classification accuracy. See the [package reference](packages/jev/README.md#stage-navigation) for input, storage, and failure behavior.
 
 ## Install through the Web UI (recommended)
 
@@ -55,7 +64,7 @@ https://github.com/luobosibing2/deepseek-harness-jev
 
 *Paste the repository URL into “Package name or address”, then click Install.*
 
-**Enabling the package does not enable its 11 Jev features; they remain off by default.** Installation applies to the Host profile serving the current Web UI. The Host needs pnpm and access to GitHub. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication.
+**Enabling the package does not enable its 12 Jev features; they remain off by default.** Installation applies to the Host profile serving the current Web UI. The Host needs pnpm and access to GitHub. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication.
 
 The GitHub entry provides the `main` features, not experimental branches. The older [v0.1.0 release](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0) does not include the newly integrated log filters. Build from source below only when changing or building the code yourself.
 

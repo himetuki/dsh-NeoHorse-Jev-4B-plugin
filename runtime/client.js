@@ -1916,6 +1916,20 @@ window.__ModuleLoader__.load({
 				return payload;
 			};
 		});
+		const $ZodVoid = /*@__PURE__*/ $constructor("$ZodVoid", (inst, def) => {
+			$ZodType.init(inst, def);
+			inst._zod.parse = (payload, _ctx) => {
+				const input = payload.value;
+				if (typeof input === "undefined") return payload;
+				payload.issues.push({
+					expected: "void",
+					code: "invalid_type",
+					input,
+					inst
+				});
+				return payload;
+			};
+		});
 		function handleArrayResult(result, final, index) {
 			if (result.issues.length) final.issues.push(...prefixIssues(index, result.issues));
 			final.value[index] = result.value;
@@ -3534,6 +3548,13 @@ window.__ModuleLoader__.load({
 			});
 		}
 		// @__NO_SIDE_EFFECTS__
+		function _void$1(Class, params) {
+			return new Class({
+				type: "void",
+				...normalizeParams(params)
+			});
+		}
+		// @__NO_SIDE_EFFECTS__
 		function _lt(value, params) {
 			return new $ZodCheckLessThan({
 				check: "less_than",
@@ -4302,6 +4323,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		const undefinedProcessor = (schema, ctx, json, params) => {
 			handleUnrepresentable(schema, ctx, json, params, "Undefined cannot be represented in JSON Schema");
+		};
+		const voidProcessor = (schema, ctx, json, params) => {
+			handleUnrepresentable(schema, ctx, json, params, "Void cannot be represented in JSON Schema");
 		};
 		const neverProcessor = (_schema, _ctx, json, _params) => {
 			json.not = {};
@@ -5214,6 +5238,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		function never(params) {
 			return /* @__PURE__ */ _never(ZodNever, params);
 		}
+		const ZodVoid = /*@__PURE__*/ $constructor("ZodVoid", (inst, def) => {
+			$ZodVoid.init(inst, def);
+			ZodType.init(inst, def);
+			inst._zod.processJSONSchema = (ctx, json, params) => voidProcessor(inst, ctx, json, params);
+		});
+		function _void(params) {
+			return /* @__PURE__ */ _void$1(ZodVoid, params);
+		}
 		const ZodArray = /*@__PURE__*/ $constructor("ZodArray", (inst, def) => {
 			_ensureDefaultMemoizer();
 			$ZodArray.init(inst, def);
@@ -5588,6 +5620,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			array(lazy(() => JsonRemoteCodec$schema())),
 			record(string(), lazy(() => JsonRemoteCodec$schema())).readonly()
 		]);
+		let JsonRemoteCodec$schema2$value;
+		const JsonRemoteCodec$schema2 = () => JsonRemoteCodec$schema2$value ??= union([
+			literal(null),
+			string(),
+			number(),
+			literal(false),
+			literal(true),
+			array(lazy(() => JsonRemoteCodec$schema2())),
+			record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+		]);
+		let _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value;
+		const _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema = () => _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value ??= string();
+		let _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value;
+		const _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema = () => _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value ??= _void();
 		let _dsh_jev_plugin_jev_getCredentialStatus_result$schema$value;
 		const _dsh_jev_plugin_jev_getCredentialStatus_result$schema = () => _dsh_jev_plugin_jev_getCredentialStatus_result$schema$value ??= object({
 			"configured": boolean(),
@@ -5922,6 +5968,696 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			]).optional(),
 			"diagnostic": boolean()
 		})]);
+		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value;
+		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value ??= string();
+		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value;
+		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value ??= string();
+		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value;
+		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value ??= union([_undefined(), string()]);
+		let _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value;
+		const _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value ??= union([literal(null), object({
+			"id": string(),
+			"sessionId": string(),
+			"stepId": string(),
+			"revision": number(),
+			"sourceFingerprint": string(),
+			"ruleVersion": string(),
+			"request": union([_undefined(), object({
+				"state": union([
+					literal(null),
+					string(),
+					number(),
+					literal(false),
+					literal(true),
+					array(lazy(() => JsonRemoteCodec$schema2())),
+					record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+				]),
+				"questions": array(union([
+					object({
+						"id": string(),
+						"kind": literal("choice"),
+						"prompt": union([
+							string(),
+							array(union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])),
+							record(string(), union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])).readonly()
+						]),
+						"options": array(object({
+							"id": string(),
+							"description": union([
+								literal(null),
+								string(),
+								array(union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])),
+								record(string(), union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])).readonly()
+							])
+						}))
+					}),
+					object({
+						"id": string(),
+						"kind": literal("score"),
+						"prompt": union([
+							string(),
+							array(union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])),
+							record(string(), union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])).readonly()
+						]),
+						"levels": array(union([
+							literal(null),
+							string(),
+							array(union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])),
+							record(string(), union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])).readonly()
+						]))
+					}),
+					object({
+						"id": string(),
+						"kind": literal("noul"),
+						"prompt": union([
+							string(),
+							array(union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])),
+							record(string(), union([
+								literal(null),
+								string(),
+								number(),
+								literal(false),
+								literal(true),
+								array(lazy(() => JsonRemoteCodec$schema2())),
+								record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+							])).readonly()
+						]),
+						"criteria": union([_undefined(), object({
+							"true": union([
+								_undefined(),
+								literal(null),
+								string(),
+								array(union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])),
+								record(string(), union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])).readonly()
+							]).optional(),
+							"false": union([
+								_undefined(),
+								literal(null),
+								string(),
+								array(union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])),
+								record(string(), union([
+									literal(null),
+									string(),
+									number(),
+									literal(false),
+									literal(true),
+									array(lazy(() => JsonRemoteCodec$schema2())),
+									record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+								])).readonly()
+							]).optional()
+						})]).optional()
+					})
+				]))
+			})]).optional(),
+			"response": union([_undefined(), object({ "answers": array(union([
+				object({
+					"id": string(),
+					"kind": literal("choice"),
+					"optionId": string(),
+					"probabilities": union([_undefined(), record(string(), number())]).optional(),
+					"confidence": union([_undefined(), number()]).optional(),
+					"legend": union([
+						_undefined(),
+						literal(null),
+						string(),
+						number(),
+						literal(false),
+						literal(true),
+						array(lazy(() => JsonRemoteCodec$schema2())),
+						record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+					]).optional()
+				}),
+				object({
+					"id": string(),
+					"kind": literal("score"),
+					"value": number(),
+					"probabilities": union([_undefined(), record(string(), number())]).optional(),
+					"confidence": union([_undefined(), number()]).optional(),
+					"legend": union([
+						_undefined(),
+						literal(null),
+						string(),
+						number(),
+						literal(false),
+						literal(true),
+						array(lazy(() => JsonRemoteCodec$schema2())),
+						record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+					]).optional()
+				}),
+				object({
+					"id": string(),
+					"kind": literal("noul"),
+					"probability": number(),
+					"confidence": union([_undefined(), number()]).optional(),
+					"legend": union([
+						_undefined(),
+						literal(null),
+						string(),
+						number(),
+						literal(false),
+						literal(true),
+						array(lazy(() => JsonRemoteCodec$schema2())),
+						record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+					]).optional()
+				})
+			])) })]).optional(),
+			"rawResponse": union([
+				_undefined(),
+				literal(null),
+				string(),
+				number(),
+				literal(false),
+				literal(true),
+				array(lazy(() => JsonRemoteCodec$schema2())),
+				record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
+			]).optional(),
+			"status": union([
+				literal("pending"),
+				literal("succeeded"),
+				literal("failed"),
+				literal("cancelled"),
+				literal("interrupted"),
+				literal("unanalysed"),
+				literal("stale"),
+				literal("unavailable")
+			]),
+			"label": union([
+				_undefined(),
+				literal("input_parsing"),
+				literal("problem_understanding"),
+				literal("solution_planning"),
+				literal("implementation"),
+				literal("review_validation"),
+				literal("delivery_finalization"),
+				literal("mixed"),
+				literal("unknown")
+			]).optional(),
+			"confidence": union([_undefined(), number()]).optional(),
+			"probabilities": union([_undefined(), record(string(), number())]).optional(),
+			"model": union([_undefined(), string()]).optional(),
+			"configuredModel": union([_undefined(), string()]).optional(),
+			"recordId": union([_undefined(), string()]).optional(),
+			"operationId": union([_undefined(), string()]).optional(),
+			"failure": union([_undefined(), object({
+				"code": string(),
+				"message": string()
+			})]).optional(),
+			"updatedAt": union([_undefined(), string()]).optional(),
+			"previousResult": union([_undefined(), object({
+				"recordId": string(),
+				"label": union([
+					literal("input_parsing"),
+					literal("problem_understanding"),
+					literal("solution_planning"),
+					literal("implementation"),
+					literal("review_validation"),
+					literal("delivery_finalization"),
+					literal("mixed"),
+					literal("unknown")
+				]),
+				"stale": boolean(),
+				"confidence": union([_undefined(), number()]).optional(),
+				"probabilities": union([_undefined(), record(string(), number())]).optional(),
+				"model": union([_undefined(), string()]).optional(),
+				"configuredModel": union([_undefined(), string()]).optional(),
+				"updatedAt": union([_undefined(), string()]).optional()
+			})]).optional()
+		})]);
+		let _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value;
+		const _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema = () => _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value ??= string();
+		let _dsh_jev_plugin_jev_getStageNavigation_result$schema$value;
+		const _dsh_jev_plugin_jev_getStageNavigation_result$schema = () => _dsh_jev_plugin_jev_getStageNavigation_result$schema$value ??= object({
+			"sessionId": string(),
+			"cursor": number(),
+			"featureEnabled": boolean(),
+			"turns": array(object({
+				"id": string(),
+				"turn": number(),
+				"startSeq": number(),
+				"endSeq": union([_undefined(), number()]).optional(),
+				"reason": union([
+					_undefined(),
+					object({ "kind": literal("interrupted") }),
+					object({ "kind": literal("completed") }),
+					object({
+						"kind": literal("aborted"),
+						"reason": union([
+							object({ "kind": literal("user").readonly() }),
+							object({ "kind": literal("parent").readonly() }),
+							object({
+								"kind": literal("hook").readonly(),
+								"reason": string().readonly()
+							}),
+							object({ "kind": literal("disposed").readonly() }),
+							object({ "kind": literal("legacy").readonly() })
+						])
+					}),
+					object({ "kind": literal("blocked") }),
+					object({
+						"kind": literal("error"),
+						"error": object({
+							"message": string().readonly(),
+							"code": string().readonly(),
+							"status": union([_undefined(), number()]).readonly().optional(),
+							"providerRetryAfterMs": union([_undefined(), number()]).readonly().optional(),
+							"requestId": union([_undefined(), intersection(string(), unknown())]).readonly().optional(),
+							"offloadImages": union([_undefined(), number()]).readonly().optional()
+						})
+					}),
+					object({ "kind": literal("max-tokens") }),
+					object({ "kind": literal("forked") })
+				]).optional(),
+				"requests": array(object({
+					"seq": number(),
+					"content": array(union([
+						object({
+							"type": literal("text"),
+							"text": string()
+						}),
+						object({
+							"type": literal("reasoning"),
+							"text": string()
+						}),
+						object({
+							"type": literal("image"),
+							"attachment": object({
+								"attachmentId": intersection(string(), unknown()),
+								"mediaType": union([
+									literal("image/png"),
+									literal("image/jpeg"),
+									literal("image/webp"),
+									literal("image/gif")
+								]),
+								"bytes": number(),
+								"width": number(),
+								"height": number(),
+								"name": union([_undefined(), string()]).optional(),
+								"originalDimensions": union([_undefined(), object({
+									"width": number(),
+									"height": number()
+								})]).optional()
+							}),
+							"offloaded": union([_undefined(), literal(true)]).optional()
+						}),
+						object({
+							"type": literal("file"),
+							"attachment": object({
+								"attachmentId": intersection(string(), unknown()),
+								"name": string(),
+								"bytes": number()
+							})
+						}),
+						object({
+							"type": literal("tool-call"),
+							"id": intersection(string(), unknown()),
+							"name": string(),
+							"arguments": string()
+						}),
+						object({
+							"type": literal("tool-addition"),
+							"toolName": string(),
+							"tool": _undefined().optional()
+						}),
+						object({
+							"type": literal("tool-removal"),
+							"toolName": string()
+						})
+					]))
+				})),
+				"steps": array(object({
+					"id": string(),
+					"turn": number(),
+					"step": number(),
+					"startSeq": number(),
+					"endSeq": union([_undefined(), number()]).optional(),
+					"status": union([
+						literal("complete"),
+						literal("terminal-partial"),
+						literal("in-progress")
+					]),
+					"classifiable": boolean(),
+					"materialStatus": union([
+						literal("ready"),
+						literal("IN_PROGRESS"),
+						literal("NO_MATERIAL"),
+						literal("MATERIAL_TOO_LARGE")
+					]),
+					"assistant": union([_undefined(), intersection(object({
+						"seq": number(),
+						"content": array(union([
+							object({
+								"type": literal("text"),
+								"text": string()
+							}),
+							object({
+								"type": literal("reasoning"),
+								"text": string()
+							}),
+							object({
+								"type": literal("image"),
+								"attachment": object({
+									"attachmentId": intersection(string(), unknown()),
+									"mediaType": union([
+										literal("image/png"),
+										literal("image/jpeg"),
+										literal("image/webp"),
+										literal("image/gif")
+									]),
+									"bytes": number(),
+									"width": number(),
+									"height": number(),
+									"name": union([_undefined(), string()]).optional(),
+									"originalDimensions": union([_undefined(), object({
+										"width": number(),
+										"height": number()
+									})]).optional()
+								}),
+								"offloaded": union([_undefined(), literal(true)]).optional()
+							}),
+							object({
+								"type": literal("file"),
+								"attachment": object({
+									"attachmentId": intersection(string(), unknown()),
+									"name": string(),
+									"bytes": number()
+								})
+							}),
+							object({
+								"type": literal("tool-call"),
+								"id": intersection(string(), unknown()),
+								"name": string(),
+								"arguments": string()
+							}),
+							object({
+								"type": literal("tool-addition"),
+								"toolName": string(),
+								"tool": _undefined().optional()
+							}),
+							object({
+								"type": literal("tool-removal"),
+								"toolName": string()
+							})
+						]))
+					}), object({ "interrupted": boolean() }))]).optional(),
+					"messages": array(intersection(object({
+						"seq": number(),
+						"content": array(union([
+							object({
+								"type": literal("text"),
+								"text": string()
+							}),
+							object({
+								"type": literal("reasoning"),
+								"text": string()
+							}),
+							object({
+								"type": literal("image"),
+								"attachment": object({
+									"attachmentId": intersection(string(), unknown()),
+									"mediaType": union([
+										literal("image/png"),
+										literal("image/jpeg"),
+										literal("image/webp"),
+										literal("image/gif")
+									]),
+									"bytes": number(),
+									"width": number(),
+									"height": number(),
+									"name": union([_undefined(), string()]).optional(),
+									"originalDimensions": union([_undefined(), object({
+										"width": number(),
+										"height": number()
+									})]).optional()
+								}),
+								"offloaded": union([_undefined(), literal(true)]).optional()
+							}),
+							object({
+								"type": literal("file"),
+								"attachment": object({
+									"attachmentId": intersection(string(), unknown()),
+									"name": string(),
+									"bytes": number()
+								})
+							}),
+							object({
+								"type": literal("tool-call"),
+								"id": intersection(string(), unknown()),
+								"name": string(),
+								"arguments": string()
+							}),
+							object({
+								"type": literal("tool-addition"),
+								"toolName": string(),
+								"tool": _undefined().optional()
+							}),
+							object({
+								"type": literal("tool-removal"),
+								"toolName": string()
+							})
+						]))
+					}), object({ "interrupted": boolean() }))),
+					"tools": array(object({
+						"callId": string(),
+						"name": string(),
+						"arguments": string(),
+						"seq": number(),
+						"dispatched": boolean(),
+						"result": union([_undefined(), intersection(object({
+							"seq": number(),
+							"content": array(union([
+								object({
+									"type": literal("text"),
+									"text": string()
+								}),
+								object({
+									"type": literal("reasoning"),
+									"text": string()
+								}),
+								object({
+									"type": literal("image"),
+									"attachment": object({
+										"attachmentId": intersection(string(), unknown()),
+										"mediaType": union([
+											literal("image/png"),
+											literal("image/jpeg"),
+											literal("image/webp"),
+											literal("image/gif")
+										]),
+										"bytes": number(),
+										"width": number(),
+										"height": number(),
+										"name": union([_undefined(), string()]).optional(),
+										"originalDimensions": union([_undefined(), object({
+											"width": number(),
+											"height": number()
+										})]).optional()
+									}),
+									"offloaded": union([_undefined(), literal(true)]).optional()
+								}),
+								object({
+									"type": literal("file"),
+									"attachment": object({
+										"attachmentId": intersection(string(), unknown()),
+										"name": string(),
+										"bytes": number()
+									})
+								}),
+								object({
+									"type": literal("tool-call"),
+									"id": intersection(string(), unknown()),
+									"name": string(),
+									"arguments": string()
+								}),
+								object({
+									"type": literal("tool-addition"),
+									"toolName": string(),
+									"tool": _undefined().optional()
+								}),
+								object({
+									"type": literal("tool-removal"),
+									"toolName": string()
+								})
+							]))
+						}), object({
+							"isError": boolean(),
+							"error": union([_undefined(), object({
+								"name": string(),
+								"code": string(),
+								"reason": union([_undefined(), string()]).optional()
+							})]).optional()
+						}))]).optional()
+					})),
+					"attemptSeqs": array(number()),
+					"analysis": object({
+						"status": union([
+							literal("pending"),
+							literal("succeeded"),
+							literal("failed"),
+							literal("cancelled"),
+							literal("interrupted"),
+							literal("unanalysed"),
+							literal("stale"),
+							literal("unavailable")
+						]),
+						"label": union([
+							_undefined(),
+							literal("input_parsing"),
+							literal("problem_understanding"),
+							literal("solution_planning"),
+							literal("implementation"),
+							literal("review_validation"),
+							literal("delivery_finalization"),
+							literal("mixed"),
+							literal("unknown")
+						]).optional(),
+						"confidence": union([_undefined(), number()]).optional(),
+						"probabilities": union([_undefined(), record(string(), number())]).optional(),
+						"model": union([_undefined(), string()]).optional(),
+						"configuredModel": union([_undefined(), string()]).optional(),
+						"recordId": union([_undefined(), string()]).optional(),
+						"operationId": union([_undefined(), string()]).optional(),
+						"failure": union([_undefined(), object({
+							"code": string(),
+							"message": string()
+						})]).optional(),
+						"updatedAt": union([_undefined(), string()]).optional(),
+						"previousResult": union([_undefined(), object({
+							"recordId": string(),
+							"label": union([
+								literal("input_parsing"),
+								literal("problem_understanding"),
+								literal("solution_planning"),
+								literal("implementation"),
+								literal("review_validation"),
+								literal("delivery_finalization"),
+								literal("mixed"),
+								literal("unknown")
+							]),
+							"stale": boolean(),
+							"confidence": union([_undefined(), number()]).optional(),
+							"probabilities": union([_undefined(), record(string(), number())]).optional(),
+							"model": union([_undefined(), string()]).optional(),
+							"configuredModel": union([_undefined(), string()]).optional(),
+							"updatedAt": union([_undefined(), string()]).optional()
+						})]).optional()
+					})
+				}))
+			})),
+			"batch": union([_undefined(), object({
+				"id": string(),
+				"sessionId": string(),
+				"status": union([
+					literal("failed"),
+					literal("cancelled"),
+					literal("completed"),
+					literal("running")
+				]),
+				"total": number(),
+				"completed": number(),
+				"failed": number(),
+				"cancelled": number(),
+				"failure": union([_undefined(), object({
+					"code": string(),
+					"message": string()
+				})]).optional()
+			})]).optional()
+		});
 		let _dsh_jev_plugin_jev_listFeatures_result$schema$value;
 		const _dsh_jev_plugin_jev_listFeatures_result$schema = () => _dsh_jev_plugin_jev_listFeatures_result$schema$value ??= array(object({
 			"enabled": boolean(),
@@ -5984,6 +6720,38 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"writable": boolean(),
 			"source": union([_undefined(), string()]).optional()
 		});
+		let _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value;
+		const _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema = () => _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value ??= object({
+			"sessionId": string(),
+			"scope": union([object({
+				"kind": literal("turn"),
+				"turn": number()
+			}), object({ "kind": literal("all") })]),
+			"mode": union([
+				literal("missing"),
+				literal("retry-failed"),
+				literal("refresh")
+			])
+		});
+		let _dsh_jev_plugin_jev_startStageAnalysis_result$schema$value;
+		const _dsh_jev_plugin_jev_startStageAnalysis_result$schema = () => _dsh_jev_plugin_jev_startStageAnalysis_result$schema$value ??= object({
+			"id": string(),
+			"sessionId": string(),
+			"status": union([
+				literal("failed"),
+				literal("cancelled"),
+				literal("completed"),
+				literal("running")
+			]),
+			"total": number(),
+			"completed": number(),
+			"failed": number(),
+			"cancelled": number(),
+			"failure": union([_undefined(), object({
+				"code": string(),
+				"message": string()
+			})]).optional()
+		});
 		let _dsh_jev_plugin_jev_testConnection_result$schema$value;
 		const _dsh_jev_plugin_jev_testConnection_result$schema = () => _dsh_jev_plugin_jev_testConnection_result$schema$value ??= object({
 			"ok": boolean(),
@@ -5998,6 +6766,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			package: "@dsh-jev/plugin",
 			descriptors: [
 				{
+					id: "@dsh-jev/plugin#jev/cancelStageAnalysis",
+					service: "jev",
+					namespace: "jev",
+					method: "cancelStageAnalysis",
+					invocation: { kind: "direct" },
+					parameters: [{
+						name: "batchId",
+						wire: "batchId",
+						source: "json",
+						codec: {
+							mode: "strict",
+							typeSymbol: "@dsh-jev/plugin#jev/cancelStageAnalysis:batchId",
+							create: _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema
+						}
+					}],
+					result: {
+						mode: "strict",
+						typeSymbol: "@dsh-jev/plugin#jev/cancelStageAnalysis:result",
+						create: _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema
+					},
+					sourceLocation: {
+						"file": "packages/jev/src/index.ts",
+						"line": 205,
+						"column": 3
+					}
+				},
+				{
 					id: "@dsh-jev/plugin#jev/getCredentialStatus",
 					service: "jev",
 					namespace: "jev",
@@ -6011,7 +6806,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 174,
+						"line": 215,
 						"column": 9
 					}
 				},
@@ -6038,8 +6833,86 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 170,
+						"line": 177,
 						"column": 9
+					}
+				},
+				{
+					id: "@dsh-jev/plugin#jev/getStageAnalysisRecord",
+					service: "jev",
+					namespace: "jev",
+					method: "getStageAnalysisRecord",
+					invocation: { kind: "direct" },
+					parameters: [
+						{
+							name: "sessionId",
+							wire: "sessionId",
+							source: "json",
+							codec: {
+								mode: "strict",
+								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:sessionId",
+								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema
+							}
+						},
+						{
+							name: "stepId",
+							wire: "stepId",
+							source: "json",
+							codec: {
+								mode: "strict",
+								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:stepId",
+								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema
+							}
+						},
+						{
+							name: "recordId",
+							wire: "recordId",
+							source: "json",
+							acceptsUndefined: true,
+							codec: {
+								mode: "strict",
+								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:recordId",
+								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema
+							}
+						}
+					],
+					result: {
+						mode: "strict",
+						typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:result",
+						create: _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema
+					},
+					sourceLocation: {
+						"file": "packages/jev/src/index.ts",
+						"line": 209,
+						"column": 3
+					}
+				},
+				{
+					id: "@dsh-jev/plugin#jev/getStageNavigation",
+					service: "jev",
+					namespace: "jev",
+					method: "getStageNavigation",
+					invocation: { kind: "direct" },
+					parameters: [{
+						name: "sessionId",
+						wire: "sessionId",
+						source: "json",
+						codec: {
+							mode: "strict",
+							typeSymbol: "@dsh-jev/plugin#jev/getStageNavigation:sessionId",
+							create: _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema
+						}
+					}],
+					cancellation: { parameter: "signal" },
+					result: {
+						mode: "strict",
+						typeSymbol: "@dsh-jev/plugin/stage-types#StageNavigationSnapshot",
+						create: _dsh_jev_plugin_jev_getStageNavigation_result$schema
+					},
+					sourceLocation: {
+						"file": "packages/jev/src/index.ts",
+						"line": 193,
+						"column": 3
 					}
 				},
 				{
@@ -6056,7 +6929,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 154,
+						"line": 161,
 						"column": 9
 					}
 				},
@@ -6083,7 +6956,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 161,
+						"line": 168,
 						"column": 9
 					}
 				},
@@ -6110,8 +6983,35 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 181,
+						"line": 222,
 						"column": 9
+					}
+				},
+				{
+					id: "@dsh-jev/plugin#jev/startStageAnalysis",
+					service: "jev",
+					namespace: "jev",
+					method: "startStageAnalysis",
+					invocation: { kind: "direct" },
+					parameters: [{
+						name: "request",
+						wire: "request",
+						source: "json",
+						codec: {
+							mode: "strict",
+							typeSymbol: "@dsh-jev/plugin/stage-types#StageAnalysisRequest",
+							create: _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema
+						}
+					}],
+					result: {
+						mode: "strict",
+						typeSymbol: "@dsh-jev/plugin/stage-types#StageBatchState",
+						create: _dsh_jev_plugin_jev_startStageAnalysis_result$schema
+					},
+					sourceLocation: {
+						"file": "packages/jev/src/index.ts",
+						"line": 199,
+						"column": 3
 					}
 				},
 				{
@@ -6129,7 +7029,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 189,
+						"line": 230,
 						"column": 9
 					}
 				}
@@ -6137,47 +7037,61 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		//#endregion
 //#region jev-css:JevPage.module.css
-		const tag = "@dsh-jev/plugin/src/client/JevPage.module.css";
-		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tag) + "]") === null) {
+		const tag$1 = "@dsh-jev/plugin/src/client/JevPage.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tag$1) + "]") === null) {
 			const element = document.createElement("style");
 			element.dataset.plugin = "@dsh-jev/plugin";
-			element.dataset.pluginCss = tag;
-			element.textContent = "._1tsnea_page{min-width:0;color:var(--dsw-alias-label-primary);flex-direction:column;gap:24px;padding:12px 0 24px;font-size:13px;line-height:20px;display:flex}._1tsnea_tabs{max-width:420px}._1tsnea_panel,._1tsnea_section,._1tsnea_form,._1tsnea_list,._1tsnea_record,._1tsnea_detail,._1tsnea_featureBody{flex-direction:column;display:flex}._1tsnea_panel{gap:24px}._1tsnea_section{gap:12px}._1tsnea_form{gap:14px}._1tsnea_list,._1tsnea_record{gap:8px}._1tsnea_detail{gap:12px}._1tsnea_featureBody{gap:2px;min-width:0}._1tsnea_heading{margin:0;font-size:14px;font-weight:500;line-height:22px}._1tsnea_row,._1tsnea_toolbar,._1tsnea_feature,._1tsnea_recordHead,._1tsnea_filters,._1tsnea_actions{align-items:center;gap:12px;display:flex}._1tsnea_feature,._1tsnea_recordHead{justify-content:space-between}._1tsnea_feature,._1tsnea_record{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);padding:12px}._1tsnea_featureTitle{font-weight:500}._1tsnea_description,._1tsnea_hint,._1tsnea_meta,._1tsnea_empty{color:var(--dsw-alias-label-secondary)}._1tsnea_description,._1tsnea_hint,._1tsnea_meta,._1tsnea_empty,._1tsnea_notice{margin:0}._1tsnea_hint{font-size:12px}._1tsnea_empty{padding:12px 0}._1tsnea_loading{justify-content:center;align-items:center;min-height:80px;display:flex}._1tsnea_toolbar,._1tsnea_actions{flex-wrap:wrap}._1tsnea_filters{flex-wrap:wrap;align-items:end}._1tsnea_field{flex-direction:column;flex:160px;gap:6px;min-width:0;display:flex}._1tsnea_field>span:first-child,._1tsnea_field>label{font-weight:500}._1tsnea_field input,._1tsnea_field select{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);width:100%;min-height:36px;color:var(--dsw-alias-label-primary);font:inherit;padding:6px 10px}._1tsnea_field input:focus-visible,._1tsnea_field select:focus-visible{outline:var(--dsw-focus-ring-width)solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}._1tsnea_field input[aria-invalid=true]{border-color:var(--dsw-alias-state-error-primary)}._1tsnea_notice{color:var(--dsw-alias-state-error-primary);font-size:13px}._1tsnea_success{color:var(--dsw-alias-state-success-primary)}._1tsnea_code{border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:10px;font-size:12px;line-height:18px;overflow:auto}._1tsnea_detailBlock{flex-direction:column;gap:6px;display:flex}._1tsnea_detailLabel{font-weight:500}@media (width<=600px){._1tsnea_feature,._1tsnea_recordHead{flex-direction:column;align-items:flex-start}._1tsnea_filters>._1tsnea_field{flex-basis:100%}}";
+			element.dataset.pluginCss = tag$1;
+			element.textContent = ".BSQV6q_page{min-width:0;color:var(--dsw-alias-label-primary);flex-direction:column;gap:24px;padding:12px 0 24px;font-size:13px;line-height:20px;display:flex}.BSQV6q_tabs{max-width:420px}.BSQV6q_panel,.BSQV6q_section,.BSQV6q_form,.BSQV6q_list,.BSQV6q_record,.BSQV6q_detail,.BSQV6q_featureBody{flex-direction:column;display:flex}.BSQV6q_panel{gap:24px}.BSQV6q_section{gap:12px}.BSQV6q_form{gap:14px}.BSQV6q_list,.BSQV6q_record{gap:8px}.BSQV6q_detail{gap:12px}.BSQV6q_featureBody{gap:2px;min-width:0}.BSQV6q_heading{margin:0;font-size:14px;font-weight:500;line-height:22px}.BSQV6q_row,.BSQV6q_toolbar,.BSQV6q_feature,.BSQV6q_recordHead,.BSQV6q_filters,.BSQV6q_actions{align-items:center;gap:12px;display:flex}.BSQV6q_feature,.BSQV6q_recordHead{justify-content:space-between}.BSQV6q_feature,.BSQV6q_record{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);padding:12px}.BSQV6q_featureTitle{font-weight:500}.BSQV6q_description,.BSQV6q_hint,.BSQV6q_meta,.BSQV6q_empty{color:var(--dsw-alias-label-secondary)}.BSQV6q_description,.BSQV6q_hint,.BSQV6q_meta,.BSQV6q_empty,.BSQV6q_notice{margin:0}.BSQV6q_hint{font-size:12px}.BSQV6q_empty{padding:12px 0}.BSQV6q_loading{justify-content:center;align-items:center;min-height:80px;display:flex}.BSQV6q_toolbar,.BSQV6q_actions{flex-wrap:wrap}.BSQV6q_filters{flex-wrap:wrap;align-items:end}.BSQV6q_field{flex-direction:column;flex:160px;gap:6px;min-width:0;display:flex}.BSQV6q_field>span:first-child,.BSQV6q_field>label{font-weight:500}.BSQV6q_field input,.BSQV6q_field select{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);width:100%;min-height:36px;color:var(--dsw-alias-label-primary);font:inherit;padding:6px 10px}.BSQV6q_field input:focus-visible,.BSQV6q_field select:focus-visible{outline:var(--dsw-focus-ring-width)solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}.BSQV6q_field input[aria-invalid=true]{border-color:var(--dsw-alias-state-error-primary)}.BSQV6q_notice{color:var(--dsw-alias-state-error-primary);font-size:13px}.BSQV6q_success{color:var(--dsw-alias-state-success-primary)}.BSQV6q_code{border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:10px;font-size:12px;line-height:18px;overflow:auto}.BSQV6q_detailBlock{flex-direction:column;gap:6px;display:flex}.BSQV6q_detailLabel{font-weight:500}@media (width<=600px){.BSQV6q_feature,.BSQV6q_recordHead{flex-direction:column;align-items:flex-start}.BSQV6q_filters>.BSQV6q_field{flex-basis:100%}}";
 			document.head.appendChild(element);
 		}
 		var JevPage_module_css_default = {
-			"form": "_1tsnea_form",
-			"page": "_1tsnea_page",
-			"hint": "_1tsnea_hint",
-			"field": "_1tsnea_field",
-			"filters": "_1tsnea_filters",
-			"description": "_1tsnea_description",
-			"featureBody": "_1tsnea_featureBody",
-			"heading": "_1tsnea_heading",
-			"feature": "_1tsnea_feature",
-			"featureTitle": "_1tsnea_featureTitle",
-			"toolbar": "_1tsnea_toolbar",
-			"detailLabel": "_1tsnea_detailLabel",
-			"detail": "_1tsnea_detail",
-			"tabs": "_1tsnea_tabs",
-			"record": "_1tsnea_record",
-			"row": "_1tsnea_row",
-			"panel": "_1tsnea_panel",
-			"section": "_1tsnea_section",
-			"actions": "_1tsnea_actions",
-			"recordHead": "_1tsnea_recordHead",
-			"empty": "_1tsnea_empty",
-			"loading": "_1tsnea_loading",
-			"success": "_1tsnea_success",
-			"code": "_1tsnea_code",
-			"notice": "_1tsnea_notice",
-			"list": "_1tsnea_list",
-			"meta": "_1tsnea_meta",
-			"detailBlock": "_1tsnea_detailBlock"
+			"code": "BSQV6q_code",
+			"panel": "BSQV6q_panel",
+			"record": "BSQV6q_record",
+			"featureBody": "BSQV6q_featureBody",
+			"featureTitle": "BSQV6q_featureTitle",
+			"loading": "BSQV6q_loading",
+			"filters": "BSQV6q_filters",
+			"success": "BSQV6q_success",
+			"row": "BSQV6q_row",
+			"detailLabel": "BSQV6q_detailLabel",
+			"detailBlock": "BSQV6q_detailBlock",
+			"toolbar": "BSQV6q_toolbar",
+			"detail": "BSQV6q_detail",
+			"heading": "BSQV6q_heading",
+			"form": "BSQV6q_form",
+			"page": "BSQV6q_page",
+			"hint": "BSQV6q_hint",
+			"notice": "BSQV6q_notice",
+			"section": "BSQV6q_section",
+			"meta": "BSQV6q_meta",
+			"actions": "BSQV6q_actions",
+			"feature": "BSQV6q_feature",
+			"tabs": "BSQV6q_tabs",
+			"recordHead": "BSQV6q_recordHead",
+			"description": "BSQV6q_description",
+			"empty": "BSQV6q_empty",
+			"field": "BSQV6q_field",
+			"list": "BSQV6q_list"
 		};
 		//#endregion
 		//#region src/client/JevPage.tsx
 		/** Jev bundle settings, feature catalogue, and bounded decision-record browser. */
+		function featureName(feature, t) {
+			if (feature.id === "shared-findings") return t("sharedFindingsName");
+			if (feature.id === "stage-navigation") return t("stageNavigationName");
+			return feature.name;
+		}
+		function featureDescription(feature, t) {
+			if (feature.id === "shared-findings") return t("sharedFindingsDescription");
+			if (feature.id === "stage-navigation") return t("stageNavigationDescription");
+			return feature.description;
+		}
+		function recordFeatureName(features, featureId, t) {
+			const feature = features.find((entry) => entry.id === featureId);
+			return feature ? featureName(feature, t) : featureId;
+		}
 		const STATUSES = [
 			"pending",
 			"waiting",
@@ -6278,6 +7192,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						}),
 						props.outputAdmissionForm && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(OutputAdmissionSettings, {
 							form: props.outputAdmissionForm,
+							notifySuccess: props.notifySuccess,
+							t
+						}),
+						props.stageNavigationForm && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(StageNavigationSettings, {
+							form: props.stageNavigationForm,
 							notifySuccess: props.notifySuccess,
 							t
 						})
@@ -6496,6 +7415,167 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 								role: "alert",
 								className: JevPage_module_css_default.notice,
 								children: t("outputAdmissionSaveFailed")
+							})
+						]
+					})
+				]
+			});
+		}
+		const STAGE_FIELDS = [
+			{
+				key: "previousSteps",
+				label: "previousSteps",
+				min: 0,
+				max: 20
+			},
+			{
+				key: "previousChars",
+				label: "previousChars",
+				min: 0,
+				max: 1e5
+			},
+			{
+				key: "maxRequestChars",
+				label: "stageMaxRequestChars",
+				min: 2048,
+				max: 1e7
+			},
+			{
+				key: "concurrency",
+				label: "stageConcurrency",
+				min: 1,
+				max: 8
+			}
+		];
+		function StageNavigationSettings({ form, notifySuccess, t }) {
+			const subscribe = (0, react.useCallback)((listener) => form.subscribe(listener), [form]);
+			const getSnapshot = (0, react.useCallback)(() => form.getSnapshot(), [form]);
+			const snapshot = (0, react.useSyncExternalStore)(subscribe, getSnapshot, getSnapshot);
+			const [draft, setDraft] = (0, react.useState)({});
+			const [invalid, setInvalid] = (0, react.useState)([]);
+			const [saving, setSaving] = (0, react.useState)(false);
+			const [saveError, setSaveError] = (0, react.useState)(false);
+			const edited = (0, react.useRef)(false);
+			const observed = (0, react.useRef)("");
+			(0, react.useEffect)(() => {
+				if (snapshot.value === void 0) return;
+				const values = {
+					previousSteps: String(snapshot.value.previousSteps),
+					previousChars: String(snapshot.value.previousChars),
+					maxRequestChars: String(snapshot.value.maxRequestChars),
+					concurrency: String(snapshot.value.concurrency)
+				};
+				const signature = JSON.stringify(values);
+				if (signature === observed.current) return;
+				observed.current = signature;
+				if (!edited.current) setDraft(values);
+			}, [snapshot.value]);
+			const current = snapshot.value;
+			const dirty = current !== void 0 && STAGE_FIELDS.some(({ key }) => draft[key] !== void 0 && draft[key] !== String(current[key]));
+			(0, react.useEffect)(() => {
+				if (!dirty) edited.current = false;
+			}, [dirty]);
+			const save = async () => {
+				const errors = [];
+				const values = {};
+				for (const { key, min, max } of STAGE_FIELDS) {
+					const raw = draft[key] ?? "";
+					const value = Number(raw);
+					if (!/^\d+$/.test(raw) || !Number.isSafeInteger(value) || value < min || value > max) errors.push(key);
+					else values[key] = value;
+				}
+				if (errors.length > 0) {
+					setInvalid(errors);
+					return;
+				}
+				setSaving(true);
+				setSaveError(false);
+				try {
+					if (!await form.mutate(STAGE_FIELDS.map(({ key }) => ({
+						op: "set",
+						path: [key],
+						value: values[key]
+					})), snapshot.revision)) setSaveError(true);
+					else {
+						edited.current = false;
+						notifySuccess(t("stageSaved"));
+					}
+				} catch {
+					setSaveError(true);
+				} finally {
+					setSaving(false);
+				}
+			};
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+				className: JevPage_module_css_default.section,
+				"aria-label": t("stageSettings"),
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", {
+						className: JevPage_module_css_default.heading,
+						children: t("stageSettings")
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: JevPage_module_css_default.hint,
+						children: t("stageSettingsHint")
+					}),
+					snapshot.status === "loading" && current === void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Loading, { label: t("loading") }),
+					snapshot.status === "unavailable" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: JevPage_module_css_default.notice,
+						children: t("unavailable")
+					}),
+					current !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: JevPage_module_css_default.form,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: JevPage_module_css_default.filters,
+								children: STAGE_FIELDS.map(({ key, label, min, max }) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: JevPage_module_css_default.field,
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("label", {
+											htmlFor: `jev-stage-${key}`,
+											children: t(label)
+										}),
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+											id: `jev-stage-${key}`,
+											type: "number",
+											min,
+											max,
+											step: "1",
+											value: draft[key] ?? String(current[key]),
+											"aria-invalid": invalid.includes(key) || void 0,
+											disabled: !snapshot.writable || saving,
+											onChange: (event) => {
+												edited.current = true;
+												setDraft((previous) => ({
+													...previous,
+													[key]: event.target.value
+												}));
+												setInvalid((previous) => previous.filter((item) => item !== key));
+											}
+										}),
+										invalid.includes(key) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											role: "alert",
+											className: JevPage_module_css_default.notice,
+											children: t("stageInvalid")
+										})
+									]
+								}, key))
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: JevPage_module_css_default.actions,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									variant: "primary",
+									disabled: !snapshot.writable || saving || !dirty,
+									onClick: () => {
+										save();
+									},
+									children: saving ? t("saving") : t("saveStageSettings")
+								})
+							}),
+							saveError && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+								role: "alert",
+								className: JevPage_module_css_default.notice,
+								children: t("stageSaveFailed")
 							})
 						]
 					})
@@ -7207,11 +8287,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 										children: [
 											/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 												className: JevPage_module_css_default.featureTitle,
-												children: feature.id === "shared-findings" ? t("sharedFindingsName") : feature.name
+												children: featureName(feature, t)
 											}),
 											/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 												className: JevPage_module_css_default.description,
-												children: feature.id === "shared-findings" ? t("sharedFindingsDescription") : feature.description
+												children: featureDescription(feature, t)
 											}),
 											feature.settingsDescription && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 												className: JevPage_module_css_default.hint,
@@ -7220,7 +8300,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 										]
 									}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Switch, {
 										checked: enabled,
-										label: `${enabled ? t("disable") : t("enable")} ${feature.id === "shared-findings" ? t("sharedFindingsName") : feature.name}`,
+										label: `${enabled ? t("disable") : t("enable")} ${featureName(feature, t)}`,
 										disabled: !snapshot.writable || featureBusy !== "",
 										onChange: (next) => {
 											toggleFeature(feature.id, next);
@@ -7330,7 +8410,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 											id: "jev-feature-suggestions",
 											children: features.map((feature) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
 												value: feature.id,
-												label: feature.id === "shared-findings" ? t("sharedFindingsName") : feature.name
+												label: featureName(feature, t)
 											}, feature.id))
 										})
 									]
@@ -7406,7 +8486,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 										className: JevPage_module_css_default.recordHead,
 										children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 											className: JevPage_module_css_default.featureTitle,
-											children: item.diagnostic ? t("diagnostic") : features.find((feature) => feature.id === item.featureId)?.name ?? item.featureId
+											children: item.diagnostic ? t("diagnostic") : recordFeatureName(features, item.featureId, t)
 										}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 											className: JevPage_module_css_default.meta,
 											children: statusLabel(item.status, t)
@@ -7601,11 +8681,1232 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}, message.sequence);
 		}
 		//#endregion
+		//#region src/client/stage-layout.ts
+		/**
+		* Merge only adjacent, successful labels within one recorded turn.
+		* @param turn - the turn whose step order is the native sequence order.
+		* @returns stable segment identities and one visible gap for each unavailable result.
+		*/
+		function stageNavigationItems(turn) {
+			const items = [];
+			let current;
+			const flush = () => {
+				if (current === void 0) return;
+				const first = current.steps[0];
+				const last = current.steps[current.steps.length - 1];
+				const segment = {
+					id: `${turn.id}:${first.id}`,
+					label: current.label,
+					firstStepId: first.id,
+					lastStepId: last.id,
+					steps: current.steps
+				};
+				items.push({
+					kind: "segment",
+					id: segment.id,
+					segment
+				});
+				current = void 0;
+			};
+			for (const step of [...turn.steps].sort((a, b) => a.startSeq - b.startSeq)) {
+				const label = step.status !== "in-progress" && step.analysis.status === "succeeded" ? step.analysis.label : void 0;
+				if (label === void 0) {
+					flush();
+					items.push({
+						kind: "gap",
+						id: `${turn.id}:${step.id}`,
+						step
+					});
+					continue;
+				}
+				const previous = current?.steps[current.steps.length - 1];
+				if (current?.label !== label || previous?.step !== step.step - 1) {
+					flush();
+					current = {
+						label,
+						steps: []
+					};
+				}
+				current.steps.push(step);
+			}
+			flush();
+			return items;
+		}
+		//#endregion
+//#region jev-css:StageNavigation.module.css
+		const tag = "@dsh-jev/plugin/src/client/StageNavigation.module.css";
+		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tag) + "]") === null) {
+			const element = document.createElement("style");
+			element.dataset.plugin = "@dsh-jev/plugin";
+			element.dataset.pluginCss = tag;
+			element.textContent = ".gq3JWG_page{width:100%;height:calc(var(--dsh-conversation-viewport-height,100dvh) - var(--dsh-composer-height,152px));box-sizing:border-box;min-width:0;min-height:0;color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-1);flex-direction:column;font-size:13px;line-height:20px;display:flex;overflow:hidden}.gq3JWG_toolbar{border-bottom:1px solid var(--dsw-alias-border-l3);flex-wrap:wrap;align-items:center;gap:8px 14px;padding:12px 20px;display:flex}.gq3JWG_toolbar h2,.gq3JWG_navigation h3,.gq3JWG_reader h3,.gq3JWG_reader h4,.gq3JWG_toolSection h4{margin:0;font-size:14px;font-weight:500;line-height:22px}.gq3JWG_toolbarActions{flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;display:flex}.gq3JWG_scopeHint{color:var(--dsw-alias-label-secondary);flex-basis:100%;margin:0;font-size:12px}.gq3JWG_notice,.gq3JWG_progress,.gq3JWG_error{margin:0;font-size:12px}.gq3JWG_notice,.gq3JWG_progress{color:var(--dsw-alias-label-secondary)}.gq3JWG_error{color:var(--dsw-alias-state-error-primary)}.gq3JWG_mobileToggle{display:none}.gq3JWG_layout{flex:1;grid-template-columns:minmax(230px,275px) minmax(0,1fr);min-height:0;display:grid;overflow:hidden}.gq3JWG_navigation,.gq3JWG_reader{overscroll-behavior:contain;scrollbar-gutter:stable;min-height:0;overflow:auto}.gq3JWG_navigation{border-right:1px solid var(--dsw-alias-border-l3);background:var(--dsw-alias-bg-layer-2);padding:16px 12px 24px}.gq3JWG_navigation h3{padding:0 7px 12px}.gq3JWG_turnItem{margin-bottom:10px}.gq3JWG_turnButton,.gq3JWG_segmentButton,.gq3JWG_gapButton{border-radius:var(--dsw-radius-sm);width:100%;color:var(--dsw-alias-label-primary);text-align:left;font:inherit;cursor:pointer;background:0 0;border:1px solid #0000;flex-direction:column;align-items:flex-start;gap:3px;display:flex}.gq3JWG_turnButton{padding:8px}.gq3JWG_turnButton>span{-webkit-line-clamp:2;overflow-wrap:anywhere;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden}.gq3JWG_turnButton small,.gq3JWG_segmentButton small,.gq3JWG_gapButton small{color:var(--dsw-alias-label-secondary);font-size:12px}.gq3JWG_activeTurn,.gq3JWG_activeSegment{background:var(--dsw-alias-bg-layer-1);border-color:var(--dsw-alias-border-l3)}.gq3JWG_segments{border-left:1px solid var(--dsw-alias-border-l3);margin-left:13px;padding-left:8px}.gq3JWG_segmentButton,.gq3JWG_gapButton{margin:3px 0;padding:6px 8px}.gq3JWG_segmentButton{border-left:2px solid var(--dsw-alias-state-business-primary)}.gq3JWG_gapButton{color:var(--dsw-alias-label-secondary)}.gq3JWG_turnButton:hover,.gq3JWG_segmentButton:hover,.gq3JWG_gapButton:hover{background:var(--dsw-alias-bg-layer-1)}.gq3JWG_reader{padding:18px 22px 32px}.gq3JWG_readerInner{width:100%;max-width:1120px;margin:0 auto}.gq3JWG_readerHeader,.gq3JWG_readerHeading,.gq3JWG_stepHead,.gq3JWG_statusLine{flex-wrap:wrap;align-items:baseline;gap:7px 14px;display:flex}.gq3JWG_readerHeader{justify-content:space-between;margin-bottom:14px}.gq3JWG_readerHeading{justify-content:space-between;margin:20px 0 10px}.gq3JWG_request{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-2);padding:12px 14px}.gq3JWG_request h4{margin-bottom:8px}.gq3JWG_request details{margin-top:8px}.gq3JWG_search{color:var(--dsw-alias-label-secondary);align-items:center;gap:8px;display:flex}.gq3JWG_search input{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);width:220px;min-width:0;min-height:34px;color:var(--dsw-alias-label-primary);font:inherit;padding:5px 8px}.gq3JWG_textButton{color:var(--dsw-alias-state-business-primary);font:inherit;cursor:pointer;background:0 0;border:0;padding:2px 0}.gq3JWG_stepCard{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-2);margin:10px 0;padding:13px 14px}.gq3JWG_inSegment{border-left:3px solid var(--dsw-alias-state-business-primary)}.gq3JWG_focused{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px}.gq3JWG_stepHead{margin-bottom:5px}.gq3JWG_stepNumber{font-weight:500}.gq3JWG_stageLabel{color:var(--dsw-alias-state-business-primary)}.gq3JWG_statusLine{margin:6px 0;font-size:12px}.gq3JWG_muted{color:var(--dsw-alias-label-secondary)}.gq3JWG_blocks{flex-direction:column;gap:6px;margin:12px 0;display:flex}.gq3JWG_message{border-top:1px solid var(--dsw-alias-border-l3);padding:8px 0}.gq3JWG_block,.gq3JWG_tool{min-width:0}.gq3JWG_blockLabel{margin:8px 0 5px;font-weight:500;display:block}.gq3JWG_sourceText{white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0;font:12px/18px ui-monospace,SFMono-Regular,monospace}.gq3JWG_block>.gq3JWG_sourceText,.gq3JWG_block>details .gq3JWG_sourceText,.gq3JWG_toolBody .gq3JWG_sourceText,.gq3JWG_detailPanel .gq3JWG_sourceText{border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-1);padding:9px}.gq3JWG_toolSection{border-top:1px solid var(--dsw-alias-border-l3);margin-top:13px;padding-top:11px}.gq3JWG_toolSection h4{font-size:13px}.gq3JWG_tool{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);margin-top:7px;padding:7px 9px}.gq3JWG_tool summary{flex-wrap:wrap;gap:12px;display:flex}.gq3JWG_toolBody{padding-top:8px}.gq3JWG_analysisSection{border-top:1px solid var(--dsw-alias-border-l3);margin-top:12px;padding-top:9px}.gq3JWG_previousResult{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);color:var(--dsw-alias-label-secondary);flex-wrap:wrap;gap:4px 12px;margin-top:9px;padding:9px;font-size:12px;display:flex}.gq3JWG_detailPanel{padding-top:8px}.gq3JWG_empty{color:var(--dsw-alias-label-secondary);text-align:center;padding:30px 15px}.gq3JWG_loading{flex:1;justify-content:center;align-items:center;display:flex}.gq3JWG_page button:focus-visible,.gq3JWG_page input:focus-visible,.gq3JWG_page summary:focus-visible{outline:var(--dsw-focus-ring-width)solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}@media (width<=760px){.gq3JWG_toolbar{padding:10px 14px}.gq3JWG_mobileToggle{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-2);font:inherit;cursor:pointer;padding:5px 8px;display:inline-block}.gq3JWG_layout{flex-direction:column;display:flex}.gq3JWG_navigation{border-right:0;border-bottom:1px solid var(--dsw-alias-border-l3);flex:none;max-height:34%;padding:12px 12px 18px}.gq3JWG_navigationClosed{display:none}.gq3JWG_reader{flex:1;padding:14px 14px 22px}.gq3JWG_search{width:100%}.gq3JWG_search input{flex:1;width:auto}}";
+			document.head.appendChild(element);
+		}
+		var StageNavigation_module_css_default = {
+			"segmentButton": "gq3JWG_segmentButton",
+			"textButton": "gq3JWG_textButton",
+			"toolbar": "gq3JWG_toolbar",
+			"toolSection": "gq3JWG_toolSection",
+			"navigation": "gq3JWG_navigation",
+			"segments": "gq3JWG_segments",
+			"blocks": "gq3JWG_blocks",
+			"muted": "gq3JWG_muted",
+			"mobileToggle": "gq3JWG_mobileToggle",
+			"error": "gq3JWG_error",
+			"stepHead": "gq3JWG_stepHead",
+			"readerHeader": "gq3JWG_readerHeader",
+			"readerHeading": "gq3JWG_readerHeading",
+			"block": "gq3JWG_block",
+			"toolBody": "gq3JWG_toolBody",
+			"empty": "gq3JWG_empty",
+			"stageLabel": "gq3JWG_stageLabel",
+			"sourceText": "gq3JWG_sourceText",
+			"stepCard": "gq3JWG_stepCard",
+			"analysisSection": "gq3JWG_analysisSection",
+			"layout": "gq3JWG_layout",
+			"turnItem": "gq3JWG_turnItem",
+			"navigationClosed": "gq3JWG_navigationClosed",
+			"request": "gq3JWG_request",
+			"previousResult": "gq3JWG_previousResult",
+			"search": "gq3JWG_search",
+			"turnButton": "gq3JWG_turnButton",
+			"tool": "gq3JWG_tool",
+			"page": "gq3JWG_page",
+			"activeTurn": "gq3JWG_activeTurn",
+			"progress": "gq3JWG_progress",
+			"activeSegment": "gq3JWG_activeSegment",
+			"scopeHint": "gq3JWG_scopeHint",
+			"gapButton": "gq3JWG_gapButton",
+			"stepNumber": "gq3JWG_stepNumber",
+			"message": "gq3JWG_message",
+			"reader": "gq3JWG_reader",
+			"statusLine": "gq3JWG_statusLine",
+			"toolbarActions": "gq3JWG_toolbarActions",
+			"blockLabel": "gq3JWG_blockLabel",
+			"inSegment": "gq3JWG_inSegment",
+			"loading": "gq3JWG_loading",
+			"detailPanel": "gq3JWG_detailPanel",
+			"readerInner": "gq3JWG_readerInner",
+			"focused": "gq3JWG_focused",
+			"notice": "gq3JWG_notice"
+		};
+		//#endregion
+		//#region src/client/StageNavigation.tsx
+		/** Session-bound, read-only source viewer with explicit Jev stage analysis actions. */
+		const LABEL_KEYS = {
+			input_parsing: "stageInputParsing",
+			problem_understanding: "stageProblemUnderstanding",
+			solution_planning: "stageSolutionPlanning",
+			implementation: "stageImplementation",
+			review_validation: "stageReviewValidation",
+			delivery_finalization: "stageDeliveryFinalization",
+			mixed: "stageMixed",
+			unknown: "stageUnknown"
+		};
+		function format(value) {
+			if (typeof value === "string") return value;
+			return JSON.stringify(value, null, 2) ?? "";
+		}
+		function requestText(requests) {
+			return requests.flatMap((message) => message.content.map((block) => block.type === "text" ? block.text : `[${block.type}]`)).join("\n");
+		}
+		function stepSource(step) {
+			return JSON.stringify({
+				messages: step.messages,
+				tools: step.tools,
+				attemptSeqs: step.attemptSeqs
+			});
+		}
+		function analysisLabel(step, t) {
+			const analysis = step.analysis;
+			if (step.status === "in-progress") return t("running");
+			if (analysis.status === "succeeded" && analysis.label !== void 0) return t(LABEL_KEYS[analysis.label]);
+			return t(analysis.status);
+		}
+		function turnStatus(turn, t) {
+			if (turn.endSeq === void 0) return t("running");
+			switch (turn.reason?.kind) {
+				case "aborted": return turn.reason.reason.kind === "user" ? t("aborted") : t("cancelled");
+				case "error": return t("endedWithError");
+				case "blocked": return t("blocked");
+				case "max-tokens": return t("maxTokens");
+				case "interrupted": return t("interrupted");
+				case "forked": return t("forked");
+				default: return t("completed");
+			}
+		}
+		function stageStepRange(segment) {
+			const first = segment.steps[0];
+			const last = segment.steps[segment.steps.length - 1];
+			return first.step === last.step ? String(first.step) : `${first.step}–${last.step}`;
+		}
+		function Content({ blocks, t }) {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: StageNavigation_module_css_default.blocks,
+				children: blocks.map((block, index) => {
+					if (block.type === "reasoning") return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", {
+						className: StageNavigation_module_css_default.block,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("summary", { children: [
+							t("reasoning"),
+							" · ",
+							index + 1
+						] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: block.text
+						})]
+					}, index);
+					if (block.type === "text") return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.block,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+							className: StageNavigation_module_css_default.blockLabel,
+							children: [
+								t("assistantText"),
+								" · ",
+								index + 1
+							]
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: block.text
+						})]
+					}, index);
+					return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", {
+						className: StageNavigation_module_css_default.block,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("summary", { children: [
+							block.type === "tool-call" ? block.name : t("assistantOther"),
+							" · ",
+							index + 1
+						] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: format(block)
+						})]
+					}, index);
+				})
+			});
+		}
+		function Tool({ tool, t }) {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", {
+				className: StageNavigation_module_css_default.tool,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("summary", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: tool.name }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: StageNavigation_module_css_default.muted,
+					children: !tool.dispatched ? t("notDispatched") : tool.result === void 0 ? t("missingResult") : tool.result.isError ? t("toolError") : t("toolResult")
+				})] }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: StageNavigation_module_css_default.toolBody,
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.muted,
+							children: [
+								tool.callId,
+								" · seq ",
+								tool.seq,
+								tool.result && ` → ${tool.result.seq}`
+							]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: StageNavigation_module_css_default.blockLabel,
+							children: t("toolArguments")
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: tool.arguments
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: StageNavigation_module_css_default.blockLabel,
+							children: t("toolResult")
+						}),
+						tool.result === void 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+							className: StageNavigation_module_css_default.muted,
+							children: t("missingResult")
+						}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [tool.result.error && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: format(tool.result.error)
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: format(tool.result.content)
+						})] })
+					]
+				})]
+			});
+		}
+		function StepCard({ step, selected, inSegment, t, onDetails, detailsOpen, previousDetailsOpen, detail, detailLoading, detailFailed }) {
+			const analysis = step.analysis;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("article", {
+				"data-step-id": step.id,
+				className: [
+					StageNavigation_module_css_default.stepCard,
+					selected ? StageNavigation_module_css_default.focused : "",
+					inSegment ? StageNavigation_module_css_default.inSegment : ""
+				].join(" "),
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+						className: StageNavigation_module_css_default.stepHead,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: StageNavigation_module_css_default.stepNumber,
+								children: [
+									t("step"),
+									" ",
+									step.step
+								]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.stageLabel,
+								children: analysisLabel(step, t)
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: StageNavigation_module_css_default.muted,
+								children: [
+									"seq ",
+									step.startSeq,
+									step.endSeq !== void 0 && `–${step.endSeq}`
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.statusLine,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("analysisStatus"),
+								": ",
+								t(analysis.status)
+							] }),
+							analysis.configuredModel && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("configuredModel"),
+								": ",
+								analysis.configuredModel
+							] }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("model"),
+								": ",
+								analysis.model ?? t("notProvided")
+							] }),
+							analysis.status === "succeeded" && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("confidence"),
+								": ",
+								analysis.confidence ?? t("notProvided"),
+								" · ",
+								t("uncalibrated")
+							] }),
+							analysis.failure && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.error,
+								children: analysis.failure.code
+							}),
+							step.assistant?.interrupted && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.error,
+								children: t("aborted")
+							}),
+							step.tools.some((tool) => tool.result?.isError) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.error,
+								children: t("toolError")
+							}),
+							step.tools.some((tool) => !tool.dispatched) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.muted,
+								children: t("notDispatched")
+							}),
+							step.tools.some((tool) => tool.dispatched && tool.result === void 0) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: StageNavigation_module_css_default.muted,
+								children: t("missingResult")
+							})
+						]
+					}),
+					analysis.status === "stale" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("staleNotice")
+					}),
+					analysis.previousResult && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.previousResult,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("previousSavedResult"),
+								": ",
+								t(LABEL_KEYS[analysis.previousResult.label])
+							] }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("confidence"),
+								": ",
+								analysis.previousResult.confidence ?? t("notProvided"),
+								" · ",
+								t("uncalibrated")
+							] }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("probabilities"),
+								": ",
+								analysis.previousResult.probabilities === void 0 ? t("notProvided") : format(analysis.previousResult.probabilities)
+							] }),
+							analysis.previousResult.configuredModel && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("configuredModel"),
+								": ",
+								analysis.previousResult.configuredModel
+							] }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+								t("model"),
+								": ",
+								analysis.previousResult.model ?? t("notProvided")
+							] }),
+							analysis.previousResult.stale && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("stale") }),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								className: StageNavigation_module_css_default.textButton,
+								type: "button",
+								onClick: () => {
+									onDetails(analysis.previousResult.recordId);
+								},
+								"aria-expanded": previousDetailsOpen,
+								children: previousDetailsOpen ? t("closeDetails") : t("viewPreviousRecord")
+							})
+						]
+					}),
+					step.status === "in-progress" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("notComplete")
+					}),
+					step.status === "terminal-partial" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("terminalPartial")
+					}),
+					!step.classifiable && step.materialStatus === "NO_MATERIAL" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("noMaterial")
+					}),
+					!step.classifiable && step.materialStatus === "MATERIAL_TOO_LARGE" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("materialTooLarge")
+					}),
+					step.messages.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						className: StageNavigation_module_css_default.muted,
+						children: t("noText")
+					}) : step.messages.map((message) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.message,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+							className: StageNavigation_module_css_default.muted,
+							children: [
+								"assistant · seq ",
+								message.seq,
+								message.interrupted && ` · ${t("aborted")}`
+							]
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Content, {
+							blocks: message.content,
+							t
+						})]
+					}, message.seq)),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.toolSection,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("h4", { children: [
+							t("tools"),
+							" · ",
+							step.tools.length
+						] }), step.tools.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+							className: StageNavigation_module_css_default.muted,
+							children: t("noTools")
+						}) : step.tools.map((tool) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Tool, {
+							tool,
+							t
+						}, tool.callId))]
+					}),
+					step.attemptSeqs.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", {
+						className: StageNavigation_module_css_default.block,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("summary", { children: [
+							t("attempts"),
+							" · ",
+							step.attemptSeqs.length
+						] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+							className: StageNavigation_module_css_default.sourceText,
+							children: step.attemptSeqs.join(", ")
+						})]
+					}),
+					(analysis.status !== "unanalysed" && analysis.status !== "unavailable" || analysis.previousResult !== void 0) && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: StageNavigation_module_css_default.analysisSection,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.statusLine,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("analysis") }),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+									t("probabilities"),
+									": ",
+									analysis.probabilities === void 0 ? t("notProvided") : format(analysis.probabilities)
+								] }),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+									className: StageNavigation_module_css_default.textButton,
+									type: "button",
+									onClick: () => {
+										onDetails();
+									},
+									"aria-expanded": detailsOpen,
+									children: detailsOpen ? t("closeDetails") : t("details")
+								})
+							]
+						}), (detailsOpen || previousDetailsOpen) && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.detailPanel,
+							children: [
+								detailLoading && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									role: "status",
+									children: t("loading")
+								}),
+								detailFailed && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+									role: "alert",
+									className: StageNavigation_module_css_default.error,
+									children: t("detailFailed")
+								}),
+								detail && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+										className: StageNavigation_module_css_default.muted,
+										children: t("redactionNote")
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+										className: StageNavigation_module_css_default.muted,
+										children: [
+											t("sourceStep"),
+											": ",
+											detail.stepId,
+											" · ",
+											detail.ruleVersion
+										]
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: StageNavigation_module_css_default.blockLabel,
+										children: t("requestSent")
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+										className: StageNavigation_module_css_default.sourceText,
+										children: detail.request === void 0 ? t("notProvided") : format(detail.request)
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: StageNavigation_module_css_default.blockLabel,
+										children: t("rawResponse")
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+										className: StageNavigation_module_css_default.sourceText,
+										children: detail.rawResponse === void 0 ? t("notProvided") : format(detail.rawResponse)
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: StageNavigation_module_css_default.blockLabel,
+										children: t("parsedResponse")
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+										className: StageNavigation_module_css_default.sourceText,
+										children: detail.response === void 0 ? t("notProvided") : format(detail.response)
+									})
+								] })
+							]
+						})]
+					})
+				]
+			});
+		}
+		/** Render the Host's full authorized Session history and persisted Jev annotations. */
+		function StageNavigation({ sessionId, jev, t, openView }) {
+			const [loadedSnapshot, setSnapshot] = (0, react.useState)(null);
+			const [loadError, setLoadError] = (0, react.useState)(false);
+			const [actionError, setActionError] = (0, react.useState)(null);
+			const [busy, setBusy] = (0, react.useState)(false);
+			const [selectedTurnId, setSelectedTurnId] = (0, react.useState)(null);
+			const [selectedSegmentId, setSelectedSegmentId] = (0, react.useState)(null);
+			const [selectedStepId, setSelectedStepId] = (0, react.useState)(null);
+			const [focusVersion, setFocusVersion] = (0, react.useState)(0);
+			const [query, setQuery] = (0, react.useState)("");
+			const [navigationOpen, setNavigationOpen] = (0, react.useState)(true);
+			const [detailsTarget, setDetailsTarget] = (0, react.useState)(null);
+			const [detail, setDetail] = (0, react.useState)(void 0);
+			const [detailLoading, setDetailLoading] = (0, react.useState)(false);
+			const [detailFailed, setDetailFailed] = (0, react.useState)(false);
+			const reader = (0, react.useRef)(null);
+			const activeSession = (0, react.useRef)(sessionId);
+			const readSequence = (0, react.useRef)(0);
+			const detailSequence = (0, react.useRef)(0);
+			const actionSequence = (0, react.useRef)(0);
+			activeSession.current = sessionId;
+			const snapshot = loadedSnapshot?.sessionId === sessionId ? loadedSnapshot : null;
+			const refresh = (0, react.useCallback)(async (signal) => {
+				const sequence = ++readSequence.current;
+				try {
+					const next = await jev.getStageNavigation(sessionId, signal);
+					if (signal.aborted || activeSession.current !== sessionId || sequence !== readSequence.current || next.sessionId !== sessionId) return;
+					setSnapshot(next);
+					setLoadError(false);
+				} catch {
+					if (!signal.aborted && activeSession.current === sessionId && sequence === readSequence.current) setLoadError(true);
+				}
+			}, [jev, sessionId]);
+			(0, react.useEffect)(() => {
+				actionSequence.current++;
+				setSnapshot(null);
+				setLoadError(false);
+				setActionError(null);
+				setBusy(false);
+				setSelectedTurnId(null);
+				setSelectedSegmentId(null);
+				setSelectedStepId(null);
+				setQuery("");
+				setDetailsTarget(null);
+				setDetail(void 0);
+				setDetailFailed(false);
+				detailSequence.current++;
+				const controller = new AbortController();
+				refresh(controller.signal);
+				return () => {
+					controller.abort();
+				};
+			}, [refresh]);
+			(0, react.useEffect)(() => {
+				if (snapshot?.batch?.status !== "running") return;
+				const controller = new AbortController();
+				let active = true;
+				let timer;
+				const poll = async () => {
+					await refresh(controller.signal);
+					if (active) timer = window.setTimeout(() => {
+						poll();
+					}, 900);
+				};
+				timer = window.setTimeout(() => {
+					poll();
+				}, 900);
+				return () => {
+					active = false;
+					window.clearTimeout(timer);
+					controller.abort();
+				};
+			}, [
+				refresh,
+				snapshot?.batch?.id,
+				snapshot?.batch?.status
+			]);
+			(0, react.useEffect)(() => {
+				if (snapshot?.featureEnabled === false) openView("chat", "");
+			}, [openView, snapshot?.featureEnabled]);
+			const selectedTurn = snapshot?.turns.find((turn) => turn.id === selectedTurnId) ?? snapshot?.turns[snapshot.turns.length - 1];
+			const selectedSegment = (0, react.useMemo)(() => selectedTurn ? stageNavigationItems(selectedTurn) : [], [selectedTurn]).find((item) => item.kind === "segment" && item.id === selectedSegmentId);
+			const segmentStepIds = new Set(selectedSegment?.kind === "segment" ? selectedSegment.segment.steps.map((step) => step.id) : []);
+			const visibleSteps = selectedTurn?.steps.filter((step) => query.trim() === "" || stepSource(step).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) ?? [];
+			const completedTurnCount = snapshot?.turns.filter((turn) => turn.endSeq !== void 0).length ?? 0;
+			const turnReadySteps = selectedTurn?.endSeq === void 0 ? [] : selectedTurn.steps.filter((step) => step.classifiable);
+			const allReadySteps = snapshot?.turns.filter((turn) => turn.endSeq !== void 0).flatMap((turn) => turn.steps).filter((step) => step.classifiable) ?? [];
+			const missingTurnCount = turnReadySteps.filter((step) => step.analysis.status === "unanalysed").length;
+			const missingAllCount = allReadySteps.filter((step) => step.analysis.status === "unanalysed").length;
+			const retryTurnCount = turnReadySteps.filter((step) => step.analysis.status === "failed" || step.analysis.status === "cancelled" || step.analysis.status === "interrupted").length;
+			const refreshTurnCount = turnReadySteps.length;
+			const featureEnabled = snapshot?.featureEnabled ?? false;
+			const batchRunning = snapshot?.batch?.status === "running";
+			(0, react.useLayoutEffect)(() => {
+				if (selectedStepId === null) return;
+				const container = reader.current;
+				const step = [...container?.querySelectorAll("[data-step-id]") ?? []].find((node) => node.dataset.stepId === selectedStepId);
+				if (container && step) container.scrollTop += step.getBoundingClientRect().top - container.getBoundingClientRect().top - 14;
+			}, [
+				selectedStepId,
+				selectedTurn?.id,
+				focusVersion
+			]);
+			const chooseTurn = (turn) => {
+				setSelectedTurnId(turn.id);
+				setSelectedSegmentId(null);
+				setSelectedStepId(null);
+				setQuery("");
+				if (reader.current) reader.current.scrollTop = 0;
+			};
+			const chooseSegment = (turn, segment) => {
+				setSelectedTurnId(turn.id);
+				setSelectedSegmentId(segment.id);
+				setSelectedStepId(segment.firstStepId);
+				setFocusVersion((value) => value + 1);
+				setQuery("");
+			};
+			const start = async (scope, mode) => {
+				if (busy || batchRunning || !featureEnabled) return;
+				const sequence = ++actionSequence.current;
+				setBusy(true);
+				setActionError(null);
+				try {
+					const batch = await jev.startStageAnalysis({
+						sessionId,
+						scope,
+						mode
+					});
+					if (activeSession.current !== sessionId || sequence !== actionSequence.current) return;
+					setSnapshot((previous) => previous?.sessionId === sessionId ? {
+						...previous,
+						batch
+					} : previous);
+					await refresh(new AbortController().signal);
+				} catch {
+					if (activeSession.current === sessionId && sequence === actionSequence.current) setActionError("analyzeFailed");
+				} finally {
+					if (activeSession.current === sessionId && sequence === actionSequence.current) setBusy(false);
+				}
+			};
+			const cancel = async () => {
+				const batch = snapshot?.batch;
+				if (!batch || batch.status !== "running" || busy) return;
+				const sequence = ++actionSequence.current;
+				setBusy(true);
+				setActionError(null);
+				try {
+					await jev.cancelStageAnalysis(batch.id);
+					if (activeSession.current !== sessionId || sequence !== actionSequence.current) return;
+					await refresh(new AbortController().signal);
+				} catch {
+					if (activeSession.current === sessionId && sequence === actionSequence.current) setActionError("cancelFailed");
+				} finally {
+					if (activeSession.current === sessionId && sequence === actionSequence.current) setBusy(false);
+				}
+			};
+			const toggleDetails = async (stepId, recordId) => {
+				const sequence = ++detailSequence.current;
+				if (detailsTarget?.stepId === stepId && detailsTarget.recordId === recordId) {
+					setDetailsTarget(null);
+					return;
+				}
+				setDetailsTarget({
+					stepId,
+					...recordId === void 0 ? {} : { recordId }
+				});
+				setDetail(void 0);
+				setDetailLoading(true);
+				setDetailFailed(false);
+				try {
+					const result = recordId === void 0 ? await jev.getStageAnalysisRecord(sessionId, stepId) : await jev.getStageAnalysisRecord(sessionId, stepId, recordId);
+					if (activeSession.current === sessionId && sequence === detailSequence.current) setDetail(result);
+				} catch {
+					if (activeSession.current === sessionId && sequence === detailSequence.current) setDetailFailed(true);
+				} finally {
+					if (activeSession.current === sessionId && sequence === detailSequence.current) setDetailLoading(false);
+				}
+			};
+			if (snapshot?.featureEnabled === false) return null;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+				className: StageNavigation_module_css_default.page,
+				"aria-label": t("title"),
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: StageNavigation_module_css_default.toolbar,
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h2", { children: t("title") }),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.toolbarActions,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+									type: "button",
+									className: StageNavigation_module_css_default.mobileToggle,
+									onClick: () => {
+										setNavigationOpen((open) => !open);
+									},
+									"aria-expanded": navigationOpen,
+									children: navigationOpen ? t("hideNavigation") : t("showNavigation")
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									variant: "outline",
+									onClick: () => {
+										refresh(new AbortController().signal);
+									},
+									children: t("refresh")
+								}),
+								featureEnabled && selectedTurn?.endSeq !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									disabled: busy || batchRunning || missingTurnCount === 0,
+									onClick: () => {
+										start({
+											kind: "turn",
+											turn: selectedTurn.turn
+										}, "missing");
+									},
+									children: t("analyzeTurn")
+								}),
+								featureEnabled && completedTurnCount > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									variant: "outline",
+									disabled: busy || batchRunning || missingAllCount === 0,
+									onClick: () => {
+										start({ kind: "all" }, "missing");
+									},
+									children: t("analyzeAll")
+								}),
+								featureEnabled && selectedTurn?.endSeq !== void 0 && selectedTurn.steps.some((step) => [
+									"failed",
+									"cancelled",
+									"interrupted"
+								].includes(step.analysis.status)) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									variant: "outline",
+									disabled: busy || batchRunning || retryTurnCount === 0,
+									onClick: () => {
+										start({
+											kind: "turn",
+											turn: selectedTurn.turn
+										}, "retry-failed");
+									},
+									children: t("retryFailed")
+								}),
+								featureEnabled && selectedTurn?.endSeq !== void 0 && selectedTurn.steps.some((step) => step.analysis.status === "succeeded" || step.analysis.status === "stale") && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									variant: "outline",
+									disabled: busy || batchRunning || refreshTurnCount === 0,
+									onClick: () => {
+										start({
+											kind: "turn",
+											turn: selectedTurn.turn
+										}, "refresh");
+									},
+									children: t("reanalyzeTurn")
+								}),
+								batchRunning && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
+									size: "sm",
+									variant: "outline",
+									disabled: busy,
+									onClick: () => {
+										cancel();
+									},
+									children: t("cancel")
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("p", {
+							className: StageNavigation_module_css_default.scopeHint,
+							children: [
+								t("missingTurnCount"),
+								": ",
+								missingTurnCount,
+								" ",
+								t("steps"),
+								" · ",
+								t("missingAllCount"),
+								": ",
+								missingAllCount,
+								" ",
+								t("steps"),
+								" · ",
+								t("retryTurnCount"),
+								": ",
+								retryTurnCount,
+								" ",
+								t("steps"),
+								" · ",
+								t("refreshTurnCount"),
+								": ",
+								refreshTurnCount,
+								" ",
+								t("steps"),
+								" (",
+								t("refreshWarning"),
+								") · ",
+								t("scopeHint")
+							]
+						}),
+						snapshot?.batch && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("p", {
+							role: "status",
+							className: StageNavigation_module_css_default.progress,
+							children: [
+								t("batchProgress"),
+								": ",
+								snapshot.batch.completed + snapshot.batch.failed + snapshot.batch.cancelled,
+								" / ",
+								snapshot.batch.total,
+								" · ",
+								t(snapshot.batch.status === "running" ? "analyzing" : snapshot.batch.status),
+								snapshot.batch.failure && ` · ${snapshot.batch.failure.code}`
+							]
+						}),
+						actionError && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+							role: "alert",
+							className: StageNavigation_module_css_default.error,
+							children: t(actionError)
+						}),
+						loadError && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+							role: "alert",
+							className: StageNavigation_module_css_default.error,
+							children: t("loadFailed")
+						})
+					]
+				}), snapshot === null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: StageNavigation_module_css_default.loading,
+					role: "status",
+					"aria-label": t("loading"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
+						state: "ongoing",
+						size: 24
+					})
+				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: StageNavigation_module_css_default.layout,
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("nav", {
+						className: [StageNavigation_module_css_default.navigation, navigationOpen ? "" : StageNavigation_module_css_default.navigationClosed].join(" "),
+						"aria-label": t("navigation"),
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("h3", { children: [
+							t("navigation"),
+							" · ",
+							snapshot.turns.length
+						] }), snapshot.turns.map((turn) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.turnItem,
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+								type: "button",
+								className: [StageNavigation_module_css_default.turnButton, selectedTurn?.id === turn.id ? StageNavigation_module_css_default.activeTurn : ""].join(" "),
+								onClick: () => {
+									chooseTurn(turn);
+								},
+								"aria-current": selectedTurn?.id === turn.id ? "true" : void 0,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+									t("turn"),
+									" ",
+									turn.turn,
+									" · ",
+									requestText(turn.requests) || t("request")
+								] }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("small", { children: [
+									turn.steps.length,
+									" ",
+									t("steps"),
+									" · ",
+									turnStatus(turn, t)
+								] })]
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: StageNavigation_module_css_default.segments,
+								children: stageNavigationItems(turn).map((item) => item.kind === "segment" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+									type: "button",
+									className: [StageNavigation_module_css_default.segmentButton, selectedSegmentId === item.id ? StageNavigation_module_css_default.activeSegment : ""].join(" "),
+									onClick: () => {
+										chooseSegment(turn, item.segment);
+									},
+									"aria-current": selectedSegmentId === item.id ? "true" : void 0,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t(LABEL_KEYS[item.segment.label]) }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("small", { children: [
+										t("step"),
+										" ",
+										stageStepRange(item.segment)
+									] })]
+								}, item.id) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+									type: "button",
+									className: StageNavigation_module_css_default.gapButton,
+									onClick: () => {
+										chooseTurn(turn);
+										setSelectedStepId(item.step.id);
+										setFocusVersion((value) => value + 1);
+									},
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [
+										t("step"),
+										" ",
+										item.step.step
+									] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("small", { children: analysisLabel(item.step, t) })]
+								}, item.id))
+							})]
+						}, turn.id))]
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: StageNavigation_module_css_default.reader,
+						ref: reader,
+						children: !selectedTurn ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+							className: StageNavigation_module_css_default.empty,
+							children: t("emptySession")
+						}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: StageNavigation_module_css_default.readerInner,
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: StageNavigation_module_css_default.readerHeader,
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("h3", { children: [
+										t("turn"),
+										" ",
+										selectedTurn.turn,
+										" · ",
+										turnStatus(selectedTurn, t)
+									] }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+										className: StageNavigation_module_css_default.muted,
+										children: [
+											selectedTurn.steps.length,
+											" ",
+											t("steps"),
+											" · seq ",
+											selectedTurn.startSeq,
+											selectedTurn.endSeq !== void 0 && `–${selectedTurn.endSeq}`
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+									className: StageNavigation_module_css_default.request,
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h4", { children: t("request") }),
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+											className: StageNavigation_module_css_default.sourceText,
+											children: requestText(selectedTurn.requests) || t("notProvided")
+										}),
+										/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("details", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("summary", { children: t("source") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("pre", {
+											className: StageNavigation_module_css_default.sourceText,
+											children: format(selectedTurn.requests)
+										})] })
+									]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: StageNavigation_module_css_default.readerHeading,
+									children: [
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("h3", { children: t("source") }),
+										/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+											className: StageNavigation_module_css_default.search,
+											children: [t("search"), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+												value: query,
+												onChange: (event) => {
+													setQuery(event.target.value);
+												},
+												placeholder: t("search")
+											})]
+										}),
+										query && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+											type: "button",
+											className: StageNavigation_module_css_default.textButton,
+											onClick: () => {
+												setQuery("");
+											},
+											children: t("clearSearch")
+										})
+									]
+								}),
+								selectedTurn.steps.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+									className: StageNavigation_module_css_default.empty,
+									children: t("emptyTurn")
+								}) : visibleSteps.length === 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+									className: StageNavigation_module_css_default.empty,
+									children: t("emptySearch")
+								}) : visibleSteps.map((step) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(StepCard, {
+									step,
+									t,
+									selected: selectedStepId === step.id,
+									inSegment: segmentStepIds.has(step.id),
+									onDetails: (recordId) => {
+										toggleDetails(step.id, recordId);
+									},
+									detailsOpen: detailsTarget?.stepId === step.id && detailsTarget.recordId === void 0,
+									previousDetailsOpen: detailsTarget?.stepId === step.id && detailsTarget.recordId !== void 0,
+									detail: detailsTarget?.stepId === step.id ? detail : void 0,
+									detailLoading: detailsTarget?.stepId === step.id && detailLoading,
+									detailFailed: detailsTarget?.stepId === step.id && detailFailed
+								}, step.id))
+							]
+						})
+					})]
+				})]
+			});
+		}
+		//#endregion
+		//#region src/client/stage-registration.ts
+		/**
+		* Register the stage view only while the feature is explicitly enabled.
+		* @param form - Host-owned Jev settings snapshot.
+		* @param register - contributes the conversation view and returns its disposer.
+		* @returns unsubscribes and removes any active view.
+		*/
+		function watchStageView(form, register) {
+			let disposeView;
+			const sync = () => {
+				const enabled = form.getSnapshot().value?.features["stage-navigation"] === true;
+				if (enabled && disposeView === void 0) disposeView = register();
+				else if (!enabled && disposeView !== void 0) {
+					disposeView();
+					disposeView = void 0;
+				}
+			};
+			const unsubscribe = form.subscribe(sync);
+			sync();
+			return () => {
+				unsubscribe();
+				disposeView?.();
+				disposeView = void 0;
+			};
+		}
+		//#endregion
+		//#region src/client/stage-locales.ts
+		const stageEn = {
+			title: "Stage navigation",
+			navigation: "Turns and stages",
+			showNavigation: "Show navigation",
+			hideNavigation: "Hide navigation",
+			refresh: "Refresh",
+			loading: "Loading session history…",
+			loadFailed: "Could not load session history.",
+			emptySession: "No turns are recorded in this session.",
+			emptyTurn: "No steps are recorded in this turn.",
+			emptySearch: "No source steps match this search.",
+			turn: "Turn",
+			step: "Step",
+			steps: "steps",
+			request: "User request",
+			source: "Original step records",
+			search: "Search this turn’s source",
+			clearSearch: "Clear search",
+			analyzeTurn: "Analyze this turn",
+			analyzeAll: "Analyze unanalysed steps",
+			retryFailed: "Retry failed steps",
+			reanalyzeTurn: "Reanalyze this turn",
+			cancel: "Cancel analysis",
+			analyzing: "Analyzing…",
+			analyzeFailed: "Could not start analysis.",
+			cancelFailed: "Could not cancel analysis.",
+			scopeTurn: "Selected completed turn",
+			scopeAll: "All completed turns",
+			scopeHint: "Only recorded step material is sent to Jev. Input is redacted; the original Session is unchanged.",
+			pendingCount: "Eligible steps",
+			batchProgress: "Analysis progress",
+			missingTurnCount: "Missing in this turn",
+			missingAllCount: "Missing in this session",
+			retryTurnCount: "Retryable in this turn",
+			refreshTurnCount: "Reanalysis in this turn",
+			refreshWarning: "Reanalysis makes new Jev requests",
+			stageInputParsing: "Input parsing",
+			stageProblemUnderstanding: "Problem understanding",
+			stageSolutionPlanning: "Solution planning",
+			stageImplementation: "Implementation and debugging",
+			stageReviewValidation: "Review and validation",
+			stageDeliveryFinalization: "Delivery and finalization",
+			stageMixed: "Mixed",
+			stageUnknown: "Unknown",
+			unanalysed: "Unanalysed",
+			stale: "Outdated",
+			failed: "Failed",
+			unavailable: "Material unavailable",
+			cancelled: "Cancelled",
+			pending: "Pending",
+			succeeded: "Classified",
+			interrupted: "Interrupted",
+			running: "Running",
+			completed: "Completed",
+			aborted: "Aborted",
+			endedWithError: "Ended with error",
+			unknownEnd: "Ended",
+			reasoning: "Think / reasoning",
+			assistantText: "Assistant text",
+			assistantOther: "Other assistant block",
+			tools: "Tool calls and results",
+			toolArguments: "Arguments",
+			toolResult: "Result",
+			toolError: "Tool reported an error",
+			missingResult: "No result recorded",
+			notDispatched: "Call was not dispatched",
+			attempts: "Attempts and retries",
+			analysis: "Jev classification",
+			analysisStatus: "Classification status",
+			confidence: "Confidence",
+			probabilities: "Probabilities",
+			notProvided: "Not provided",
+			model: "Reported model",
+			configuredModel: "Configured model",
+			details: "Classification input and response",
+			closeDetails: "Close details",
+			detailFailed: "Could not load the classification record.",
+			requestSent: "Redacted input sent to Jev",
+			previousSavedResult: "Previous saved result",
+			viewPreviousRecord: "View previous record",
+			rawResponse: "Raw response",
+			parsedResponse: "Validated response",
+			redactionNote: "Classification input is redacted before it is sent and saved. Source records below remain original.",
+			uncalibrated: "Uncalibrated signal",
+			sourceStep: "Source step",
+			noReasoning: "No reasoning block was recorded.",
+			noText: "No assistant text was recorded.",
+			noTools: "This step has no tool call.",
+			notComplete: "This step is still in progress and cannot be classified.",
+			terminalPartial: "The turn ended before this step closed. Recorded material is shown; some results may be missing.",
+			staleNotice: "This saved classification is outdated and is excluded from the stage sequence.",
+			noMaterial: "No classifiable material was recorded.",
+			materialTooLarge: "The complete step exceeds the request limit and was not truncated.",
+			blocked: "Blocked",
+			maxTokens: "Output limit reached",
+			forked: "Fork boundary"
+		};
+		const stageZh = {
+			title: "阶段导航",
+			navigation: "轮次与阶段",
+			showNavigation: "展开导航",
+			hideNavigation: "收起导航",
+			refresh: "刷新",
+			loading: "正在读取会话历史…",
+			loadFailed: "无法读取会话历史",
+			emptySession: "本会话尚无已记录轮次",
+			emptyTurn: "本轮尚无已记录步骤",
+			emptySearch: "本轮原文没有匹配的步骤",
+			turn: "第",
+			step: "步骤",
+			steps: "步",
+			request: "用户请求",
+			source: "完整步骤原文",
+			search: "搜索本轮原文",
+			clearSearch: "清除搜索",
+			analyzeTurn: "分析本轮",
+			analyzeAll: "补齐未分析步骤",
+			retryFailed: "重试失败步骤",
+			reanalyzeTurn: "重新分析本轮",
+			cancel: "取消分析",
+			analyzing: "分析中…",
+			analyzeFailed: "无法启动分析",
+			cancelFailed: "无法取消分析",
+			scopeTurn: "选中的已结束轮",
+			scopeAll: "本会话全部已结束轮",
+			scopeHint: "只向 Jev 发送已记录的步骤材料；输入先脱敏，原始 Session 不变",
+			pendingCount: "可处理步骤",
+			batchProgress: "分析进度",
+			missingTurnCount: "本轮待补齐",
+			missingAllCount: "本会话待补齐",
+			retryTurnCount: "本轮可重试",
+			refreshTurnCount: "本轮可重分析",
+			refreshWarning: "重分析将再次调用 Jev",
+			stageInputParsing: "输入解析",
+			stageProblemUnderstanding: "问题理解澄清",
+			stageSolutionPlanning: "方案规划",
+			stageImplementation: "实现与调试",
+			stageReviewValidation: "审查验证",
+			stageDeliveryFinalization: "交付收尾",
+			stageMixed: "混合",
+			stageUnknown: "未知",
+			unanalysed: "未分析",
+			stale: "已过期",
+			failed: "失败",
+			unavailable: "材料不可用",
+			cancelled: "已取消",
+			pending: "等待中",
+			succeeded: "已分类",
+			interrupted: "已中断",
+			running: "进行中",
+			completed: "已结束",
+			aborted: "用户中止",
+			endedWithError: "错误结束",
+			unknownEnd: "已结束",
+			reasoning: "完整 Think / reasoning",
+			assistantText: "对外文本",
+			assistantOther: "其他助手内容",
+			tools: "全部工具调用与返回",
+			toolArguments: "完整参数",
+			toolResult: "完整返回",
+			toolError: "工具报告错误",
+			missingResult: "未记录返回",
+			notDispatched: "工具调用未派发",
+			attempts: "尝试与重试",
+			analysis: "Jev 阶段分类",
+			analysisStatus: "分类状态",
+			confidence: "Confidence",
+			probabilities: "Probabilities",
+			notProvided: "未提供",
+			model: "返回模型",
+			configuredModel: "配置模型",
+			details: "分类输入与返回",
+			closeDetails: "收起详情",
+			detailFailed: "无法读取分类记录",
+			requestSent: "实际发送给 Jev 的脱敏输入",
+			previousSavedResult: "之前保存的有效结果",
+			viewPreviousRecord: "查看旧记录",
+			rawResponse: "原始回答",
+			parsedResponse: "已校验回答",
+			redactionNote: "分类输入在发送和保存前已脱敏；下方来源记录保持原文",
+			uncalibrated: "未经校准",
+			sourceStep: "来源步骤",
+			noReasoning: "本步骤未记录 reasoning 内容",
+			noText: "本步骤未记录对外文本",
+			noTools: "本步骤没有工具调用",
+			notComplete: "本步骤仍在进行中，不能分类",
+			terminalPartial: "本轮在步骤闭合前结束；这里展示已记录材料，部分返回可能缺失",
+			staleNotice: "这条保存的分类已过期，不参与当前阶段合并",
+			noMaterial: "没有可分类的已记录材料",
+			materialTooLarge: "完整步骤超过请求上限，未截断发送",
+			blocked: "已阻塞",
+			maxTokens: "达到输出上限",
+			forked: "派生会话边界"
+		};
+		//#endregion
 		//#region src/client/locales.ts
 		/** English copy. */
 		const en = {
 			sharedFindingsName: "Shared finding corrections",
 			sharedFindingsDescription: "Compare already shared reports and messages, correct actual recipients, and ask the root to verify conflicts.",
+			stageNavigationName: "Stage navigation",
+			stageNavigationDescription: "Manually classify complete recorded steps in a Session and browse adjacent purpose stages.",
 			tabs: "Jev pages",
 			settings: "Settings and features",
 			records: "Decision records",
@@ -7667,6 +9968,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			saveSupervisionCounts: "Save supervision counts",
 			supervisionCountSaved: "Supervision counts saved.",
 			supervisionCountSaveFailed: "Could not save supervision counts.",
+			stageSettings: "Stage analysis limits",
+			stageSettingsHint: "Used only for manual analysis while stage navigation is enabled. The current step is never truncated; a request over the limit is skipped.",
+			previousSteps: "Prior steps in context",
+			previousChars: "Characters per prior step",
+			stageMaxRequestChars: "Maximum complete request characters",
+			stageConcurrency: "Concurrent Jev requests",
+			stageInvalid: "Enter a whole number within the allowed range.",
+			saveStageSettings: "Save stage limits",
+			stageSaved: "Stage limits saved.",
+			stageSaveFailed: "Could not save stage limits.",
 			replaceKey: "Replace key",
 			saveKey: "Save key",
 			keySaved: "Key saved.",
@@ -7727,6 +10038,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const zh = {
 			sharedFindingsName: "共享发现纠正",
 			sharedFindingsDescription: "比较已共享报告和消息，纠正实际接收者，并将冲突交给主代理核实。",
+			stageNavigationName: "阶段导航",
+			stageNavigationDescription: "手动分类会话中的完整步骤，并按轮次浏览连续目的阶段",
 			tabs: "Jev 页面",
 			settings: "设置与功能",
 			records: "判断记录",
@@ -7788,6 +10101,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			saveSupervisionCounts: "保存监督次数",
 			supervisionCountSaved: "监督次数已保存",
 			supervisionCountSaveFailed: "无法保存监督次数",
+			stageSettings: "阶段分析预算",
+			stageSettingsHint: "仅在启用阶段导航并手动分析时使用。当前完整步骤不会截断；请求超限时跳过分类",
+			previousSteps: "纳入上下文的前序步骤数",
+			previousChars: "每个前序步骤的字符数",
+			stageMaxRequestChars: "完整请求字符上限",
+			stageConcurrency: "同时发起的 Jev 请求数",
+			stageInvalid: "请输入允许范围内的整数",
+			saveStageSettings: "保存阶段预算",
+			stageSaved: "阶段预算已保存",
+			stageSaveFailed: "无法保存阶段预算",
 			replaceKey: "替换密钥",
 			saveKey: "保存密钥",
 			keySaved: "密钥已保存",
@@ -7865,9 +10188,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				setCredential: async (value) => unwrap(await remote.setCredential(value))
 			};
 		}
+		/** Adapt the Session stage commands while retaining their Host authorization. */
+		function jevStageRemote(remote) {
+			return {
+				getStageNavigation: async (sessionId, signal) => unwrap(await remote.getStageNavigation(sessionId, signal)),
+				startStageAnalysis: async (request) => unwrap(await remote.startStageAnalysis(request)),
+				cancelStageAnalysis: async (batchId) => unwrap(await remote.cancelStageAnalysis(batchId)),
+				getStageAnalysisRecord: async (sessionId, stepId, recordId) => unwrap(await (recordId === void 0 ? remote.getStageAnalysisRecord(sessionId, stepId) : remote.getStageAnalysisRecord(sessionId, stepId, recordId)))
+			};
+		}
 		//#endregion
 		//#region src/client/mount.ts
 		const NS = "jev.plugin";
+		const STAGE_NS = "jev.stage";
 		const PACKAGE = "@dsh-jev/plugin";
 		const ENTRY = "jev";
 		const SELECTION_ENTRY = "jev-selection";
@@ -7884,10 +10217,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				zh,
 				en
 			}));
+			ctx.effect(() => ctx.locale.register(STAGE_NS, {
+				zh: stageZh,
+				en: stageEn
+			}));
 			const form = ctx.configForms.get(ENTRY);
 			const selectionForm = ctx.configForms.get(SELECTION_ENTRY);
 			const outputAdmissionForm = ctx.configForms.get(OUTPUT_ENTRY);
 			const supervisionForm = ctx.configForms.get("jev-supervision");
+			const stageNavigationForm = ctx.configForms.get("jev-stage-navigation");
 			const toast = (0, _deepseek_ai_dsh_client_store.createSnapshotStore)(null);
 			let sequence = 0;
 			const dismiss = () => {
@@ -7904,6 +10242,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				selectionForm,
 				supervisionForm,
 				outputAdmissionForm,
+				stageNavigationForm,
 				jev: jevPageRemote(ctx.remote.jev),
 				notifySuccess
 			};
@@ -7921,6 +10260,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				locale: NS,
 				inject: () => face
 			}, JevPage))));
+			const stageT = ctx.locale.bind(STAGE_NS);
+			const stageRemote = jevStageRemote(ctx.remote.jev);
+			ctx.effect(() => watchStageView(form, () => ctx.slots.inject("conversation.view", () => ctx.slots.register({
+				name: "conversation.view",
+				id: "jev-stage-navigation",
+				order: 20,
+				locale: STAGE_NS,
+				label: () => stageT("title"),
+				inject: (sessionId) => ({
+					sessionId,
+					jev: stageRemote
+				})
+			}, StageNavigation))));
 		}
 		/**
 		* Mount Jev's generated Remote first, then register the bundle page while its settings entry is served.

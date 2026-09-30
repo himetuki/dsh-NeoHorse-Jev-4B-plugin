@@ -505,6 +505,25 @@ var JevLedger = class JevLedger {
 		await this.domain.table("operations").put(detail.id, detail);
 		return detail;
 	}
+	/** Record a rules-only result without inventing a model attempt or usage. */
+	async createRuleObservation(featureId, link) {
+		const at = (/* @__PURE__ */ new Date()).toISOString();
+		const detail = {
+			id: randomUUID(),
+			featureId,
+			link,
+			...link.sessionId === void 0 ? {} : { sessionId: link.sessionId },
+			diagnostic: false,
+			status: "succeeded",
+			startedAt: at,
+			updatedAt: at,
+			attempts: 0,
+			attemptRecords: [],
+			receipts: []
+		};
+		await this.domain.table("operations").put(detail.id, detail);
+		return detail;
+	}
 	/** Write one stable zero-attempt recovery record in a single durable operation. */
 	async createInterrupted(featureId, link) {
 		const id = "interrupted-" + createHash("sha256").update(JSON.stringify([
@@ -587,6 +606,17 @@ var JevLedger = class JevLedger {
 			failure,
 			updatedAt: (/* @__PURE__ */ new Date()).toISOString()
 		}));
+	}
+	/** Explain a settled, unusable operation without inventing an action or model attempt. */
+	async noteFailure(operationId, failure) {
+		await this.domain.table("operations").update(operationId, (current) => {
+			if (current.status !== "failed" && current.status !== "cancelled") throw new Error("Jev operation is not failed or cancelled");
+			return {
+				...current,
+				failure,
+				updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+			};
+		});
 	}
 	async receipt(operationId, receipt) {
 		return this.domain.table("operations").update(operationId, (current) => {
@@ -717,6 +747,10 @@ let JevService = (() => {
 	let _listFeatures_decorators;
 	let _listRecords_decorators;
 	let _getRecord_decorators;
+	let _getStageNavigation_decorators;
+	let _startStageAnalysis_decorators;
+	let _cancelStageAnalysis_decorators;
+	let _getStageAnalysisRecord_decorators;
 	let _getCredentialStatus_decorators;
 	let _setCredential_decorators;
 	let _testConnection_decorators;
@@ -726,6 +760,10 @@ let JevService = (() => {
 			_listFeatures_decorators = [Remote("listFeatures")];
 			_listRecords_decorators = [Remote("listRecords")];
 			_getRecord_decorators = [Remote("getRecord")];
+			_getStageNavigation_decorators = [Remote("getStageNavigation")];
+			_startStageAnalysis_decorators = [Remote("startStageAnalysis")];
+			_cancelStageAnalysis_decorators = [Remote("cancelStageAnalysis")];
+			_getStageAnalysisRecord_decorators = [Remote("getStageAnalysisRecord")];
 			_getCredentialStatus_decorators = [Remote("getCredentialStatus")];
 			_setCredential_decorators = [Remote("setCredential")];
 			_testConnection_decorators = [Remote("testConnection")];
@@ -759,6 +797,50 @@ let JevService = (() => {
 				access: {
 					has: (obj) => "getRecord" in obj,
 					get: (obj) => obj.getRecord
+				},
+				metadata: _metadata
+			}, null, _instanceExtraInitializers);
+			__esDecorate(this, null, _getStageNavigation_decorators, {
+				kind: "method",
+				name: "getStageNavigation",
+				static: false,
+				private: false,
+				access: {
+					has: (obj) => "getStageNavigation" in obj,
+					get: (obj) => obj.getStageNavigation
+				},
+				metadata: _metadata
+			}, null, _instanceExtraInitializers);
+			__esDecorate(this, null, _startStageAnalysis_decorators, {
+				kind: "method",
+				name: "startStageAnalysis",
+				static: false,
+				private: false,
+				access: {
+					has: (obj) => "startStageAnalysis" in obj,
+					get: (obj) => obj.startStageAnalysis
+				},
+				metadata: _metadata
+			}, null, _instanceExtraInitializers);
+			__esDecorate(this, null, _cancelStageAnalysis_decorators, {
+				kind: "method",
+				name: "cancelStageAnalysis",
+				static: false,
+				private: false,
+				access: {
+					has: (obj) => "cancelStageAnalysis" in obj,
+					get: (obj) => obj.cancelStageAnalysis
+				},
+				metadata: _metadata
+			}, null, _instanceExtraInitializers);
+			__esDecorate(this, null, _getStageAnalysisRecord_decorators, {
+				kind: "method",
+				name: "getStageAnalysisRecord",
+				static: false,
+				private: false,
+				access: {
+					has: (obj) => "getStageAnalysisRecord" in obj,
+					get: (obj) => obj.getStageAnalysisRecord
 				},
 				metadata: _metadata
 			}, null, _instanceExtraInitializers);
@@ -819,6 +901,7 @@ let JevService = (() => {
 		controllers = /* @__PURE__ */ new Set();
 		disposing = false;
 		featureListeners = /* @__PURE__ */ new Set();
+		stageNavigation;
 		constructor(ctx, config) {
 			super(ctx, "jev");
 			this.config = config;
@@ -872,6 +955,34 @@ let JevService = (() => {
 		/** Read one current-profile operation after the list has identified it. */
 		async getRecord(id) {
 			return this.records().get(id);
+		}
+		/** Bind the optional Host stage consumer while its plugin row is active. */
+		registerStageNavigation(manager) {
+			if (this.stageNavigation !== void 0) throw new JevError("DUPLICATE_FEATURE", "Stage navigation is already registered");
+			this.stageNavigation = manager;
+			return () => {
+				if (this.stageNavigation === manager) this.stageNavigation = void 0;
+			};
+		}
+		stages() {
+			if (this.stageNavigation === void 0) throw new JevError("UNAVAILABLE", "Stage navigation is unavailable");
+			return this.stageNavigation;
+		}
+		/** Read one complete authorized Session cut and its auxiliary stage results. */
+		getStageNavigation(sessionId, signal) {
+			return this.stages().read(sessionId, signal);
+		}
+		/** Start only a user-requested batch; returning does not await model calls. */
+		startStageAnalysis(request) {
+			return this.stages().start(request);
+		}
+		/** Cancel auxiliary requests without cancelling the native Agent. */
+		cancelStageAnalysis(batchId) {
+			return this.stages().cancel(batchId);
+		}
+		/** Load exact persisted input and raw Jev answer for one selected step. */
+		getStageAnalysisRecord(sessionId, stepId, recordId) {
+			return this.stages().detail(sessionId, stepId, recordId);
 		}
 		/** Report credential presence, source, and writability without its value. */
 		async getCredentialStatus() {
@@ -1120,6 +1231,10 @@ let JevService = (() => {
 				timeoutMs: this.config.timeoutMs.get()
 			};
 		}
+		/** Stable non-secret connection settings used to decide whether an old stage result is current. */
+		stageConnectionIdentity() {
+			return this.connectionIdentity();
+		}
 		async tryOnce(operationId, request, interpret, outerSignal, featureId) {
 			let snapshot;
 			try {
@@ -1247,6 +1362,21 @@ let JevService = (() => {
 				if (!this.features.has(featureId)) throw new JevError("UNKNOWN_FEATURE", "Jev feature is not registered");
 				if (!link.sessionId?.trim() || !link.inputVersion?.trim()) throw new JevError("INVALID_LINK", "Interrupted records require a session and input identity");
 				return this.records().createInterrupted(featureId, link);
+			});
+		}
+		/** Record one rules-only candidate result with zero model attempts. */
+		recordRuleObservation(featureId, link) {
+			return this.runActive(void 0, async () => {
+				if (!this.features.has(featureId)) throw new JevError("UNKNOWN_FEATURE", "Jev feature is not registered");
+				return this.records().createRuleObservation(featureId, link);
+			});
+		}
+		/** Attach a consumer fallback reason to an already failed or cancelled operation. */
+		async noteFailure(operationId, code, message) {
+			if (!/^[A-Z][A-Z0-9_]{0,63}$/.test(code) || !message.trim()) throw new JevError("INVALID_NOTE", "A failure code and reason are required");
+			await this.records().noteFailure(operationId, {
+				code,
+				message
 			});
 		}
 		/** Persist one action receipt; a failed write leaves execution status unconfirmed. */
