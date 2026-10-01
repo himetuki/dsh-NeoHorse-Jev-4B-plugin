@@ -209,12 +209,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luobosibing2/deepseek-harness-jev.git",
+    "url": "git+https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin.git",
     "directory": "packages/jev"
   },
-  "homepage": "https://github.com/luobosibing2/deepseek-harness-jev#readme",
+  "homepage": "https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin#readme",
   "bugs": {
-    "url": "https://github.com/luobosibing2/deepseek-harness-jev/issues"
+    "url": "https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin/issues"
   },
   "keywords": [
     "deepseek-harness",

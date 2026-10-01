@@ -204,8 +204,7 @@
     "runtime/**/*.d.ts",
     "packages/jev/cordis.patch.yml",
     "README.md",
-    "README.en.md",
-    "README.zh-CN.md",
+    "readme_en.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],
@@ -216,11 +215,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luobosibing2/deepseek-harness-jev.git"
+    "url": "git+https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin.git"
   },
-  "homepage": "https://github.com/luobosibing2/deepseek-harness-jev#readme",
+  "homepage": "https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin#readme",
   "bugs": {
-    "url": "https://github.com/luobosibing2/deepseek-harness-jev/issues"
+    "url": "https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin/issues"
   },
   "keywords": [
     "deepseek-harness",
