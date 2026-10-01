@@ -1,0 +1,100 @@
+{
+  "arms": [
+    "baseline",
+    "log_admission"
+  ],
+  "budget": {
+    "agent_timeout_sec": 120,
+    "cost_policy": "advisory",
+    "max_batch_spend_usd": 1,
+    "max_infrastructure_retries": 0,
+    "usage_incomplete_policy": "halt",
+    "verifier_timeout_sec": 60
+  },
+  "concurrency": 1,
+  "conditions": {
+    "compaction": "dsh-0.1.7-rc.2-default",
+    "context_window": 1000000,
+    "main_credential_env": "DEEPSEEK_API_KEY",
+    "network": "inference-and-npm-allowlist",
+    "sandbox": "danger-full-access",
+    "spill": "maxInlineTokens:12500",
+    "toolset": "dsh-headless-no-web-tools"
+  },
+  "credential_supply": {
+    "jev": "One UTF-8 key line from protected launcher stdin supplies JEV_API_KEY only to the isolated child environment",
+    "main": "Published DSH credentials-local resolves the host's DEEPSEEK_API_KEY, then the launcher supplies only that value to the isolated child environment"
+  },
+  "jev": {
+    "credential_env": "JEV_API_KEY",
+    "endpoint": "https://api.typesafe.ai/v1/systemone",
+    "model": "jev-1.13.0"
+  },
+  "model": {
+    "endpoint": "https://api.deepseek.com/anthropic",
+    "floating_alias": true,
+    "id": "deepseek-flash",
+    "provider": "deepseek-official",
+    "reasoning_effort": "high",
+    "route": "deepseek-official/deepseek-flash"
+  },
+  "paths": {
+    "deep_swe": "/absolute/path/to/deep-swe",
+    "node_tarball": "/absolute/path/to/node-v24.14.1-linux-x64.tar.xz",
+    "pier": "/absolute/path/to/pier",
+    "plugin_tarball": "/absolute/path/to/dsh-jev-plugin.tgz"
+  },
+  "phase": "pilot",
+  "prices": {
+    "jev": {
+      "cache_read_per_million": -1,
+      "cache_write_per_million": -1,
+      "input_per_million": -1,
+      "output_per_million": -1,
+      "source": "FILL_CURRENT_PRICE_SOURCE_AND_DATE"
+    },
+    "main": {
+      "cache_read_per_million": -1,
+      "cache_write_per_million": -1,
+      "input_per_million": -1,
+      "output_per_million": -1,
+      "source": "FILL_CURRENT_PRICE_SOURCE_AND_DATE"
+    }
+  },
+  "repeats": 1,
+  "schema": 1,
+  "selection_rule": "Fixed six synthetic glob-ranking cases; baseline then file-ranking for each case; no task selection after results",
+  "selection_suite": {
+    "cases": [
+      "zero",
+      "single",
+      "twelve",
+      "nested-sixteen",
+      "multi-forty",
+      "over-forty-one"
+    ],
+    "conditions": [
+      "baseline",
+      "file-ranking"
+    ],
+    "schema": 1
+  },
+  "tasks": [
+    {
+      "id": "vitest-duration-sharding",
+      "image_digest": "sha256:11087ec4eb0320e80546ad5eda89c67938e72be69cbb7c6730cf9baf88dc7556",
+      "platform": "linux/amd64",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "versions": {
+    "deep_swe_commit": "0b9fabbb63b9104d678fe965e1632f2dd9eaa2ea",
+    "dsh": "0.1.7-rc.2",
+    "node": "24.14.1",
+    "node_tar_sha256": "84d38715d449447117d05c3e71acd78daa49d5b1bfa8aacf610303920c3322be",
+    "pier_commit": "4d3c14041d16443f3f9f460dcdf23629994a304e",
+    "plugin_commit": "FILL_PLUGIN_COMMIT",
+    "plugin_tar_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "pnpm": "11.7.0"
+  }
+}

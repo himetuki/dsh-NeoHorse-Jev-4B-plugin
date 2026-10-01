@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "title": "Jev glob file-ranking frozen synthetic pilot",
+  "evidenceClass": "historical frozen one-off driver; not a general accuracy or DeepSWE benefit estimate",
+  "source": {
+    "suiteLockSha256": "0f864ca6679677a7098e1481120c660893116ab725552aacf5c275a698ecfe0e",
+    "sourceInputTimestamp": null,
+    "sourceInputTimestampNote": "No explicit freeze timestamp is recorded in the suite lock or manifest; Session timestamps below are trial activity times.",
+    "sessionRunWindowUtc": {
+      "start": "2026-10-01T02:43:34.992Z",
+      "end": "2026-10-01T02:56:10.749Z"
+    },
+    "sourceRevisions": {
+      "deepSweCommit": "0b9fabbb63b9104d678fe965e1632f2dd9eaa2ea",
+      "pluginCommit": "cd041b90a3a291d832d75030ea92975501280f63",
+      "pierCommit": "4d3c14041d16443f3f9f460dcdf23629994a304e"
+    },
+    "runtimeVersions": {
+      "dsh": "0.1.7-rc.2",
+      "jevModel": "jev-1.13.0",
+      "mainModel": "deepseek-flash",
+      "mainModelProvider": "deepseek-official",
+      "reasoningEffort": "high",
+      "node": "24.14.1",
+      "pnpm": "11.7.0"
+    },
+    "pluginTarSha256": "3a77e6e2b777df295fada449cfa1d23462d7d513a101f7ec6c63eb52693631b2",
+    "frozenDriverInputSha256": {
+      "cases.py": "adfa13240b23901a6a1f1935f0237bd36b66aa09ff7cd5e2de4e5273c55e0e0a",
+      "selection_suite.py": "28c794b354caec72c5fbcf839893ed0a8ed76322ab1aa2e66fbd383593bb1774",
+      "analyze.py": "95b7c1a3d2b50b097e2a33fee0b129ac0501084883726cb08f8975d94e5dc5ed",
+      "launch.mjs": "0c02e361fe742087eb9ff6568c15126ffbac782437fc8caf2611cedbed8cae1a"
+    },
+    "environmentSeedTask": {
+      "id": "vitest-duration-sharding",
+      "platform": "linux/amd64",
+      "taskInputSha256": "c74fa8aa04aa707c1d6f27094d587526523f13bc8780ddc01bf422fd783e9bf2",
+      "imageDigest": "sha256:11087ec4eb0320e80546ad5eda89c67938e72be69cbb7c6730cf9baf88dc7556",
+      "note": "Only the pinned environment/bootstrap source and image origin; the six evaluated cases are separate synthetic fixtures, and the verifier was disabled."
+    },
+    "frozenPrices": {
+      "jev": {
+        "cache_read_per_million": 0,
+        "cache_write_per_million": 0,
+        "input_per_million": 0.042,
+        "output_per_million": 0,
+        "source": "https://docs.typesafe.ai/models Jev 1.13.0, 2026-09-30; no separate client cache usage"
+      },
+      "main": {
+        "cache_read_per_million": 0.006,
+        "cache_write_per_million": 0.3,
+        "input_per_million": 0.3,
+        "output_per_million": 1.2,
+        "source": "https://api-docs.deepseek.com/quick_start/pricing/ peak 2026-09-30"
+      }
+    }
+  },
+  "design": {
+    "plannedTrials": 12,
+    "completedTrials": 12,
+    "conditions": [
+      "baseline",
+      "file-ranking"
+    ],
+    "repeatsPerCasePerCondition": 1,
+    "candidateCounts": {
+      "multi-forty": 40,
+      "nested-sixteen": 16,
+      "over-forty-one": 41,
+      "single": 1,
+      "twelve": 12,
+      "zero": 0
+    },
+    "fileRankingCandidateLimit": 40,
+    "displayedPathLimit": 12,
+    "agentTimeoutSec": 120,
+    "automaticRetries": false,
+    "verifierEnabled": false,
+    "toolset": "dsh-headless-no-web-tools",
+    "network": "inference-and-npm-allowlist",
+    "profileDiffPath": "[1].config.features.file-ranking",
+    "readOnlyInstructions": true
+  },
+  "summary": {
+    "structuralOkTrials": 12,
+    "normalTerminationTrials": 12,
+    "usageCompleteTrials": 12,
+    "fixtureUnchangedTrials": 12,
+    "mainModelCalls": 40,
+    "mainModelTokens": {
+      "inputTokens": 32142,
+      "outputTokens": 12718,
+      "cacheReadTokens": 304256,
+      "cacheWriteTokens": 0
+    },
+    "jevOperations": 4,
+    "jevSuccessfulOperations": 4,
+    "jevQuestions": 69,
+    "jevAnswers": 69,
+    "jevTokens": {
+      "inputTokens": 4250,
+      "outputTokens": 1296
+    },
+    "allTruthTargetsInFinalAnswers": true,
+    "noModelVisibleWriteOrWebToolsObserved": true,
+    "estimatedUsd": 0.026908236,
+    "estimatedUsdByCondition": {
+      "baselineMainModel": 0.017517384,
+      "fileRankingMainModel": 0.009212352,
+      "fileRankingJev": 0.00017850000000000003
+    }
+  },
+  "cases": [
+    {
+      "id": "zero",
+      "candidateCount": 0,
+      "fixtureSha256": "84ff92691f909a05b224e1c56abb4864f01b4f8e3c854e4bb4c7baf1d3f6d652",
+      "truthTargets": [],
+      "baselineNativeTargetPositions": {},
+      "fileRankingTargetResults": [],
+      "fileRankingOperationCount": 0,
+      "fileRankingScoredCandidateCount": 0,
+      "fileRankingDisplayedPathCount": 0,
+      "fileRankingRankedCandidates": [],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 0,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 0,
+          "spill_reads": 0,
+          "other_reads": 0
+        }
+      }
+    },
+    {
+      "id": "single",
+      "candidateCount": 1,
+      "fixtureSha256": "635973c8339ee4d6b734697f867e7d130e921a37e7f1f17e6c4411ed02f06dba",
+      "truthTargets": [
+        "src/jev-suite/single/auth/access-token-refresh.ts"
+      ],
+      "baselineNativeTargetPositions": {
+        "src/jev-suite/single/auth/access-token-refresh.ts": 1
+      },
+      "fileRankingTargetResults": [
+        {
+          "path": "src/jev-suite/single/auth/access-token-refresh.ts",
+          "baselineNativePosition": 1,
+          "fileRankingInputPosition": 1,
+          "fileRankingRank": 1,
+          "fileRankingScore": 0.81,
+          "enabledNativePositionWhenBypassed": null,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        }
+      ],
+      "fileRankingOperationCount": 1,
+      "fileRankingScoredCandidateCount": 1,
+      "fileRankingDisplayedPathCount": 1,
+      "fileRankingRankedCandidates": [
+        {
+          "inputPosition": 1,
+          "path": "src/jev-suite/single/auth/access-token-refresh.ts",
+          "score": 0.81,
+          "rank": 1
+        }
+      ],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        }
+      }
+    },
+    {
+      "id": "twelve",
+      "candidateCount": 12,
+      "fixtureSha256": "7457aaecd77ed6ce77c7a8324e66133175ebf7f636d5326d72486b480f5f5b3f",
+      "truthTargets": [
+        "src/jev-suite/twelve/12-circuit-reset.ts"
+      ],
+      "baselineNativeTargetPositions": {
+        "src/jev-suite/twelve/12-circuit-reset.ts": 2
+      },
+      "fileRankingTargetResults": [
+        {
+          "path": "src/jev-suite/twelve/12-circuit-reset.ts",
+          "baselineNativePosition": 2,
+          "fileRankingInputPosition": 2,
+          "fileRankingRank": 1,
+          "fileRankingScore": 0.75,
+          "enabledNativePositionWhenBypassed": null,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        }
+      ],
+      "fileRankingOperationCount": 1,
+      "fileRankingScoredCandidateCount": 12,
+      "fileRankingDisplayedPathCount": 12,
+      "fileRankingRankedCandidates": [
+        {
+          "inputPosition": 2,
+          "path": "src/jev-suite/twelve/12-circuit-reset.ts",
+          "score": 0.75,
+          "rank": 1
+        },
+        {
+          "inputPosition": 10,
+          "path": "src/jev-suite/twelve/04-url-parse.ts",
+          "score": 0.67,
+          "rank": 2
+        },
+        {
+          "inputPosition": 11,
+          "path": "src/jev-suite/twelve/06-request-header.ts",
+          "score": 0.66,
+          "rank": 3
+        },
+        {
+          "inputPosition": 6,
+          "path": "src/jev-suite/twelve/05-cache-key.ts",
+          "score": 0.63,
+          "rank": 4
+        },
+        {
+          "inputPosition": 3,
+          "path": "src/jev-suite/twelve/10-state-render.ts",
+          "score": 0.59,
+          "rank": 5
+        },
+        {
+          "inputPosition": 4,
+          "path": "src/jev-suite/twelve/09-json-schema.ts",
+          "score": 0.59,
+          "rank": 6
+        },
+        {
+          "inputPosition": 8,
+          "path": "src/jev-suite/twelve/08-metrics.ts",
+          "score": 0.59,
+          "rank": 7
+        },
+        {
+          "inputPosition": 7,
+          "path": "src/jev-suite/twelve/02-path-normalize.ts",
+          "score": 0.58,
+          "rank": 8
+        },
+        {
+          "inputPosition": 12,
+          "path": "src/jev-suite/twelve/07-log-level.ts",
+          "score": 0.57,
+          "rank": 9
+        },
+        {
+          "inputPosition": 1,
+          "path": "src/jev-suite/twelve/11-queue-length.ts",
+          "score": 0.56,
+          "rank": 10
+        },
+        {
+          "inputPosition": 9,
+          "path": "src/jev-suite/twelve/01-date-format.ts",
+          "score": 0.52,
+          "rank": 11
+        },
+        {
+          "inputPosition": 5,
+          "path": "src/jev-suite/twelve/03-color-theme.ts",
+          "score": 0.46,
+          "rank": 12
+        }
+      ],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        }
+      }
+    },
+    {
+      "id": "nested-sixteen",
+      "candidateCount": 16,
+      "fixtureSha256": "8fffb96e011e925bef601bafa9bd34d09c110cb6bd670285664fb9cd185f8dd7",
+      "truthTargets": [
+        "src/jev-suite/nested-sixteen/auth/session/refresh.ts"
+      ],
+      "baselineNativeTargetPositions": {
+        "src/jev-suite/nested-sixteen/auth/session/refresh.ts": 13
+      },
+      "fileRankingTargetResults": [
+        {
+          "path": "src/jev-suite/nested-sixteen/auth/session/refresh.ts",
+          "baselineNativePosition": 13,
+          "fileRankingInputPosition": 13,
+          "fileRankingRank": 5,
+          "fileRankingScore": 0.75,
+          "enabledNativePositionWhenBypassed": null,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        }
+      ],
+      "fileRankingOperationCount": 1,
+      "fileRankingScoredCandidateCount": 16,
+      "fileRankingDisplayedPathCount": 12,
+      "fileRankingRankedCandidates": [
+        {
+          "inputPosition": 7,
+          "path": "src/jev-suite/nested-sixteen/ui/session/refresh.ts",
+          "score": 0.77,
+          "rank": 1
+        },
+        {
+          "inputPosition": 10,
+          "path": "src/jev-suite/nested-sixteen/parser/token/refresh.ts",
+          "score": 0.76,
+          "rank": 2
+        },
+        {
+          "inputPosition": 3,
+          "path": "src/jev-suite/nested-sixteen/http/client.ts",
+          "score": 0.75,
+          "rank": 3
+        },
+        {
+          "inputPosition": 5,
+          "path": "src/jev-suite/nested-sixteen/cache/token/refresh.ts",
+          "score": 0.75,
+          "rank": 4
+        },
+        {
+          "inputPosition": 13,
+          "path": "src/jev-suite/nested-sixteen/auth/session/refresh.ts",
+          "score": 0.75,
+          "rank": 5
+        },
+        {
+          "inputPosition": 16,
+          "path": "src/jev-suite/nested-sixteen/types/session.ts",
+          "score": 0.75,
+          "rank": 6
+        },
+        {
+          "inputPosition": 14,
+          "path": "src/jev-suite/nested-sixteen/storage/index.ts",
+          "score": 0.7,
+          "rank": 7
+        },
+        {
+          "inputPosition": 2,
+          "path": "src/jev-suite/nested-sixteen/http/header.ts",
+          "score": 0.69,
+          "rank": 8
+        },
+        {
+          "inputPosition": 9,
+          "path": "src/jev-suite/nested-sixteen/parser/token/parse.ts",
+          "score": 0.69,
+          "rank": 9
+        },
+        {
+          "inputPosition": 15,
+          "path": "src/jev-suite/nested-sixteen/storage/ttl.ts",
+          "score": 0.66,
+          "rank": 10
+        },
+        {
+          "inputPosition": 6,
+          "path": "src/jev-suite/nested-sixteen/ui/session/display.ts",
+          "score": 0.63,
+          "rank": 11
+        },
+        {
+          "inputPosition": 11,
+          "path": "src/jev-suite/nested-sixteen/auth/session/expire.ts",
+          "score": 0.63,
+          "rank": 12
+        },
+        {
+          "inputPosition": 8,
+          "path": "src/jev-suite/nested-sixteen/logging/events.ts",
+          "score": 0.62,
+          "rank": 13
+        },
+        {
+          "inputPosition": 12,
+          "path": "src/jev-suite/nested-sixteen/auth/session/revoke.ts",
+          "score": 0.61,
+          "rank": 14
+        },
+        {
+          "inputPosition": 4,
+          "path": "src/jev-suite/nested-sixteen/cache/token/evict.ts",
+          "score": 0.59,
+          "rank": 15
+        },
+        {
+          "inputPosition": 1,
+          "path": "src/jev-suite/nested-sixteen/metrics/count.ts",
+          "score": 0.57,
+          "rank": 16
+        }
+      ],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 4,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 4,
+          "spill_reads": 1,
+          "other_reads": 0
+        }
+      }
+    },
+    {
+      "id": "multi-forty",
+      "candidateCount": 40,
+      "fixtureSha256": "7e79582e36e7ee43348868a24f9a0dd868e3824ec39667f304f847c89faf8578",
+      "truthTargets": [
+        "src/jev-suite/multi-forty/auth/session/refresh-access-token.ts",
+        "src/jev-suite/multi-forty/auth/session/token-store.ts"
+      ],
+      "baselineNativeTargetPositions": {
+        "src/jev-suite/multi-forty/auth/session/refresh-access-token.ts": 26,
+        "src/jev-suite/multi-forty/auth/session/token-store.ts": 27
+      },
+      "fileRankingTargetResults": [
+        {
+          "path": "src/jev-suite/multi-forty/auth/session/refresh-access-token.ts",
+          "baselineNativePosition": 26,
+          "fileRankingInputPosition": 26,
+          "fileRankingRank": 1,
+          "fileRankingScore": 0.8,
+          "enabledNativePositionWhenBypassed": null,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        },
+        {
+          "path": "src/jev-suite/multi-forty/auth/session/token-store.ts",
+          "baselineNativePosition": 27,
+          "fileRankingInputPosition": 27,
+          "fileRankingRank": 3,
+          "fileRankingScore": 0.76,
+          "enabledNativePositionWhenBypassed": null,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        }
+      ],
+      "fileRankingOperationCount": 1,
+      "fileRankingScoredCandidateCount": 40,
+      "fileRankingDisplayedPathCount": 12,
+      "fileRankingRankedCandidates": [
+        {
+          "inputPosition": 26,
+          "path": "src/jev-suite/multi-forty/auth/session/refresh-access-token.ts",
+          "score": 0.8,
+          "rank": 1
+        },
+        {
+          "inputPosition": 19,
+          "path": "src/jev-suite/multi-forty/parser/token/refresh-access-token.ts",
+          "score": 0.77,
+          "rank": 2
+        },
+        {
+          "inputPosition": 27,
+          "path": "src/jev-suite/multi-forty/auth/session/token-store.ts",
+          "score": 0.76,
+          "rank": 3
+        },
+        {
+          "inputPosition": 29,
+          "path": "src/jev-suite/multi-forty/auth/schema/token-store.ts",
+          "score": 0.75,
+          "rank": 4
+        },
+        {
+          "inputPosition": 16,
+          "path": "src/jev-suite/multi-forty/module-08/adapter.ts",
+          "score": 0.72,
+          "rank": 5
+        },
+        {
+          "inputPosition": 1,
+          "path": "src/jev-suite/multi-forty/module-04/adapter.ts",
+          "score": 0.71,
+          "rank": 6
+        },
+        {
+          "inputPosition": 11,
+          "path": "src/jev-suite/multi-forty/module-31/adapter.ts",
+          "score": 0.71,
+          "rank": 7
+        },
+        {
+          "inputPosition": 17,
+          "path": "src/jev-suite/multi-forty/module-09/adapter.ts",
+          "score": 0.71,
+          "rank": 8
+        },
+        {
+          "inputPosition": 22,
+          "path": "src/jev-suite/multi-forty/module-11/adapter.ts",
+          "score": 0.71,
+          "rank": 9
+        },
+        {
+          "inputPosition": 24,
+          "path": "src/jev-suite/multi-forty/module-05/adapter.ts",
+          "score": 0.71,
+          "rank": 10
+        },
+        {
+          "inputPosition": 35,
+          "path": "src/jev-suite/multi-forty/module-30/adapter.ts",
+          "score": 0.71,
+          "rank": 11
+        },
+        {
+          "inputPosition": 38,
+          "path": "src/jev-suite/multi-forty/module-02/adapter.ts",
+          "score": 0.71,
+          "rank": 12
+        },
+        {
+          "inputPosition": 39,
+          "path": "src/jev-suite/multi-forty/module-14/adapter.ts",
+          "score": 0.71,
+          "rank": 13
+        },
+        {
+          "inputPosition": 2,
+          "path": "src/jev-suite/multi-forty/module-28/adapter.ts",
+          "score": 0.7,
+          "rank": 14
+        },
+        {
+          "inputPosition": 3,
+          "path": "src/jev-suite/multi-forty/module-25/adapter.ts",
+          "score": 0.7,
+          "rank": 15
+        },
+        {
+          "inputPosition": 5,
+          "path": "src/jev-suite/multi-forty/module-17/adapter.ts",
+          "score": 0.7,
+          "rank": 16
+        },
+        {
+          "inputPosition": 6,
+          "path": "src/jev-suite/multi-forty/module-03/adapter.ts",
+          "score": 0.7,
+          "rank": 17
+        },
+        {
+          "inputPosition": 7,
+          "path": "src/jev-suite/multi-forty/module-01/adapter.ts",
+          "score": 0.7,
+          "rank": 18
+        },
+        {
+          "inputPosition": 9,
+          "path": "src/jev-suite/multi-forty/module-19/adapter.ts",
+          "score": 0.7,
+          "rank": 19
+        },
+        {
+          "inputPosition": 12,
+          "path": "src/jev-suite/multi-forty/module-21/adapter.ts",
+          "score": 0.7,
+          "rank": 20
+        },
+        {
+          "inputPosition": 14,
+          "path": "src/jev-suite/multi-forty/module-10/adapter.ts",
+          "score": 0.7,
+          "rank": 21
+        },
+        {
+          "inputPosition": 15,
+          "path": "src/jev-suite/multi-forty/module-24/adapter.ts",
+          "score": 0.7,
+          "rank": 22
+        },
+        {
+          "inputPosition": 18,
+          "path": "src/jev-suite/multi-forty/module-34/adapter.ts",
+          "score": 0.7,
+          "rank": 23
+        },
+        {
+          "inputPosition": 20,
+          "path": "src/jev-suite/multi-forty/module-20/adapter.ts",
+          "score": 0.7,
+          "rank": 24
+        },
+        {
+          "inputPosition": 23,
+          "path": "src/jev-suite/multi-forty/module-06/adapter.ts",
+          "score": 0.7,
+          "rank": 25
+        },
+        {
+          "inputPosition": 25,
+          "path": "src/jev-suite/multi-forty/module-26/adapter.ts",
+          "score": 0.7,
+          "rank": 26
+        },
+        {
+          "inputPosition": 30,
+          "path": "src/jev-suite/multi-forty/module-18/adapter.ts",
+          "score": 0.7,
+          "rank": 27
+        },
+        {
+          "inputPosition": 32,
+          "path": "src/jev-suite/multi-forty/module-15/adapter.ts",
+          "score": 0.7,
+          "rank": 28
+        },
+        {
+          "inputPosition": 34,
+          "path": "src/jev-suite/multi-forty/module-16/adapter.ts",
+          "score": 0.7,
+          "rank": 29
+        },
+        {
+          "inputPosition": 40,
+          "path": "src/jev-suite/multi-forty/module-07/adapter.ts",
+          "score": 0.7,
+          "rank": 30
+        },
+        {
+          "inputPosition": 4,
+          "path": "src/jev-suite/multi-forty/module-27/adapter.ts",
+          "score": 0.69,
+          "rank": 31
+        },
+        {
+          "inputPosition": 8,
+          "path": "src/jev-suite/multi-forty/module-22/adapter.ts",
+          "score": 0.69,
+          "rank": 32
+        },
+        {
+          "inputPosition": 10,
+          "path": "src/jev-suite/multi-forty/module-35/adapter.ts",
+          "score": 0.69,
+          "rank": 33
+        },
+        {
+          "inputPosition": 13,
+          "path": "src/jev-suite/multi-forty/module-29/adapter.ts",
+          "score": 0.69,
+          "rank": 34
+        },
+        {
+          "inputPosition": 31,
+          "path": "src/jev-suite/multi-forty/module-13/adapter.ts",
+          "score": 0.69,
+          "rank": 35
+        },
+        {
+          "inputPosition": 36,
+          "path": "src/jev-suite/multi-forty/module-12/adapter.ts",
+          "score": 0.69,
+          "rank": 36
+        },
+        {
+          "inputPosition": 37,
+          "path": "src/jev-suite/multi-forty/module-32/adapter.ts",
+          "score": 0.69,
+          "rank": 37
+        },
+        {
+          "inputPosition": 21,
+          "path": "src/jev-suite/multi-forty/module-33/adapter.ts",
+          "score": 0.68,
+          "rank": 38
+        },
+        {
+          "inputPosition": 28,
+          "path": "src/jev-suite/multi-forty/auth/ui/token-store.ts",
+          "score": 0.68,
+          "rank": 39
+        },
+        {
+          "inputPosition": 33,
+          "path": "src/jev-suite/multi-forty/module-23/adapter.ts",
+          "score": 0.68,
+          "rank": 40
+        }
+      ],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 40,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 5,
+          "spill_reads": 1,
+          "other_reads": 0
+        }
+      }
+    },
+    {
+      "id": "over-forty-one",
+      "candidateCount": 41,
+      "fixtureSha256": "e21fd8fc353e3412d5790e0d473d205672691a57d3fb607d241c577917f2a86c",
+      "truthTargets": [
+        "src/jev-suite/over-forty-one/security/lease-expiration.ts"
+      ],
+      "baselineNativeTargetPositions": {
+        "src/jev-suite/over-forty-one/security/lease-expiration.ts": 28
+      },
+      "fileRankingTargetResults": [
+        {
+          "path": "src/jev-suite/over-forty-one/security/lease-expiration.ts",
+          "baselineNativePosition": 28,
+          "fileRankingInputPosition": null,
+          "fileRankingRank": null,
+          "fileRankingScore": null,
+          "enabledNativePositionWhenBypassed": 28,
+          "presentInFinalAnswer": true,
+          "readFromSourceInBothConditions": true
+        }
+      ],
+      "fileRankingOperationCount": 0,
+      "fileRankingScoredCandidateCount": 0,
+      "fileRankingDisplayedPathCount": 41,
+      "fileRankingRankedCandidates": [],
+      "readCounts": {
+        "baseline": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        },
+        "fileRanking": {
+          "source_reads": 1,
+          "spill_reads": 0,
+          "other_reads": 0
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Six synthetic cases, one trial per case per condition; results do not establish general path-ranking accuracy or benefit.",
+    "Not a formal DeepSWE verifier score; no stage-navigation condition was tested.",
+    "The later public bench/selection pipeline was organized after this frozen run, uses a main revision with a twelfth feature, and was not rerun here."
+  ]
+}

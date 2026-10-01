@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "phase": "pilot",
+  "selection_rule": "Write the fixed task-selection rule before observing outcomes",
+  "paths": {
+    "deep_swe": "/absolute/path/to/deep-swe",
+    "pier": "/absolute/path/to/pier",
+    "plugin_tarball": "/absolute/path/to/dsh-jev-plugin.tgz"
+  },
+  "versions": {
+    "deep_swe_commit": "0b9fabbb63b9104d678fe965e1632f2dd9eaa2ea",
+    "pier_commit": "4d3c14041d16443f3f9f460dcdf23629994a304e",
+    "dsh": "0.1.7-rc.2",
+    "plugin_commit": "FILL_PLUGIN_COMMIT",
+    "plugin_tar_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "node": "24.14.1",
+    "pnpm": "11.7.0"
+  },
+  "tasks": [
+    {
+      "id": "vitest-duration-sharding",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "platform": "linux/amd64"
+    }
+  ],
+  "arms": ["baseline", "log_admission"],
+  "repeats": 2,
+  "concurrency": 1,
+  "model": {
+    "provider": "deepseek-official",
+    "id": "deepseek-flash",
+    "route": "deepseek-official/deepseek-flash",
+    "reasoning_effort": "high",
+    "endpoint": "https://api.deepseek.com/anthropic",
+    "floating_alias": true
+  },
+  "jev": {
+    "endpoint": "https://api.typesafe.ai/v1/systemone",
+    "model": "FILL_EXACT_JEV_MODEL_ID",
+    "credential_env": "JEV_API_KEY"
+  },
+  "conditions": {
+    "main_credential_env": "DEEPSEEK_API_KEY",
+    "sandbox": "workspace-write",
+    "toolset": "dsh-headless-no-web-tools",
+    "context_window": 0,
+    "compaction": "dsh-0.1.7-rc.2-default",
+    "spill": "maxInlineTokens:12500",
+    "network": "inference-and-npm-allowlist"
+  },
+  "budget": {
+    "agent_timeout_sec": 10800,
+    "verifier_timeout_sec": 1800,
+    "max_batch_spend_usd": 0,
+    "cost_policy": "advisory",
+    "usage_incomplete_policy": "halt",
+    "max_infrastructure_retries": 0
+  },
+  "prices": {
+    "main": {
+      "source": "FILL_PRICE_SOURCE_AND_DATE",
+      "input_per_million": -1,
+      "cache_read_per_million": -1,
+      "cache_write_per_million": -1,
+      "output_per_million": -1
+    },
+    "jev": {
+      "source": "FILL_PRICE_SOURCE_AND_DATE",
+      "input_per_million": -1,
+      "cache_read_per_million": -1,
+      "cache_write_per_million": -1,
+      "output_per_million": -1
+    }
+  }
+}

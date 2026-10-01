@@ -1,6 +1,7 @@
 export const evidence = {
   validation: { title: '验证范围与边界', file: 'docs/validation.md', slug: 'validation' },
   selection: { title: '技能选择与文件排序：公开验收摘要', file: 'docs/testing/jev-selection/public-results.zh-CN.md', slug: 'selection-results' },
+  glob: { title: '文件排序：六例真实验证', file: 'docs/testing/2026-10-01-glob-ranking/public-results.zh-CN.md', slug: 'glob-ranking-results' },
   hooks: { title: '六项监督与纠正：公开验收摘要', file: 'docs/testing/2026-09-27-jev-hooks/public-results.zh-CN.md', slug: 'hook-results' },
   logs: { title: '工具输出准入：真实 profile 报告', file: 'docs/reports/2026-09-27-tool-output-admission.zh-CN.md', slug: 'tool-output' },
   approval: { title: '工作区审批：QA 场景与结果', file: 'packages/jev/tests/workspace-approval-qa.md', slug: 'workspace-approval' },
@@ -41,7 +42,7 @@ export const features = [
     slug: 'file-ranking', group: 'selection', name: '文件排序', status: '接入已验证', tone: 'observed',
     summary: '重排原生 glob 已找到的路径，不为判断再扫描文件。',
     intro: '主 Agent 仍然调用 DSH 的 glob。工具先完成原本的文件搜索，Jev 只看已返回的路径并评估它们与当前任务的相关性。',
-    homeEvidence: '7 条同分路径通过 Web 管线；相关性提升尚未量化。',
+    homeEvidence: '固定六例的 12 次真实试次结构验收通过；嵌套目标排第 5，41 条整体旁路。',
     mechanism: {
       seams: ['tools/execute', 'tools/post-execute'],
       trigger: '原生 glob 在 tools/execute 得到非空、且数量未超过配置上限的路径后判断；tools/post-execute 再把分数摘要呈给模型。',
@@ -50,6 +51,15 @@ export const features = [
       refs: [{ title: 'glob 执行与排序', file: 'packages/jev/src/selection.ts', anchor: '#L294-L355' }],
     },
     cases: [
+      {
+        kind: '真实 DSH · Jev 适用例与旁路', title: '0、1、12、16、40、41 条路径的关闭与开启对照',
+        task: '预先固定六个合成文件任务，各运行一次关闭组和仅开启文件排序组；两组使用相同 DSH 0.1.7-rc.2、DeepSeek Flash/high、jev-1.13.0 和默认 40 候选 / 12 显示上限。这是旧 11 功能插件冻结产物的历史运行，没有用新增 stage-navigation 后的当前 12 功能 main 重跑。',
+        probe: '核对 Session、Jev 判断账本、模型可见结果、完整排序恢复文件、源码读取和冻结文件哈希；目标位置按开启组自身的原始顺序比较。',
+        result: '12 次均正常结束且结构验收通过，40 条主模型消息 usage 完整，合成任务的最终源码答案均正确；1、12、16、40 条开启组各有一次成功判断，共返回 69 项分数。0 与 41 条不调用 Jev，41 条保留完整原生结果；16 与 40 条的完整排序文件均被原生 read 回读。grep 不触发排序。',
+        reading: '真实目标分别从第 1→1、第 2→1、第 13→5、第 26→1 和第 27→3；嵌套例的 UI/parser 路径高于目标，多目标例的 parser 诱饵排第 2。嵌套例两组各读 4 个源码；多目标例从 40 次源码读取到 5 次，开启组另读 1 次恢复文件。已记录 usage 的峰价估算合计 $0.026908236，其中 Jev $0.0001785，并非账单。单次合成任务不证明通用排序质量、读取节省或 DeepSWE 收益。',
+        evidence: ['glob'],
+        references: [{ title: '后续公开测试管线与复现入口', file: 'bench/selection/README.zh-CN.md' }, { title: '历史结构化逐次结果', file: 'docs/testing/2026-10-01-glob-ranking/results.json' }],
+      },
       {
         kind: '隔离 Web · 确定性 Jev', title: '一次 glob 找到 7 条 TypeScript 路径',
         task: '用测试指令走原生 glob，搜索得到 7 条 TypeScript 路径；本地判断服务给每条路径相同的 0.75 分数。',
@@ -66,7 +76,7 @@ export const features = [
         references: [{ title: 'glob 排序与数量测试', file: 'packages/jev/tests/selection.test.ts', anchor: '#L187-L202' }],
       },
     ],
-    limits: ['低概率路径仍可被展示，分数只描述路径相关性。', '原始搜索范围、忽略规则和搜索错误仍由 DSH 的 glob 负责。'],
+    limits: ['六例均为预先固定的合成任务、每组只运行一次；结构验收通过不等于语义排序始终正确。', '最终答案按冻结的合成真值核验，本套件没有运行独立 DeepSWE verifier。', '41 条超过默认候选上限时整体保留原生结果，不对前 40 条做部分排序。', '低概率路径仍可被展示，分数只描述路径相关性。', '原始搜索范围、忽略规则和搜索错误仍由 DSH 的 glob 负责。'],
   },
   {
     slug: 'drift-reminder', group: 'supervision', name: '跑偏提醒', status: '真实提醒未送达', tone: 'caution',

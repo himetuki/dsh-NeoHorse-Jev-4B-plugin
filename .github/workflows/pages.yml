@@ -9,6 +9,8 @@ on:
       - docs/validation.md
       - docs/testing/jev-selection/public-results.zh-CN.md
       - docs/testing/2026-09-27-jev-hooks/public-results.zh-CN.md
+      - docs/testing/2026-10-01-glob-ranking/**
+      - bench/selection/**
       - docs/reports/2026-09-27-tool-output-admission.zh-CN.md
       - packages/jev/tests/workspace-approval-qa.md
   workflow_dispatch:
