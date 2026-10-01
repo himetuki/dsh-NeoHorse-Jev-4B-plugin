@@ -68,6 +68,16 @@ https://github.com/luobosibing2/deepseek-harness-jev
 
 The GitHub entry provides the `main` features, not experimental branches. The older [v0.1.0 release](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0) does not include the newly integrated log filters. Build from source below only when changing or building the code yourself.
 
+### Install this fork (TokenRhythm NeoHorse-Jev-4B)
+
+This fork pins the DSH peers to **0.2.0-rc.2** and adds the TokenRhythm decision endpoint, so it installs on a DSH 0.2.0-rc.2 Host; the upstream repository still pins 0.1.7-rc.2. It ships the same prebuilt entry, so the Web UI steps above apply unchanged.
+
+```text
+https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
+```
+
+Configure the Jev page with the endpoint `https://tokenrhythm.studio/v1/systemone`, the model `NeoHorse-Jev-4B`, and a credential reference of your choice. The API key itself is saved through the page's key control, never in source files or a repository URL.
+
 ## Install from source (developers)
 
 Use the following steps when modifying or building the plugin yourself. Existing DSH Web users can install using the GitHub URL above.

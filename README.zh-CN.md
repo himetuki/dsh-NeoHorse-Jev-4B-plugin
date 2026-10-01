@@ -68,6 +68,16 @@ https://github.com/luobosibing2/deepseek-harness-jev
 
 当前 GitHub 入口提供 `main` 的功能，不包含实验分支。历史 [v0.1.0 安装包](https://github.com/luobosibing2/deepseek-harness-jev/releases/tag/v0.1.0)不含新合入的日志筛选功能；需要自行修改代码时再看下面的源码构建步骤。
 
+### 安装本复刻仓库（基元律动 NeoHorse-Jev-4B）
+
+本复刻把 DSH peer 固定为 **0.2.0-rc.2** 并加入基元律动决策接口，可在 DSH 0.2.0-rc.2 宿主上安装；上游仓库仍固定 0.1.7-rc.2。仓库同样自带预构建入口，上面的网页端安装步骤完全适用。
+
+```text
+https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
+```
+
+在 Jev 页面填写服务地址 `https://tokenrhythm.studio/v1/systemone`、模型 `NeoHorse-Jev-4B`，以及自选的凭据引用。API Key 本身通过页面的密钥控件保存，不要写入源码或仓库 URL。
+
 ## 从源码安装（开发者）
 
 需要修改代码或自行构建时，再使用以下步骤。已有 DSH Web 的普通用户直接使用上面的 GitHub 地址安装即可。
