@@ -2,9 +2,9 @@
 
 English | [简体中文](README.md)
 
-**Native DeepSeek Harness (DSH) plugin integrating TypeSafe Jev as a System One decision layer.**
+**Native DeepSeek Harness (DSH) plugin for the TokenRhythm NeoHorse-Jev-4B decision model.**
 
-`deepseek-harness-jev` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [Jev by TypeSafe AI](https://typesafe.ai/) for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, single-operation approval assistance, and historical stage navigation. Its 12 features are individually configurable from one Jev settings page and are all disabled by default.
+`deepseek-harness-jev` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [TokenRhythm](https://tokenrhythm.studio/)'s `NeoHorse-Jev-4B` decision model for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, single-operation approval assistance, and historical stage navigation. Its 12 features are individually configurable from one Jev settings page and are all disabled by default.
 
 The main model continues to plan, generate answers, and call native tools. The plugin automatically invokes enabled Jev judgments at DSH extension points for skill catalogs, agent lifecycle, tool results, and approvals, then applies results according to each feature. DSH configures the main model; Jev has a separate connection. Integration uses public Cordis / DSH plugin APIs without modifying the host source.
 
@@ -108,8 +108,8 @@ Open the authenticated Web address printed by DSH. Configure your main model thr
 
 ## Configure Jev
 
-1. Set the full System One endpoint. The tested NeoHorse-Jev-4B endpoint is `https://tokenrhythm.studio/v1/systemone`; a TypeSafe endpoint such as `https://api.typesafe.ai/v1/systemone` also works.
-2. Set the model. For TokenRhythm the model id is fixed: `NeoHorse-Jev-4B`.
+1. Set the full System One compatible endpoint: `https://tokenrhythm.studio/v1/systemone`.
+2. Set the model id: `NeoHorse-Jev-4B`.
 3. Choose a DSH credential reference, save the connection, and save your API key using the page's credential control. Do not put a key in source files or a repository URL.
 4. Review the timeout, then enable only the features you need.
 5. Inspect **Decision records** for input, answers, attempts, and actual adoption or execution receipts.

@@ -27,7 +27,7 @@ function step(turn: number, number: number, label: 'implementation' | 'review_va
     endSeq: turn * 100 + number * 10 + 9, status: 'complete', classifiable: true, materialStatus: 'ready', assistant, messages: [assistant],
     tools: [{ callId: `call-${turn}-${number}`, name: 'read', arguments: '{"path":"source.ts"}', seq: turn * 100 + number * 10 + 2, dispatched: true,
       result: { seq: turn * 100 + number * 10 + 3, isError: number === 2, content: [{ type: 'text', text: number === 2 ? 'read failed' : 'source content' }] } }],
-    attemptSeqs: [], analysis: { status: 'succeeded', label, confidence: number === 1 ? 0.45 : 0.57, model: 'jev-1.13.0' },
+    attemptSeqs: [], analysis: { status: 'succeeded', label, confidence: number === 1 ? 0.45 : 0.57, model: 'NeoHorse-Jev-4B' },
   }
 }
 
@@ -169,7 +169,7 @@ describe('stage navigation view', () => {
     const failedRefresh = { ...selected.steps[0]!, analysis: {
       status: 'failed' as const, failure: { code: 'NETWORK', message: 'Could not reach Jev' },
       previousResult: { recordId: 'previous-1', label: 'review_validation' as const, stale: false, confidence: 0.45,
-        probabilities: { review_validation: 0.45 }, model: 'jev-1.13.0', configuredModel: 'jev-latest' },
+        probabilities: { review_validation: 0.45 }, model: 'NeoHorse-Jev-4B', configuredModel: 'NeoHorse-Jev-4B' },
     } }
     const jev = remote({ ...value, turns: [value.turns[0]!, { ...selected, steps: [failedRefresh] }] })
     render(view('session', jev))

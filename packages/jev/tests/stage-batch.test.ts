@@ -115,7 +115,7 @@ describe('stage batch ownership and cancellation', () => {
     await entered.promise
     f.disable()
     f.manager.cancelRunning()
-    held.resolve({ attemptRecords: [{ id: 'attempt-1', rawResponse: { model: 'jev-1.13.0' } }] })
+    held.resolve({ attemptRecords: [{ id: 'attempt-1', rawResponse: { model: 'NeoHorse-Jev-4B' } }] })
     await f.manager.cancel(batch.id)
     expect([...f.saved.values()].map(record => record.status)).not.toContain('succeeded')
     expect([...f.saved.values()].at(-1)?.status).toBe('cancelled')
@@ -170,7 +170,7 @@ describe('stage batch ownership and cancellation', () => {
         } }
         : { kind: 'failed', operationId: 'op-failure', failure: { code: 'INVALID_RESPONSE', message: 'Invalid Jev choice' } },
       getRecord: async () => ({ attemptRecords: [{ id: 'attempt-1', request: { state: {}, questions: [] },
-        rawResponse: { model: 'jev-1.13.0', answers: { stage: { choice: 'implementation' } } } }] }),
+        rawResponse: { model: 'NeoHorse-Jev-4B', answers: { stage: { choice: 'implementation' } } } }] }),
     })
     const first = await f.manager.start(request)
     await vi.waitFor(async () => {
@@ -192,7 +192,7 @@ describe('stage batch ownership and cancellation', () => {
     expect(analysis.previousResult).toMatchObject({ label: 'implementation', confidence: 0.45, stale: false })
     expect((await f.manager.detail('session-1', 'session-1:1'))?.status).toBe('failed')
     const earlier = await f.manager.detail('session-1', 'session-1:1', analysis.previousResult?.recordId)
-    expect(earlier).toMatchObject({ status: 'succeeded', label: 'implementation', rawResponse: { model: 'jev-1.13.0' } })
+    expect(earlier).toMatchObject({ status: 'succeeded', label: 'implementation', rawResponse: { model: 'NeoHorse-Jev-4B' } })
     await f.manager.stop()
   })
 })

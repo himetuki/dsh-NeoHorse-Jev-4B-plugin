@@ -24,7 +24,7 @@ const response = {
 
 describe('System One typed exchange', () => {
   it('keeps structured criteria and a fractional score in its original rubric', () => {
-    const body = wireBody('jev-latest', request)
+    const body = wireBody('NeoHorse-Jev-4B', request)
     expect(body).toMatchObject({ state: {}, questions: {
       route: { type: 'choice', instructions: { task: 'choose' }, criteria: { left: { path: ['left'] }, right: null } },
       risk: { type: 'score', criteria: ['low', { risk: 'medium' }, 'high'] },

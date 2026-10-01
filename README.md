@@ -2,9 +2,9 @@
 
 [English](readme_en.md) | 简体中文
 
-**DeepSeek Harness（DSH）的原生 Jev 插件：按需接入 TypeSafe Jev / System One 判断。**
+**DeepSeek Harness（DSH）的原生 Jev 类决策插件：按需接入基元律动 NeoHorse-Jev-4B。**
 
-`deepseek-harness-jev` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与 [TypeSafe AI 的 Jev](https://typesafe.ai/) 连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选、单次操作审批和历史轨迹阶段导航。12 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
+`deepseek-harness-jev` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与[基元律动（TokenRhythm）](https://tokenrhythm.studio/)的 `NeoHorse-Jev-4B` 决策模型连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选、单次操作审批和历史轨迹阶段导航。12 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
 
 主模型继续负责规划、生成回答和调用原生工具；插件在 DSH 的技能目录、Agent 生命周期、工具结果与审批等扩展点自动发起已启用的 Jev 判断，再按对应功能应用结果。主模型由 DSH 配置，Jev 连接单独配置。接入基于公开的 Cordis / DSH 插件接口，无需修改宿主源码。
 
@@ -108,8 +108,8 @@ dsh --profile jev
 
 ## 配置 Jev
 
-1. 填写完整 System One 地址。已实测的 NeoHorse-Jev-4B 地址是 `https://tokenrhythm.studio/v1/systemone`；TypeSafe 地址（例如 `https://api.typesafe.ai/v1/systemone`）同样可用。
-2. 填写模型。使用基元律动时模型 ID 固定为 `NeoHorse-Jev-4B`。
+1. 填写完整的 System One 兼容地址：`https://tokenrhythm.studio/v1/systemone`。
+2. 填写模型 ID：`NeoHorse-Jev-4B`。
 3. 指定 DSH 凭据引用，保存连接，再通过页面的凭据控件保存 API Key。不要把密钥写入源码或仓库 URL。
 4. 检查超时时间，只开启需要的功能。
 5. 在“判断记录”中查看输入、答案、尝试次数，以及实际采纳或执行回执。
