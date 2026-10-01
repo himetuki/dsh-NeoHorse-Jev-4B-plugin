@@ -196,8 +196,7 @@
     "lightningcss": "1.30.2",
     "tsdown": "0.22.2",
     "typescript": "6.0.3",
-    "vitest": "4.1.8",
-    "@deepseek-ai/dsh": "0.1.7-rc.2"
+    "vitest": "4.1.8"
   },
   "files": [
     "runtime/**/*.js",

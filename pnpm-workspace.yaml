@@ -2,8 +2,4 @@ packages:
   - packages/*
   - '!packages/typert-protocol-reference'
 allowBuilds:
-  '@deepseek-ai/dsh-subprocess-local': true
-  '@google/genai': false
   esbuild: true
-  node-pty: true
-  protobufjs: false

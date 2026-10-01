@@ -29,13 +29,7 @@
 | 工作区提权代审批（Workspace approval） | 仅在 workspace-write 下参与适用的原生单次提权；非肯定判断回到原人工审批。 |
 | 阶段导航（Stage navigation） | 按需分类已记录的完整模型步骤，将连续阶段与轨迹原文关联。 |
 
-![Jev 功能设置页：选择、监督、共享纠正和工作区审批等功能可分别开启](docs/images/jev-feature-toggles.png)
-
-*较早版本的功能设置示例。截图展示 9 个开关及用户自行选择的状态；当前 `main` 包含上表中的 12 项功能，新安装时默认全部关闭。*
-
 所有功能共用连接、按 profile 保存的设置、判断记录与操作回执。多数 Agent 功能面向存活的 Web 主会话；向子 Agent 发送纠正，不等于子 Agent 自动拥有其他 Jev 增强。
-
-**功能分支不等于已合入 main。** 工具输出筛选已进入 `main`；`codex/jev-tool-output-admission` 保留开发快照。原生网页执行在 `codex/jev-native-web-execution`，该方向目前**暂停，普通网站效果未通过验收**。其他历史分支保留早期实现。切换前请看[分支状态](docs/branches.md)，本表始终以 `main` 为准。
 
 ## 阶段导航
 
@@ -57,10 +51,6 @@
 ```text
 https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
 ```
-
-![DSH 添加插件窗口，已填入仓库地址](docs/images/install-from-github.jpg)
-
-*在「包名或地址」中粘贴仓库 URL，再点击「安装」。*
 
 仓库自带可直接加载的插件入口和预构建文件：安装不会在你的机器上编译源码，也不要求发布 npm 包；Host 需能运行 pnpm 并访问 GitHub。安装作用于当前 Web 连接的 Host profile。
 
@@ -137,12 +127,12 @@ dsh --profile jev
 ## 行为与限制
 
 - **提醒是建议。** 跑偏和约束提醒不会阻塞、取消工具，也不会强制主模型遵守。
-- **完成核查只审查证据。** 它不会独立运行测试；真实样例曾放行缺乏依据的“没有新增文件”声明，不能视为完成保证。
+- **完成核查只审查证据。** 它不会独立运行测试，也不构成完成保证。
 - **审批只针对一次操作。** 不改变会话沙箱模式，不覆盖宿主固定检查。有效 approve 可返回 allowed-once，unauthorized 或 unknown 回原人工审批；技术故障保留人工 Retry/Cancel。
 - **共享纠正有明确范围。** 它只处理已经共享的报告和消息，不读取所有 Agent 的内部探索；自动投递限当前存活的主 Agent 及其活跃、可继续的直接子 Agent。同一发现以不同形式上报时，仍可能产生重复纠正。
 - **判断成功不等于执行成功。** 日志分别记录判断、采纳、许可发放和实际操作结果。
-- **日志准入保留原文入口。** 它只在工具执行后调整符合条件的模型可见文本；DSH 即时 spill、工具输出上限和之后的上下文压缩仍生效。隔离真实 profile 的一次构建将 8,510 字符日志缩短了 75.7%。一次中性措辞的 180 项测试触发了测试日志判断，但省略概率低于 0.8，因此完整保留；该次不证明测试日志已有实际缩减效果。见[工具输出准入报告](docs/reports/2026-09-27-tool-output-admission.zh-CN.md)。
-- **验证有范围。** 确定性测试证明集成流程，有限真实样例不能证明普遍语义准确率。详见[验证说明](docs/validation.md)。
+- **日志准入保留原文入口。** 它只在工具执行后调整符合条件的模型可见文本；DSH 即时 spill、工具输出上限和之后的上下文压缩仍生效。
+- **验证有范围。** 确定性测试证明集成流程，不证明普遍语义准确率。
 
 开启的功能会将相关任务上下文或操作内容发送到配置的判断服务。精确判断输入和回答保存在 profile 的本地插件记录中，主模型可见影响使用正常 DSH Session 记录。运行资料和凭据应保留为私有数据；公开源码历史不包含个人 QA 截图和原始会话抓取。
 
@@ -158,10 +148,6 @@ dsh --profile jev
 
 仓库根目录是 GitHub 安装入口，`packages/jev` 保留开发源码；`pnpm run build` 会同步生成 `runtime/`，发布源码改动时应一并提交这些生成文件。
 
-维护者可用 [DeepSWE 配对评测入口](bench/deepswe/README.zh-CN.md)评测编码任务，用 [glob 排序管线](bench/selection/README.zh-CN.md)验证固定路径选择案例。两者采用隔离的 DSH/Pier trial，将模型执行与离线检查、报告分开。[英文评测指南](bench/deepswe/README.md)提供编码任务工作流。
-
-[公开 glob 实验](docs/testing/2026-10-01-glob-ranking/README.md)记录六类合成案例与12次真实DeepSeek/Jev运行：4次成功Jev判断返回69项分数，0和41候选按规则旁路；报告保留质量负例、恢复检查、源码读取数与费用估算。历史运行使用固定的旧版插件产物，维护中的管线不表示当前main已重跑，也不表示通用任务成功率提高。
-
 ```sh
 pnpm run typecheck
 pnpm run build
@@ -172,10 +158,6 @@ pnpm exec vitest run packages/jev/tests/host.test.ts packages/jev/tests/wire.tes
 
 - [包参考与消费者 API](packages/jev/README.md)
 - [工作区审批集成测试](packages/jev/tests/workspace-approval.test.ts)
-- [工作区审批 QA 用例](packages/jev/tests/workspace-approval-qa.md)
-- [工具输出准入报告](docs/reports/2026-09-27-tool-output-admission.zh-CN.md)
-- [分支状态](docs/branches.md)
-- [验证说明](docs/validation.md)
 
 ### DSH 接入点
 

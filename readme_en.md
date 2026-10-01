@@ -29,13 +29,7 @@ The following features are in `main`. **Every feature is independently disabled 
 | Workspace approval | In `workspace-write`, can answer eligible native single-operation escalation requests; non-affirmative answers return to human approval. |
 | Stage navigation | Classifies complete recorded model steps on request, then links consecutive stages to their original trajectory evidence. |
 
-![Jev settings page with independent feature switches for selection, supervision, corrections, and workspace approval](docs/images/jev-feature-toggles.png)
-
-*Example feature settings from an earlier build. The screenshot shows nine switches and user-selected states; current `main` includes the twelve features listed above, all disabled on a fresh installation.*
-
 All features share a connection, profile-scoped settings, decision records, and operation receipts. Most agent-facing features target live Web root sessions; correcting a child agent does not enable every feature inside that child.
-
-**Feature branches are not all included in `main`.** Tool-output filtering is included in `main`; `codex/jev-tool-output-admission` preserves its development snapshot. Native web execution is on `codex/jev-native-web-execution` and is **paused; ordinary-site effectiveness has not passed acceptance**. Historical split branches preserve earlier work. See [branch status](docs/branches.md) before switching branches; this table always describes `main`.
 
 ## Stage navigation
 
@@ -57,10 +51,6 @@ If you already use **DSH 0.2.0-rc.2 Web**, install directly from the GitHub repo
 ```text
 https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
 ```
-
-![DSH Add plugin dialog with the repository URL entered](docs/images/install-from-github.jpg)
-
-*Paste the repository URL into “Package name or address”, then click Install.*
 
 The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication. The Host needs pnpm and access to GitHub. Installation applies to the Host profile serving the current Web UI.
 
@@ -137,12 +127,12 @@ Long-log and test-log admission have independent switches, both off by default. 
 ## Behavior and limitations
 
 - **Reminders are advisory.** Drift and instruction guidance do not block or cancel tools, and do not force the main model to comply.
-- **Completion is evidence review.** It does not run independent verification. A real test accepted an unsupported “no new files” claim; do not use it as a proof of completion.
+- **Completion is evidence review.** It does not run independent verification and is not a proof of completion.
 - **Approvals remain single-operation.** Workspace approval neither changes the session's sandbox mode nor overrides fixed host checks. `approve` can supply `allowed-once`; `unauthorized` or `unknown` returns to the original human approval flow. Technical failures retain manual Retry/Cancel.
 - **Shared corrections have a limited scope.** They process already-shared reports and messages, not every agent's private exploration. Automatic delivery targets the live root agent and its active, continuable direct children. Duplicate corrections can still arise when the same finding appears in different report forms.
 - **Judgment success is not action success.** The ledger distinguishes an answer, its adoption, permission issuance, and execution results.
-- **Log admission keeps an original reference.** It changes only eligible model-visible tool text after execution; DSH's immediate spill, tool output limits, and later context compaction still apply. An isolated real-profile build reduced one 8,510-character log by 75.7%. A neutral 180-test run reached the test-log judge but stayed complete because its omit probabilities were below 0.8; that run does not establish test-log reduction effectiveness. See the [tool-output admission report](docs/reports/2026-09-27-tool-output-admission.md).
-- **Validation is scoped.** Deterministic tests establish integration. Limited real-service examples do not establish general semantic accuracy. See [validation notes](docs/validation.md).
+- **Log admission keeps an original reference.** It changes only eligible model-visible tool text after execution; DSH's immediate spill, tool output limits, and later context compaction still apply.
+- **Validation is scoped.** Deterministic tests establish integration, not general semantic accuracy.
 
 Enabled features send the relevant task context or operation data to the configured judgment endpoint. Exact judgment inputs and answers are stored in the profile's local plugin records; model-visible effects use normal DSH session records. Keep runtime records and credentials private. Public source history excludes personal QA screenshots and raw session captures.
 
@@ -158,10 +148,6 @@ The project is named `deepseek-harness-jev`; its internal package and import ide
 
 The repository root is the GitHub install entry; `packages/jev` retains development sources. `pnpm run build` also regenerates `runtime/`; commit these generated files when releasing source changes.
 
-Maintainers can use the [DeepSWE paired-evaluation runner](bench/deepswe/README.md) for coding tasks and the [glob-ranking pipeline](bench/selection/README.md) for fixed path-selection cases. Both use isolated DSH/Pier trials and keep model execution separate from offline checks and reports. The [Chinese evaluation guide](bench/deepswe/README.zh-CN.md) covers the coding-task workflow.
-
-The [public glob experiment](docs/testing/2026-10-01-glob-ranking/README.md) records six synthetic cases and 12 real DeepSeek/Jev trials: four successful Jev judgments returned 69 scores, while zero and 41 candidates bypassed ranking. It retains quality failures, recovery checks, source-read counts, and estimated costs. The historical run used a pinned earlier plugin artifact; the maintained pipeline does not imply the current `main` was rerun or that general task success improved.
-
 ```sh
 pnpm run typecheck
 pnpm run build
@@ -172,10 +158,6 @@ Run the focused tests for the feature you change. Do not enable real-provider ex
 
 - [Package reference and consumer API](packages/jev/README.md)
 - [Workspace-approval integration tests](packages/jev/tests/workspace-approval.test.ts)
-- [Workspace-approval QA cases](packages/jev/tests/workspace-approval-qa.md)
-- [Tool-output admission report](docs/reports/2026-09-27-tool-output-admission.md)
-- [Branch status](docs/branches.md)
-- [Validation notes](docs/validation.md)
 
 ### DSH integration points
 
