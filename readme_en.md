@@ -8,7 +8,7 @@ English | [简体中文](README.md)
 
 The main model continues to plan, generate answers, and call native tools. The plugin automatically invokes enabled Jev judgments at DSH extension points for skill catalogs, agent lifecycle, tool results, and approvals, then applies results according to each feature. DSH configures the main model; Jev has a separate connection. Integration uses public Cordis / DSH plugin APIs without modifying the host source.
 
-This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin tested with **DSH 0.2.0-rc.2**; its APIs and model judgments are not a correctness guarantee.
+This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin **adapted and verified on DSH Desktop 0.2.0-rc.2**; its APIs and model judgments are not a correctness guarantee.
 
 ## What is included?
 
@@ -39,39 +39,31 @@ The independent **Stage navigation** switch is off by default. It controls the t
 
 Each classification covers one complete DSH model step: its recorded reasoning, text, all tool calls, and paired results. Jev selects one of six stages, `mixed`, or `unknown`; adjacent equal labels merge only within the same turn. The page keeps a multi-turn directory beside the original steps and exposes the actual classification input and answer. Labels and confidence do not establish tool success or classification accuracy. See the [package reference](packages/jev/README.md#stage-navigation) for input, storage, and failure behavior.
 
-## Install through the Web UI (recommended)
+## Install in DSH Desktop (recommended)
 
-If you already use **DSH 0.2.0-rc.2 Web**, install directly from the GitHub repository URL. No source checkout, manual packaging, or npm login is required.
+**This project was adapted and verified on DSH Desktop (the Electron application)**: the DSH peers are pinned to `0.2.0-rc.2`, prebuilt files are committed under `runtime/`, and installation does not compile source on your machine. DSH Desktop is the primary installation path.
 
-1. Open **Plugins in the sidebar → Add plugin**.
-2. Paste the GitHub URL below into **Package name or address**, then click **Install**.
-3. Click **Enable now** after installation. Restart the current profile only if DSH says it will load on the next start.
-4. Open **Jev**, configure the endpoint, model, and API key, then enable the individual features you need.
+1. Open DSH Desktop and go to **Plugins in the sidebar → Add plugin**.
+2. Paste the GitHub repository URL below into **Package name or address**, then click **Install**. Desktop installs dependencies with its bundled pnpm.
+3. Click **Enable now** when installation finishes; restart DSH Desktop if it says the plugin loads on the next start.
+4. Open the **Jev** page, set the endpoint, model, and credential reference, then enable the features you need.
 
 ```text
 https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
 ```
 
-The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication. The Host needs pnpm and access to GitHub. Installation applies to the Host profile serving the current Web UI.
-
-**Enabling the package does not enable its 12 Jev features; they remain off by default.**
-
-This fork pins the DSH peers to **0.2.0-rc.2** and adds the TokenRhythm decision endpoint. The upstream repository still pins 0.1.7-rc.2 and is rejected by the compatibility check on a 0.2.0-rc.2 Host.
-
-Configure the Jev page with the endpoint `https://tokenrhythm.studio/v1/systemone`, the model `NeoHorse-Jev-4B`, and a credential reference of your choice. The API key itself is saved through the page's key control, never in source files or a repository URL.
-
-### Install in DSH Desktop
-
-This fork is **adapted and verified on DSH Desktop (the Electron application) 0.2.0-rc.2**: the DSH peers are pinned to `0.2.0-rc.2`, prebuilt files are committed under `runtime/`, and installation does not compile source on your machine. The Desktop installation is the environment this adaptation targets.
-
-1. Open DSH Desktop and go to **Plugins in the sidebar → Add plugin**.
-2. Paste the GitHub repository URL from this document into **Package name or address**, then click **Install**. Desktop installs dependencies with its bundled pnpm.
-3. Click **Enable now** when installation finishes; restart DSH Desktop if it says the plugin loads on the next start.
-4. Open the **Jev** page, set the endpoint, model, and credential reference, then enable the features you need.
-
 - The Desktop `desktop` profile is managed exclusively by the Electron application, and the CLI refuses `dsh --profile desktop`. Install, enable, and remove the plugin from the in-app plugin page.
 - You do not need a separate Node or pnpm installation (Desktop ships its runtime), but the machine must reach GitHub.
 - If you previously installed a development copy from a local directory (`link:`), remove that entry before installing from the repository URL so the same dependency name does not keep pointing at the local folder.
+- **Enabling the package does not enable its 12 Jev features; they remain off by default.**
+
+This fork pins the DSH peers to **0.2.0-rc.2** and connects the TokenRhythm `NeoHorse-Jev-4B` model. The upstream repository still pins 0.1.7-rc.2 and is rejected by the compatibility check on a 0.2.0-rc.2 Host.
+
+Configure the Jev page with the endpoint `https://tokenrhythm.studio/v1/systemone`, the model `NeoHorse-Jev-4B`, and a credential reference of your choice. The API key itself is saved through the page's key control, never in source files or a repository URL.
+
+## Install through the Web UI (other DSH Web hosts)
+
+If you already use **DSH 0.2.0-rc.2 Web**, paste the same GitHub repository URL above: open **Plugins in the sidebar → Add plugin**, paste the address, click **Install**, then click **Enable now**; restart the current profile only if DSH says it will load on the next start. The repository includes the plugin entry and prebuilt files, so installation does not compile source on the user's machine or require an npm registry publication. The Host needs pnpm and access to GitHub.
 
 ## Install from source (developers)
 
