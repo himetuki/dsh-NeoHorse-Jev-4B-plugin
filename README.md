@@ -10,7 +10,7 @@ The main model continues to plan, generate answers, and call native tools. The p
 
 This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin tested with **DSH 0.1.7-rc.2**; its APIs and model judgments are not a correctness guarantee.
 
-The [Chinese feature website](https://luobosibing2.github.io/deepseek-harness-jev/) explains each DSH integration point, the information sent to Jev, and the observed test cases and limits.
+The [Chinese feature website](https://luobosibing2.github.io/dsh-jev-plugin/) explains each DSH integration point, the information sent to Jev, and the observed test cases and limits.
 
 ## What is included?
 
@@ -151,6 +151,10 @@ Disable individual features in the Jev page. For package removal, consult `dsh p
 The project is named `deepseek-harness-jev`; its internal package and import identifier remains `@dsh-jev/plugin`, matching existing profile plugin configurations.
 
 The repository root is the GitHub install entry; `packages/jev` retains development sources. `pnpm run build` also regenerates `runtime/`; commit these generated files when releasing source changes.
+
+Maintainers can use the [DeepSWE paired-evaluation runner](bench/deepswe/README.md) for coding tasks and the [glob-ranking pipeline](bench/selection/README.md) for fixed path-selection cases. Both use isolated DSH/Pier trials and keep model execution separate from offline checks and reports. The [Chinese evaluation guide](bench/deepswe/README.zh-CN.md) covers the coding-task workflow.
+
+The [public glob experiment](docs/testing/2026-10-01-glob-ranking/README.md) records six synthetic cases and 12 real DeepSeek/Jev trials: four successful Jev judgments returned 69 scores, while zero and 41 candidates bypassed ranking. It retains quality failures, recovery checks, source-read counts, and estimated costs. The historical run used a pinned earlier plugin artifact; the maintained pipeline does not imply the current `main` was rerun or that general task success improved.
 
 ```sh
 pnpm run typecheck

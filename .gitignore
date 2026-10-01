@@ -8,6 +8,8 @@ packages/typert-protocol-reference/node_modules
 *.tgz
 dist/
 .artifacts/
+__pycache__/
+*.py[cod]
 .env
 .env.*
 !.env.example
