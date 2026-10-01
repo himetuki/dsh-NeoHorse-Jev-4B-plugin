@@ -1,10 +1,10 @@
-# deepseek-harness-jev
+# dsh-NeoHorse-Jev-4B-plugin
 
 English | [简体中文](README.md)
 
 **Native DeepSeek Harness (DSH) plugin for the TokenRhythm NeoHorse-Jev-4B decision model.**
 
-`deepseek-harness-jev` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [TokenRhythm](https://tokenrhythm.studio/)'s `NeoHorse-Jev-4B` decision model for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, single-operation approval assistance, and historical stage navigation. Its 12 features are individually configurable from one Jev settings page and are all disabled by default.
+`dsh-NeoHorse-Jev-4B-plugin` connects [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) to [TokenRhythm](https://tokenrhythm.studio/)'s `NeoHorse-Jev-4B` decision model for agent skill and file selection, task supervision, shared-finding corrections, tool-output filtering, single-operation approval assistance, and historical stage navigation. Its 12 features are individually configurable from one Jev settings page and are all disabled by default.
 
 The main model continues to plan, generate answers, and call native tools. The plugin automatically invokes enabled Jev judgments at DSH extension points for skill catalogs, agent lifecycle, tool results, and approvals, then applies results according to each feature. DSH configures the main model; Jev has a separate connection. Integration uses public Cordis / DSH plugin APIs without modifying the host source.
 
@@ -144,7 +144,7 @@ Disable individual features in the Jev page. For package removal, consult `dsh p
 
 ## Development
 
-The project is named `deepseek-harness-jev`; its internal package and import identifier remains `@dsh-jev/plugin`, matching existing profile plugin configurations.
+The project is named `dsh-NeoHorse-Jev-4B-plugin`; its internal package and import identifier remains `@dsh-jev/plugin`, matching existing profile plugin configurations.
 
 The repository root is the GitHub install entry; `packages/jev` retains development sources. `pnpm run build` also regenerates `runtime/`; commit these generated files when releasing source changes.
 

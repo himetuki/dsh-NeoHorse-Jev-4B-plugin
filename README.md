@@ -1,10 +1,10 @@
-# deepseek-harness-jev
+# dsh-NeoHorse-Jev-4B-plugin
 
 [English](readme_en.md) | 简体中文
 
 **DeepSeek Harness（DSH）的原生 Jev 类决策插件：按需接入基元律动 NeoHorse-Jev-4B。**
 
-`deepseek-harness-jev` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与[基元律动（TokenRhythm）](https://tokenrhythm.studio/)的 `NeoHorse-Jev-4B` 决策模型连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选、单次操作审批和历史轨迹阶段导航。12 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
+`dsh-NeoHorse-Jev-4B-plugin` 将 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) 与[基元律动（TokenRhythm）](https://tokenrhythm.studio/)的 `NeoHorse-Jev-4B` 决策模型连接起来，为 Agent 提供技能与文件选择、任务监督、共享发现纠正、工具日志筛选、单次操作审批和历史轨迹阶段导航。12 项功能可在同一个 Jev 设置页分别开启，默认全部关闭。
 
 主模型继续负责规划、生成回答和调用原生工具；插件在 DSH 的技能目录、Agent 生命周期、工具结果与审批等扩展点自动发起已启用的 Jev 判断，再按对应功能应用结果。主模型由 DSH 配置，Jev 连接单独配置。接入基于公开的 Cordis / DSH 插件接口，无需修改宿主源码。
 
@@ -144,7 +144,7 @@ dsh --profile jev
 
 ## 开发
 
-项目名称为 `deepseek-harness-jev`；内部安装包与导入标识保留 `@dsh-jev/plugin`，与已有 profile 的插件配置一致。
+项目名称为 `dsh-NeoHorse-Jev-4B-plugin`；内部安装包与导入标识保留 `@dsh-jev/plugin`，与已有 profile 的插件配置一致。
 
 仓库根目录是 GitHub 安装入口，`packages/jev` 保留开发源码；`pnpm run build` 会同步生成 `runtime/`，发布源码改动时应一并提交这些生成文件。
 
