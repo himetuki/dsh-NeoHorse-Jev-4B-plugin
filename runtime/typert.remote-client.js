@@ -598,7 +598,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/cancelStageAnalysis:result',
         create: _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":205,"column":3},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":206,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/getCredentialStatus',
@@ -613,7 +613,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevCredentialStatus',
         create: _dsh_jev_plugin_jev_getCredentialStatus_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":215,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":216,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/getRecord',
@@ -638,7 +638,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/getRecord:result',
         create: _dsh_jev_plugin_jev_getRecord_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":177,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":178,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/getStageAnalysisRecord',
@@ -684,7 +684,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/getStageAnalysisRecord:result',
         create: _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":209,"column":3},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":210,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/getStageNavigation',
@@ -710,7 +710,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/stage-types#StageNavigationSnapshot',
         create: _dsh_jev_plugin_jev_getStageNavigation_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":193,"column":3},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":194,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/listFeatures',
@@ -725,7 +725,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin#jev/listFeatures:result',
         create: _dsh_jev_plugin_jev_listFeatures_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":161,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":162,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/listRecords',
@@ -750,7 +750,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevRecordPage',
         create: _dsh_jev_plugin_jev_listRecords_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":168,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":169,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/setCredential',
@@ -775,7 +775,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevCredentialStatus',
         create: _dsh_jev_plugin_jev_setCredential_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":222,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":223,"column":9},
     },
     {
       id: '@dsh-jev/plugin#jev/startStageAnalysis',
@@ -800,7 +800,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/stage-types#StageBatchState',
         create: _dsh_jev_plugin_jev_startStageAnalysis_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":199,"column":3},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":200,"column":3},
     },
     {
       id: '@dsh-jev/plugin#jev/testConnection',
@@ -816,7 +816,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: '@dsh-jev/plugin/types#JevProbeResult',
         create: _dsh_jev_plugin_jev_testConnection_result$schema,
       },
-      sourceLocation: {"file":"packages/jev/src/index.ts","line":230,"column":9},
+      sourceLocation: {"file":"packages/jev/src/index.ts","line":231,"column":9},
     },
   ],
 }

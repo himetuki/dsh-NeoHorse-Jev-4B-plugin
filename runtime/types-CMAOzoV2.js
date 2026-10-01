@@ -34,6 +34,7 @@ function validateRequest(request) {
 		switch (question.kind) {
 			case "choice": {
 				if (!Array.isArray(question.options) || question.options.length === 0) throw new TypeError(`Jev choice ${question.id} needs options`);
+				if (question.options.length > 255) throw new TypeError(`Jev choice ${question.id} supports at most 255 options`);
 				const choices = /* @__PURE__ */ new Set();
 				for (const option of question.options) {
 					if (typeof option.id !== "string" || option.id.length === 0 || choices.has(option.id) || option.description !== null && !input(option.description)) throw new TypeError(`Jev choice ${question.id} has an invalid option`);
@@ -155,6 +156,21 @@ function parseProbabilities(value, allowed, id) {
 //#region packages/jev/lib/types/adapter.js
 /** Dedicated System One adapter used only by JevService's typed one-shot calls. */
 const JEV_PROVIDER = "jev-system-one";
+/**
+* NeoHorse-Jev-4B accepts at most 16 plain-text questions per call and rejects
+* a larger batch. A judgment that needs more questions is split into ordered
+* batches whose answers are merged back into one response, so consumers keep
+* one typed judgment per operation.
+*/
+const MAX_QUESTIONS_PER_CALL = 16;
+/** Provider ceiling for one plain-text request body: 1 MiB. */
+const MAX_REQUEST_BYTES = 1048576;
+/** Provider-independent ceiling on one response body, retained from the single-call guard. */
+const MAX_RESPONSE_CHARS = 2e6;
+/** Bounded provider error facts retained beside a failure for troubleshooting. */
+const MAX_ERROR_DETAIL_CHARS = 400;
+/** Bounded bytes read from a failing response body. */
+const MAX_ERROR_BODY_CHARS = 4096;
 /** The adapter never advertises a chat model and rejects calls lacking a service-issued nonce. */
 var JevAdapter = class extends LlmAdapter {
 	pending = /* @__PURE__ */ new Map();
@@ -183,33 +199,8 @@ var JevAdapter = class extends LlmAdapter {
 		if (call === void 0 || options.model !== call.connection.model || JSON.stringify(request) !== JSON.stringify(call.request)) throw new LlmError("Jev accepts only issued typed judgments", "UNSUPPORTED_OPTION");
 		const { connection } = call;
 		if (call.canStart?.() === false) throw new LlmError("Jev feature was disabled before dispatch", "FEATURE_DISABLED");
-		const response = await fetch(connection.baseUrl, {
-			method: "POST",
-			headers: {
-				...attributionHeaders(),
-				authorization: `Bearer ${connection.apiKey}`,
-				"content-type": "application/json",
-				accept: "application/json"
-			},
-			body: JSON.stringify(wireBody(connection.model, request)),
-			signal: options.signal
-		}).catch((error) => {
-			if (options.signal?.aborted) throw new LlmError("Jev request was cancelled or timed out", "ABORTED");
-			throw new LlmError("Jev service could not be reached", "NETWORK", { cause: error });
-		});
-		if (!response.ok) {
-			const code = response.status === 401 || response.status === 403 ? "AUTH" : response.status === 402 ? "PAYMENT_REQUIRED" : response.status === 429 ? "RATE_LIMIT" : response.status >= 500 ? "SERVER" : "BAD_REQUEST";
-			throw new LlmError(`Jev service returned HTTP ${response.status}`, code, { status: response.status });
-		}
-		const raw = await response.text();
-		if (raw.length > 2e6) throw new LlmError("Jev response exceeds 2 MB", "INVALID_RESPONSE");
-		let json;
-		try {
-			json = JSON.parse(raw);
-		} catch {
-			throw new LlmError("Jev response is not JSON", "INVALID_RESPONSE");
-		}
-		const text = JSON.stringify(json);
+		const merged = await this.dispatch(connection, request, options.signal);
+		const text = JSON.stringify(merged);
 		yield {
 			type: "block-start",
 			index: 0,
@@ -232,6 +223,87 @@ var JevAdapter = class extends LlmAdapter {
 			type: "finish",
 			reason: { kind: "stop" }
 		};
+	}
+	/**
+	* Send one request per ≤16-question batch and merge every batch answer into a
+	* single System One response body. Local input is never truncated: an
+	* oversized body fails before dispatch, and a partial batch set fails as a whole.
+	*/
+	async dispatch(connection, request, signal) {
+		const batches = [];
+		for (let index = 0; index < request.questions.length; index += MAX_QUESTIONS_PER_CALL) batches.push(request.questions.slice(index, index + MAX_QUESTIONS_PER_CALL));
+		const answers = {};
+		let model;
+		let extensions;
+		let usageComplete = true;
+		let inputTokens = 0;
+		let outputTokens = 0;
+		for (const [index, questions] of batches.entries()) {
+			if (signal?.aborted) throw new LlmError("Jev request was cancelled or timed out", "ABORTED");
+			const payload = JSON.stringify(wireBody(connection.model, {
+				state: request.state,
+				questions
+			}));
+			const bytes = new TextEncoder().encode(payload).length;
+			if (bytes > MAX_REQUEST_BYTES) throw new LlmError(`Jev request body is ${String(bytes)} bytes, above the provider's 1 MiB limit; reduce the judgment input`, "BAD_REQUEST");
+			const answered = await this.post(connection, payload, signal);
+			const batchAnswers = answered.answers;
+			if (typeof batchAnswers !== "object" || batchAnswers === null || Array.isArray(batchAnswers)) throw new LlmError("Jev response has no answers object", "INVALID_RESPONSE");
+			for (const [id, value] of Object.entries(batchAnswers)) answers[id] = value;
+			if (index === 0) {
+				if (answered.model !== void 0) model = answered.model;
+				if (answered.extensions !== void 0) extensions = answered.extensions;
+			}
+			const batchUsage = readUsage(answered.usage);
+			if (batchUsage === void 0) usageComplete = false;
+			else {
+				inputTokens += batchUsage.inputTokens;
+				outputTokens += batchUsage.outputTokens;
+			}
+		}
+		return {
+			...model === void 0 ? {} : { model },
+			answers,
+			...usageComplete && batches.length > 0 ? { usage: {
+				input_tokens: inputTokens,
+				output_tokens: outputTokens
+			} } : {},
+			...extensions === void 0 ? {} : { extensions }
+		};
+	}
+	/** One non-streaming JSON POST with the provider's error envelope preserved. */
+	async post(connection, payload, signal) {
+		const response = await fetch(connection.baseUrl, {
+			method: "POST",
+			headers: {
+				...attributionHeaders(),
+				authorization: `Bearer ${connection.apiKey}`,
+				"content-type": "application/json",
+				accept: "application/json"
+			},
+			body: payload,
+			signal
+		}).catch((error) => {
+			if (signal?.aborted) throw new LlmError("Jev request was cancelled or timed out", "ABORTED");
+			throw new LlmError("Jev service could not be reached", "NETWORK", { cause: error });
+		});
+		if (!response.ok) throw await this.failure(response);
+		const raw = await response.text();
+		if (raw.length > MAX_RESPONSE_CHARS) throw new LlmError("Jev response exceeds 2 MB", "INVALID_RESPONSE");
+		let json;
+		try {
+			json = JSON.parse(raw);
+		} catch {
+			throw new LlmError("Jev response is not JSON", "INVALID_RESPONSE");
+		}
+		if (typeof json !== "object" || json === null || Array.isArray(json)) throw new LlmError("Jev response is not a JSON object", "INVALID_RESPONSE");
+		return json;
+	}
+	/** Map one provider status to a stable code and keep its code/message/traceId for troubleshooting. */
+	async failure(response) {
+		const code = response.status === 401 || response.status === 403 ? "AUTH" : response.status === 402 ? "PAYMENT_REQUIRED" : response.status === 429 ? "RATE_LIMIT" : response.status >= 500 ? "SERVER" : "BAD_REQUEST";
+		const detail = await providerDetail(response);
+		return new LlmError(`Jev service returned HTTP ${String(response.status)}${detail === void 0 ? "" : ` (${detail})`}`, code, { status: response.status });
 	}
 	envelope(options) {
 		if (options.provider !== "jev-system-one" || options.system !== void 0 || options.tools !== void 0 || options.temperature !== void 0 || options.stop !== void 0 || options.maxTokens !== void 0 || options.reasoningEffort !== void 0 || options.messages.length !== 1) throw new LlmError("Jev is not a chat model", "UNSUPPORTED_OPTION");
@@ -260,6 +332,52 @@ var JevAdapter = class extends LlmAdapter {
 		};
 	}
 };
+/** Read the provider's optional `usage` counts; an unusable shape is reported as unknown rather than guessed. */
+function readUsage(value) {
+	if (typeof value !== "object" || value === null || Array.isArray(value)) return void 0;
+	const input = value.input_tokens;
+	const output = value.output_tokens;
+	if (!Number.isSafeInteger(input) || !Number.isSafeInteger(output) || input < 0 || output < 0) return void 0;
+	return {
+		inputTokens: input,
+		outputTokens: output
+	};
+}
+/** Bounded provider error facts (`code`, `message`, `traceId`) with credential-shaped text removed. */
+async function providerDetail(response) {
+	let text;
+	try {
+		text = (await response.text()).slice(0, MAX_ERROR_BODY_CHARS);
+	} catch {
+		return;
+	}
+	const parts = [];
+	try {
+		const parsed = JSON.parse(text);
+		if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+			const envelope = parsed;
+			for (const key of [
+				"code",
+				"message",
+				"traceId"
+			]) {
+				const value = envelope[key];
+				if (typeof value === "string" && value.trim() !== "") parts.push(`${key}=${redact(value.trim())}`);
+			}
+		}
+	} catch {}
+	if (parts.length === 0) {
+		const summary = redact(text.replaceAll(/\s+/gu, " ").trim());
+		if (summary !== "") parts.push(`body=${summary}`);
+	}
+	if (parts.length === 0) return void 0;
+	const detail = parts.join("; ");
+	return detail.length > MAX_ERROR_DETAIL_CHARS ? `${detail.slice(0, MAX_ERROR_DETAIL_CHARS)}…` : detail;
+}
+/** Remove credential-shaped text before provider words reach a profile record. */
+function redact(text) {
+	return text.replaceAll(/sk[-_][A-Za-z0-9_-]{6,}/gu, "[redacted-key]").replaceAll(/Bearer\s+[A-Za-z0-9._~+/=-]{8,}/gu, "Bearer [redacted]");
+}
 //#endregion
 //#region packages/jev/lib/types/ledger.js
 /** Profile-scoped durable operation, attempt, and action records. */
@@ -709,9 +827,9 @@ const PROBE = {
 /** Validated live configuration presented through DSH settings. */
 const Config = s.object({
 	baseUrl: s.string().pattern(/^(?:$|https?:\/\/(?:\[[0-9a-fA-F:]+\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?(?:\/[^?#\s]*)?)$/).default("").volatile(),
-	model: s.string().pattern(/^[^\s]+$/).default("jev-latest").volatile(),
+	model: s.string().pattern(/^[^\s]+$/).default("NeoHorse-Jev-4B").volatile(),
 	credentialRef: s.string().pattern(/^[A-Za-z_][A-Za-z0-9_]*$/).default("JEV_API_KEY").volatile(),
-	timeoutMs: s.number().step(1).min(1).max(3e5).default(1e4).volatile(),
+	timeoutMs: s.number().step(1).min(1).max(3e5).default(3e4).volatile(),
 	features: s.dict(s.boolean()).default({}).volatile()
 });
 function safeFailure(error) {
@@ -730,10 +848,13 @@ function safeFailure(error) {
 			"NETWORK",
 			"ABORTED",
 			"TIMEOUT"
-		].includes(code)) return {
-			code,
-			message: `Jev ${code.toLowerCase().replaceAll("_", " ")}`
-		};
+		].includes(code)) {
+			const detail = error.message.trim();
+			return {
+				code,
+				message: detail === "" ? `Jev ${code.toLowerCase().replaceAll("_", " ")}` : detail.slice(0, 400)
+			};
+		}
 	}
 	return {
 		code: "SERVICE_FAILURE",
@@ -981,8 +1102,8 @@ let JevService = (() => {
 			return this.stages().cancel(batchId);
 		}
 		/** Load exact persisted input and raw Jev answer for one selected step. */
-		getStageAnalysisRecord(sessionId, stepId) {
-			return this.stages().detail(sessionId, stepId);
+		getStageAnalysisRecord(sessionId, stepId, recordId) {
+			return this.stages().detail(sessionId, stepId, recordId);
 		}
 		/** Report credential presence, source, and writability without its value. */
 		async getCredentialStatus() {
@@ -1283,7 +1404,11 @@ let JevService = (() => {
 						if (chunk.type === "block-end" && chunk.block.type === "text") text = chunk.block.text;
 						if (chunk.type === "finish") {
 							finished = true;
-							if (chunk.reason.kind === "error" || chunk.reason.kind === "aborted") throw new JevError(outerSignal?.aborted ? "CANCELLED" : timeout.aborted ? "TIMEOUT" : chunk.reason.failure.code, outerSignal?.aborted ? "Jev operation was cancelled" : timeout.aborted ? "Jev request timed out" : "Jev request failed");
+							if (chunk.reason.kind === "error" || chunk.reason.kind === "aborted") {
+								const provider = chunk.reason.failure;
+								const detail = provider.message.trim();
+								throw new JevError(outerSignal?.aborted ? "CANCELLED" : timeout.aborted ? "TIMEOUT" : provider.code, outerSignal?.aborted ? "Jev operation was cancelled" : timeout.aborted ? "Jev request timed out" : detail === "" ? "Jev request failed" : detail.slice(0, 400));
+							}
 							if (chunk.reason.kind !== "stop") throw new JevError("INVALID_RESPONSE", "Jev did not complete a typed answer");
 						}
 					}

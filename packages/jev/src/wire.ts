@@ -34,6 +34,7 @@ export function validateRequest(request: JevRequest): void {
     switch (question.kind) {
       case 'choice': {
         if (!Array.isArray(question.options) || question.options.length === 0) throw new TypeError(`Jev choice ${question.id} needs options`)
+        if (question.options.length > 255) throw new TypeError(`Jev choice ${question.id} supports at most 255 options`)
         const choices = new Set<string>()
         for (const option of question.options) {
           if (typeof option.id !== 'string' || option.id.length === 0 || choices.has(option.id)

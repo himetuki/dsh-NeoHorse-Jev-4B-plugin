@@ -8,7 +8,7 @@ English | [简体中文](README.zh-CN.md) | [中文功能与实测网站](https:
 
 The main model continues to plan, generate answers, and call native tools. The plugin automatically invokes enabled Jev judgments at DSH extension points for skill catalogs, agent lifecycle, tool results, and approvals, then applies results according to each feature. DSH configures the main model; Jev has a separate connection. Integration uses public Cordis / DSH plugin APIs without modifying the host source.
 
-This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin tested with **DSH 0.1.7-rc.2**; its APIs and model judgments are not a correctness guarantee.
+This is an independent community project, not an official DeepSeek or Jev release. It is an early-stage plugin tested with **DSH 0.2.0-rc.2**; its APIs and model judgments are not a correctness guarantee.
 
 The [Chinese feature website](https://luobosibing2.github.io/dsh-jev-plugin/) explains each DSH integration point, the information sent to Jev, and the observed test cases and limits.
 
@@ -49,7 +49,7 @@ Each classification covers one complete DSH model step: its recorded reasoning, 
 
 ## Install through the Web UI (recommended)
 
-If you already use **DSH 0.1.7-rc.2 Web**, install directly from the GitHub repository URL. No source checkout, manual packaging, or npm login is required.
+If you already use **DSH 0.2.0-rc.2 Web**, install directly from the GitHub repository URL. No source checkout, manual packaging, or npm login is required.
 
 1. Open **Plugins in the sidebar → Add plugin**.
 2. Paste the GitHub URL below into **Package name or address**, then click **Install**.
@@ -76,13 +76,13 @@ Use the following steps when modifying or building the plugin yourself. Existing
 
 - Node.js **24.11 or later** is recommended; the publication build is checked on Node 24.14.1.
 - pnpm **11.7.0** available on `PATH`.
-- DeepSeek Harness CLI **0.1.7-rc.2**. The plugin pins the corresponding DSH peers and Cordis **4.0.4**; newer versions are not automatically supported.
+- DeepSeek Harness CLI **0.2.0-rc.2**. The plugin pins the corresponding DSH peers and Cordis **4.0.4**; newer versions are not automatically supported.
 - A configured main-model provider in DSH, plus your own Jev-compatible System One endpoint and credentials.
 
 If needed, install the tools:
 
 ```sh
-npm install --global pnpm@11.7.0 @deepseek-ai/dsh@0.1.7-rc.2
+npm install --global pnpm@11.7.0 @deepseek-ai/dsh@0.2.0-rc.2
 ```
 
 ### Build the package
@@ -116,13 +116,17 @@ Open the authenticated Web address printed by DSH. Configure your main model thr
 
 ## Configure Jev
 
-1. Set the full System One endpoint, for example `https://api.typesafe.ai/v1/systemone`.
-2. Set the model, for example `jev-latest`.
+1. Set the full System One endpoint. The tested NeoHorse-Jev-4B endpoint is `https://tokenrhythm.studio/v1/systemone`; a TypeSafe endpoint such as `https://api.typesafe.ai/v1/systemone` also works.
+2. Set the model. For TokenRhythm the model id is fixed: `NeoHorse-Jev-4B`.
 3. Choose a DSH credential reference, save the connection, and save your API key using the page's credential control. Do not put a key in source files or a repository URL.
 4. Review the timeout, then enable only the features you need.
 5. Inspect **Decision records** for input, answers, attempts, and actual adoption or execution receipts.
 
 The main agent's provider and the Jev judgment connection are separate. A credential marked “configured” is not a successful connectivity test. Connection tests and enabled judgments make requests to your provider.
+
+### Provider limits
+
+The provider accepts at most 16 plain-text questions per request, so a judgment that needs more (skill and file ranking, test-log candidates) is split into ordered batches of 16 and the answers are merged back into one typed judgment. Judgments are never truncated locally: a request body above the provider's 1 MiB ceiling fails before it is sent, and one failed batch fails the whole judgment. A refused request keeps the provider's `code`, `message`, and `traceId` on the failure record for troubleshooting, with credential-shaped text removed. The default per-attempt timeout is 30 seconds because a batched judgment may take several calls.
 
 Selection defaults are 5 skill summaries, at most 40 glob matches eligible for ranking, and 12 displayed ranked paths. A larger glob skips Jev rather than silently judging only the first 40. Supervision defaults are a drift check every 6 completed model steps and a pause after 3 native goal rounds without progress. These values can be changed without enabling the features.
 

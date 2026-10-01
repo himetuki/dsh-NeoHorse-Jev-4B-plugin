@@ -16,6 +16,16 @@ export declare class JevAdapter extends LlmAdapter {
         release: () => void;
     };
     stream(options: GenerateOptions): AsyncIterable<StreamChunk>;
+    /**
+     * Send one request per ≤16-question batch and merge every batch answer into a
+     * single System One response body. Local input is never truncated: an
+     * oversized body fails before dispatch, and a partial batch set fails as a whole.
+     */
+    private dispatch;
+    /** One non-streaming JSON POST with the provider's error envelope preserved. */
+    private post;
+    /** Map one provider status to a stable code and keep its code/message/traceId for troubleshooting. */
+    private failure;
     private envelope;
 }
 //# sourceMappingURL=adapter.d.ts.map

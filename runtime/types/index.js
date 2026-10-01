@@ -57,9 +57,9 @@ const PROBE = {
 /** Validated live configuration presented through DSH settings. */
 export const Config = s.object({
     baseUrl: s.string().pattern(/^(?:$|https?:\/\/(?:\[[0-9a-fA-F:]+\]|[A-Za-z0-9.-]+)(?::[0-9]{1,5})?(?:\/[^?#\s]*)?)$/).default('').volatile(),
-    model: s.string().pattern(/^[^\s]+$/).default('jev-latest').volatile(),
+    model: s.string().pattern(/^[^\s]+$/).default('NeoHorse-Jev-4B').volatile(),
     credentialRef: s.string().pattern(/^[A-Za-z_][A-Za-z0-9_]*$/).default('JEV_API_KEY').volatile(),
-    timeoutMs: s.number().step(1).min(1).max(300_000).default(10_000).volatile(),
+    timeoutMs: s.number().step(1).min(1).max(300_000).default(30_000).volatile(),
     features: s.dict(s.boolean()).default({}).volatile(),
 });
 function safeFailure(error) {
@@ -68,7 +68,8 @@ function safeFailure(error) {
     if (error instanceof Error && 'code' in error && typeof error.code === 'string') {
         const code = error.code;
         if (['AUTH', 'PAYMENT_REQUIRED', 'RATE_LIMIT', 'SERVER', 'BAD_REQUEST', 'NETWORK', 'ABORTED', 'TIMEOUT'].includes(code)) {
-            return { code, message: `Jev ${code.toLowerCase().replaceAll('_', ' ')}` };
+            const detail = error.message.trim();
+            return { code, message: detail === '' ? `Jev ${code.toLowerCase().replaceAll('_', ' ')}` : detail.slice(0, 400) };
         }
     }
     return { code: 'SERVICE_FAILURE', message: 'Jev request failed' };
@@ -467,7 +468,10 @@ let JevService = (() => {
                         if (chunk.type === 'finish') {
                             finished = true;
                             if (chunk.reason.kind === 'error' || chunk.reason.kind === 'aborted') {
-                                throw new JevError(outerSignal?.aborted ? 'CANCELLED' : timeout.aborted ? 'TIMEOUT' : chunk.reason.failure.code, outerSignal?.aborted ? 'Jev operation was cancelled' : timeout.aborted ? 'Jev request timed out' : 'Jev request failed');
+                                const provider = chunk.reason.failure;
+                                const detail = provider.message.trim();
+                                throw new JevError(outerSignal?.aborted ? 'CANCELLED' : timeout.aborted ? 'TIMEOUT' : provider.code, outerSignal?.aborted ? 'Jev operation was cancelled' : timeout.aborted ? 'Jev request timed out'
+                                    : detail === '' ? 'Jev request failed' : detail.slice(0, 400));
                             }
                             if (chunk.reason.kind !== 'stop')
                                 throw new JevError('INVALID_RESPONSE', 'Jev did not complete a typed answer');
