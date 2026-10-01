@@ -147,6 +147,14 @@ For an existing profile, rebuild and pack, then install the new tarball with `ds
 
 Disable individual features in the Jev page. For package removal, consult `dsh plugin --help` for the CLI version you have installed. Removing or switching the package can remove branch-specific features; keep a profile backup before replacing an experimental branch build.
 
+### Mutually exclusive with the upstream plugin
+
+This plugin and upstream `@dsh-jev/plugin` are two versions of the same plugin, and **only one of them can be installed in a profile**:
+
+- A DSH version accepts only one: upstream pins `0.1.7-rc.2`, this fork pins `0.2.0-rc.2`, and a mismatch is refused by the DSH compatibility check.
+- Both use the same row ids (`jev`, `jev-selection`, ...) and the same service and page namespaces (`ctx.jev`, the `jev` Remote namespace, the `jev.plugin` / `jev.stage` client namespaces). Even if the version check is bypassed, DSH only **silently appends** the duplicate rows — a measured run composed 18 rows instead of 9 with no dedicated error — and the conflict then surfaces at service registration.
+- Remove the other plugin before switching sources. The package names differ, so the plugin manager does not treat them as the same package.
+
 ## Development
 
 The project is named `dsh-NeoHorse-Jev-4B-plugin`; its package identifier is `@himetuki/dsh-neohorse-jev-4b-plugin`, the name DSH lists and installs.
