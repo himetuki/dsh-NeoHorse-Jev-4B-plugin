@@ -1,5 +1,5 @@
 {
-  "name": "@dsh-jev/plugin",
+  "name": "@himetuki/dsh-neohorse-jev-4b-plugin",
   "version": "0.1.0",
   "description": "dsh-NeoHorse-Jev-4B-plugin: native DeepSeek Harness (DSH) plugin connecting the TokenRhythm NeoHorse-Jev-4B decision model for selection, supervision, corrections, tool-output filtering, and approvals",
   "type": "module",

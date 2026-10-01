@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-	id: "@dsh-jev/plugin",
+	id: "@himetuki/dsh-neohorse-jev-4b-plugin",
 	factory: (require) => {
 		var module = { exports: {} };
 		var exports = module.exports;
@@ -5630,20 +5630,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			array(lazy(() => JsonRemoteCodec$schema2())),
 			record(string(), lazy(() => JsonRemoteCodec$schema2())).readonly()
 		]);
-		let _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema = () => _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema$value ??= string();
-		let _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value;
-		const _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema = () => _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema$value ??= _void();
-		let _dsh_jev_plugin_jev_getCredentialStatus_result$schema$value;
-		const _dsh_jev_plugin_jev_getCredentialStatus_result$schema = () => _dsh_jev_plugin_jev_getCredentialStatus_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_parameter_0$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_result$schema$value ??= _void();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getCredentialStatus_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getCredentialStatus_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getCredentialStatus_result$schema$value ??= object({
 			"configured": boolean(),
 			"writable": boolean(),
 			"source": union([_undefined(), string()]).optional()
 		});
-		let _dsh_jev_plugin_jev_getRecord_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_getRecord_parameter_0$schema = () => _dsh_jev_plugin_jev_getRecord_parameter_0$schema$value ??= string();
-		let _dsh_jev_plugin_jev_getRecord_result$schema$value;
-		const _dsh_jev_plugin_jev_getRecord_result$schema = () => _dsh_jev_plugin_jev_getRecord_result$schema$value ??= union([literal(null), object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_parameter_0$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_result$schema$value ??= union([literal(null), object({
 			"link": object({
 				"sessionId": union([_undefined(), string()]).optional(),
 				"runId": union([_undefined(), string()]).optional(),
@@ -5968,14 +5968,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			]).optional(),
 			"diagnostic": boolean()
 		})]);
-		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value ??= string();
-		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value;
-		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value ??= string();
-		let _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value;
-		const _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value ??= union([_undefined(), string()]);
-		let _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value;
-		const _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema = () => _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema$value ??= union([literal(null), object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_0$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_1$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_1$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_2$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_2$schema$value ??= union([_undefined(), string()]);
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_result$schema$value ??= union([literal(null), object({
 			"id": string(),
 			"sessionId": string(),
 			"stepId": string(),
@@ -6279,10 +6279,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				"updatedAt": union([_undefined(), string()]).optional()
 			})]).optional()
 		})]);
-		let _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema = () => _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema$value ??= string();
-		let _dsh_jev_plugin_jev_getStageNavigation_result$schema$value;
-		const _dsh_jev_plugin_jev_getStageNavigation_result$schema = () => _dsh_jev_plugin_jev_getStageNavigation_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_parameter_0$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_result$schema$value ??= object({
 			"sessionId": string(),
 			"cursor": number(),
 			"featureEnabled": boolean(),
@@ -6658,16 +6658,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				})]).optional()
 			})]).optional()
 		});
-		let _dsh_jev_plugin_jev_listFeatures_result$schema$value;
-		const _dsh_jev_plugin_jev_listFeatures_result$schema = () => _dsh_jev_plugin_jev_listFeatures_result$schema$value ??= array(object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_listFeatures_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_listFeatures_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_listFeatures_result$schema$value ??= array(object({
 			"enabled": boolean(),
 			"id": string(),
 			"name": string(),
 			"description": string(),
 			"settingsDescription": union([_undefined(), string()]).optional()
 		}));
-		let _dsh_jev_plugin_jev_listRecords_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_listRecords_parameter_0$schema = () => _dsh_jev_plugin_jev_listRecords_parameter_0$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_parameter_0$schema$value ??= object({
 			"featureId": union([_undefined(), string()]).optional(),
 			"status": union([
 				_undefined(),
@@ -6682,8 +6682,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"cursor": union([_undefined(), string()]).optional(),
 			"limit": union([_undefined(), number()]).optional()
 		});
-		let _dsh_jev_plugin_jev_listRecords_result$schema$value;
-		const _dsh_jev_plugin_jev_listRecords_result$schema = () => _dsh_jev_plugin_jev_listRecords_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_result$schema$value ??= object({
 			"items": array(object({
 				"id": string(),
 				"featureId": string(),
@@ -6712,16 +6712,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			})),
 			"nextCursor": union([_undefined(), string()]).optional()
 		});
-		let _dsh_jev_plugin_jev_setCredential_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_setCredential_parameter_0$schema = () => _dsh_jev_plugin_jev_setCredential_parameter_0$schema$value ??= string();
-		let _dsh_jev_plugin_jev_setCredential_result$schema$value;
-		const _dsh_jev_plugin_jev_setCredential_result$schema = () => _dsh_jev_plugin_jev_setCredential_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_parameter_0$schema$value ??= string();
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_result$schema$value ??= object({
 			"configured": boolean(),
 			"writable": boolean(),
 			"source": union([_undefined(), string()]).optional()
 		});
-		let _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value;
-		const _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema = () => _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_parameter_0$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_parameter_0$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_parameter_0$schema$value ??= object({
 			"sessionId": string(),
 			"scope": union([object({
 				"kind": literal("turn"),
@@ -6733,8 +6733,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				literal("refresh")
 			])
 		});
-		let _dsh_jev_plugin_jev_startStageAnalysis_result$schema$value;
-		const _dsh_jev_plugin_jev_startStageAnalysis_result$schema = () => _dsh_jev_plugin_jev_startStageAnalysis_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_result$schema$value ??= object({
 			"id": string(),
 			"sessionId": string(),
 			"status": union([
@@ -6752,8 +6752,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				"message": string()
 			})]).optional()
 		});
-		let _dsh_jev_plugin_jev_testConnection_result$schema$value;
-		const _dsh_jev_plugin_jev_testConnection_result$schema = () => _dsh_jev_plugin_jev_testConnection_result$schema$value ??= object({
+		let _himetuki_dsh_neohorse_jev_4b_plugin_jev_testConnection_result$schema$value;
+		const _himetuki_dsh_neohorse_jev_4b_plugin_jev_testConnection_result$schema = () => _himetuki_dsh_neohorse_jev_4b_plugin_jev_testConnection_result$schema$value ??= object({
 			"ok": boolean(),
 			"latencyMs": number(),
 			"recordId": string(),
@@ -6763,10 +6763,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			})]).optional()
 		});
 		const TYPERT_REMOTE = {
-			package: "@dsh-jev/plugin",
+			package: "@himetuki/dsh-neohorse-jev-4b-plugin",
 			descriptors: [
 				{
-					id: "@dsh-jev/plugin#jev/cancelStageAnalysis",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/cancelStageAnalysis",
 					service: "jev",
 					namespace: "jev",
 					method: "cancelStageAnalysis",
@@ -6777,14 +6777,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin#jev/cancelStageAnalysis:batchId",
-							create: _dsh_jev_plugin_jev_cancelStageAnalysis_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/cancelStageAnalysis:batchId",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_parameter_0$schema
 						}
 					}],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin#jev/cancelStageAnalysis:result",
-						create: _dsh_jev_plugin_jev_cancelStageAnalysis_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/cancelStageAnalysis:result",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_cancelStageAnalysis_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6793,7 +6793,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/getCredentialStatus",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getCredentialStatus",
 					service: "jev",
 					namespace: "jev",
 					method: "getCredentialStatus",
@@ -6801,8 +6801,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					parameters: [],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/types#JevCredentialStatus",
-						create: _dsh_jev_plugin_jev_getCredentialStatus_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/types#JevCredentialStatus",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getCredentialStatus_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6811,7 +6811,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/getRecord",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getRecord",
 					service: "jev",
 					namespace: "jev",
 					method: "getRecord",
@@ -6822,14 +6822,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin#jev/getRecord:id",
-							create: _dsh_jev_plugin_jev_getRecord_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getRecord:id",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_parameter_0$schema
 						}
 					}],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin#jev/getRecord:result",
-						create: _dsh_jev_plugin_jev_getRecord_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getRecord:result",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getRecord_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6838,7 +6838,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/getStageAnalysisRecord",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageAnalysisRecord",
 					service: "jev",
 					namespace: "jev",
 					method: "getStageAnalysisRecord",
@@ -6850,8 +6850,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							source: "json",
 							codec: {
 								mode: "strict",
-								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:sessionId",
-								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_0$schema
+								typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageAnalysisRecord:sessionId",
+								create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_0$schema
 							}
 						},
 						{
@@ -6860,8 +6860,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							source: "json",
 							codec: {
 								mode: "strict",
-								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:stepId",
-								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_1$schema
+								typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageAnalysisRecord:stepId",
+								create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_1$schema
 							}
 						},
 						{
@@ -6871,15 +6871,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							acceptsUndefined: true,
 							codec: {
 								mode: "strict",
-								typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:recordId",
-								create: _dsh_jev_plugin_jev_getStageAnalysisRecord_parameter_2$schema
+								typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageAnalysisRecord:recordId",
+								create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_parameter_2$schema
 							}
 						}
 					],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin#jev/getStageAnalysisRecord:result",
-						create: _dsh_jev_plugin_jev_getStageAnalysisRecord_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageAnalysisRecord:result",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageAnalysisRecord_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6888,7 +6888,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/getStageNavigation",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageNavigation",
 					service: "jev",
 					namespace: "jev",
 					method: "getStageNavigation",
@@ -6899,15 +6899,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin#jev/getStageNavigation:sessionId",
-							create: _dsh_jev_plugin_jev_getStageNavigation_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/getStageNavigation:sessionId",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_parameter_0$schema
 						}
 					}],
 					cancellation: { parameter: "signal" },
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/stage-types#StageNavigationSnapshot",
-						create: _dsh_jev_plugin_jev_getStageNavigation_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/stage-types#StageNavigationSnapshot",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_getStageNavigation_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6916,7 +6916,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/listFeatures",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/listFeatures",
 					service: "jev",
 					namespace: "jev",
 					method: "listFeatures",
@@ -6924,8 +6924,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					parameters: [],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin#jev/listFeatures:result",
-						create: _dsh_jev_plugin_jev_listFeatures_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/listFeatures:result",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_listFeatures_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6934,7 +6934,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/listRecords",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/listRecords",
 					service: "jev",
 					namespace: "jev",
 					method: "listRecords",
@@ -6945,14 +6945,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin/types#JevRecordFilter",
-							create: _dsh_jev_plugin_jev_listRecords_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/types#JevRecordFilter",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_parameter_0$schema
 						}
 					}],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/types#JevRecordPage",
-						create: _dsh_jev_plugin_jev_listRecords_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/types#JevRecordPage",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_listRecords_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6961,7 +6961,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/setCredential",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/setCredential",
 					service: "jev",
 					namespace: "jev",
 					method: "setCredential",
@@ -6972,14 +6972,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin#jev/setCredential:value",
-							create: _dsh_jev_plugin_jev_setCredential_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/setCredential:value",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_parameter_0$schema
 						}
 					}],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/types#JevCredentialStatus",
-						create: _dsh_jev_plugin_jev_setCredential_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/types#JevCredentialStatus",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_setCredential_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -6988,7 +6988,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/startStageAnalysis",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/startStageAnalysis",
 					service: "jev",
 					namespace: "jev",
 					method: "startStageAnalysis",
@@ -6999,14 +6999,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						source: "json",
 						codec: {
 							mode: "strict",
-							typeSymbol: "@dsh-jev/plugin/stage-types#StageAnalysisRequest",
-							create: _dsh_jev_plugin_jev_startStageAnalysis_parameter_0$schema
+							typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/stage-types#StageAnalysisRequest",
+							create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_parameter_0$schema
 						}
 					}],
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/stage-types#StageBatchState",
-						create: _dsh_jev_plugin_jev_startStageAnalysis_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/stage-types#StageBatchState",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_startStageAnalysis_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -7015,7 +7015,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				},
 				{
-					id: "@dsh-jev/plugin#jev/testConnection",
+					id: "@himetuki/dsh-neohorse-jev-4b-plugin#jev/testConnection",
 					service: "jev",
 					namespace: "jev",
 					method: "testConnection",
@@ -7024,8 +7024,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					cancellation: { parameter: "signal" },
 					result: {
 						mode: "strict",
-						typeSymbol: "@dsh-jev/plugin/types#JevProbeResult",
-						create: _dsh_jev_plugin_jev_testConnection_result$schema
+						typeSymbol: "@himetuki/dsh-neohorse-jev-4b-plugin/types#JevProbeResult",
+						create: _himetuki_dsh_neohorse_jev_4b_plugin_jev_testConnection_result$schema
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
@@ -7037,43 +7037,43 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		//#endregion
 //#region jev-css:JevPage.module.css
-		const tag$1 = "@dsh-jev/plugin/src\\client\\JevPage.module.css";
+		const tag$1 = "@himetuki/dsh-neohorse-jev-4b-plugin/src\\client\\JevPage.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tag$1) + "]") === null) {
 			const element = document.createElement("style");
-			element.dataset.plugin = "@dsh-jev/plugin";
+			element.dataset.plugin = "@himetuki/dsh-neohorse-jev-4b-plugin";
 			element.dataset.pluginCss = tag$1;
 			element.textContent = ".qwH4Ha_page{min-width:0;color:var(--dsw-alias-label-primary);flex-direction:column;gap:24px;padding:12px 0 24px;font-size:13px;line-height:20px;display:flex}.qwH4Ha_tabs{max-width:420px}.qwH4Ha_panel,.qwH4Ha_section,.qwH4Ha_form,.qwH4Ha_list,.qwH4Ha_record,.qwH4Ha_detail,.qwH4Ha_featureBody{flex-direction:column;display:flex}.qwH4Ha_panel{gap:24px}.qwH4Ha_section{gap:12px}.qwH4Ha_form{gap:14px}.qwH4Ha_list,.qwH4Ha_record{gap:8px}.qwH4Ha_detail{gap:12px}.qwH4Ha_featureBody{gap:2px;min-width:0}.qwH4Ha_heading{margin:0;font-size:14px;font-weight:500;line-height:22px}.qwH4Ha_row,.qwH4Ha_toolbar,.qwH4Ha_feature,.qwH4Ha_recordHead,.qwH4Ha_filters,.qwH4Ha_actions{align-items:center;gap:12px;display:flex}.qwH4Ha_feature,.qwH4Ha_recordHead{justify-content:space-between}.qwH4Ha_feature,.qwH4Ha_record{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);padding:12px}.qwH4Ha_featureTitle{font-weight:500}.qwH4Ha_description,.qwH4Ha_hint,.qwH4Ha_meta,.qwH4Ha_empty{color:var(--dsw-alias-label-secondary)}.qwH4Ha_description,.qwH4Ha_hint,.qwH4Ha_meta,.qwH4Ha_empty,.qwH4Ha_notice{margin:0}.qwH4Ha_hint{font-size:12px}.qwH4Ha_empty{padding:12px 0}.qwH4Ha_loading{justify-content:center;align-items:center;min-height:80px;display:flex}.qwH4Ha_toolbar,.qwH4Ha_actions{flex-wrap:wrap}.qwH4Ha_filters{flex-wrap:wrap;align-items:end}.qwH4Ha_field{flex-direction:column;flex:160px;gap:6px;min-width:0;display:flex}.qwH4Ha_field>span:first-child,.qwH4Ha_field>label{font-weight:500}.qwH4Ha_field input,.qwH4Ha_field select{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);width:100%;min-height:36px;color:var(--dsw-alias-label-primary);font:inherit;padding:6px 10px}.qwH4Ha_field input:focus-visible,.qwH4Ha_field select:focus-visible{outline:var(--dsw-focus-ring-width)solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}.qwH4Ha_field input[aria-invalid=true]{border-color:var(--dsw-alias-state-error-primary)}.qwH4Ha_notice{color:var(--dsw-alias-state-error-primary);font-size:13px}.qwH4Ha_success{color:var(--dsw-alias-state-success-primary)}.qwH4Ha_code{border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:10px;font-size:12px;line-height:18px;overflow:auto}.qwH4Ha_detailBlock{flex-direction:column;gap:6px;display:flex}.qwH4Ha_detailLabel{font-weight:500}@media (width<=600px){.qwH4Ha_feature,.qwH4Ha_recordHead{flex-direction:column;align-items:flex-start}.qwH4Ha_filters>.qwH4Ha_field{flex-basis:100%}}";
 			document.head.appendChild(element);
 		}
 		var JevPage_module_css_default = {
-			"form": "qwH4Ha_form",
-			"heading": "qwH4Ha_heading",
-			"tabs": "qwH4Ha_tabs",
-			"panel": "qwH4Ha_panel",
 			"record": "qwH4Ha_record",
-			"page": "qwH4Ha_page",
-			"filters": "qwH4Ha_filters",
-			"recordHead": "qwH4Ha_recordHead",
-			"section": "qwH4Ha_section",
-			"featureTitle": "qwH4Ha_featureTitle",
-			"meta": "qwH4Ha_meta",
-			"loading": "qwH4Ha_loading",
-			"field": "qwH4Ha_field",
 			"detail": "qwH4Ha_detail",
-			"detailLabel": "qwH4Ha_detailLabel",
+			"heading": "qwH4Ha_heading",
 			"featureBody": "qwH4Ha_featureBody",
-			"toolbar": "qwH4Ha_toolbar",
-			"success": "qwH4Ha_success",
-			"row": "qwH4Ha_row",
-			"hint": "qwH4Ha_hint",
-			"actions": "qwH4Ha_actions",
-			"feature": "qwH4Ha_feature",
-			"notice": "qwH4Ha_notice",
-			"list": "qwH4Ha_list",
-			"description": "qwH4Ha_description",
+			"panel": "qwH4Ha_panel",
+			"recordHead": "qwH4Ha_recordHead",
+			"meta": "qwH4Ha_meta",
+			"featureTitle": "qwH4Ha_featureTitle",
 			"empty": "qwH4Ha_empty",
+			"success": "qwH4Ha_success",
+			"detailLabel": "qwH4Ha_detailLabel",
+			"detailBlock": "qwH4Ha_detailBlock",
+			"row": "qwH4Ha_row",
+			"actions": "qwH4Ha_actions",
+			"list": "qwH4Ha_list",
+			"page": "qwH4Ha_page",
+			"description": "qwH4Ha_description",
+			"section": "qwH4Ha_section",
+			"filters": "qwH4Ha_filters",
+			"notice": "qwH4Ha_notice",
+			"tabs": "qwH4Ha_tabs",
+			"toolbar": "qwH4Ha_toolbar",
+			"form": "qwH4Ha_form",
+			"field": "qwH4Ha_field",
 			"code": "qwH4Ha_code",
-			"detailBlock": "qwH4Ha_detailBlock"
+			"hint": "qwH4Ha_hint",
+			"feature": "qwH4Ha_feature",
+			"loading": "qwH4Ha_loading"
 		};
 		//#endregion
 		//#region src/client/JevPage.tsx
@@ -8734,61 +8734,61 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		//#endregion
 //#region jev-css:StageNavigation.module.css
-		const tag = "@dsh-jev/plugin/src\\client\\StageNavigation.module.css";
+		const tag = "@himetuki/dsh-neohorse-jev-4b-plugin/src\\client\\StageNavigation.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tag) + "]") === null) {
 			const element = document.createElement("style");
-			element.dataset.plugin = "@dsh-jev/plugin";
+			element.dataset.plugin = "@himetuki/dsh-neohorse-jev-4b-plugin";
 			element.dataset.pluginCss = tag;
 			element.textContent = ".t0KTeq_page{width:100%;height:calc(var(--dsh-conversation-viewport-height,100dvh) - var(--dsh-composer-height,152px));box-sizing:border-box;min-width:0;min-height:0;color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-1);flex-direction:column;font-size:13px;line-height:20px;display:flex;overflow:hidden}.t0KTeq_toolbar{border-bottom:1px solid var(--dsw-alias-border-l3);flex-wrap:wrap;align-items:center;gap:8px 14px;padding:12px 20px;display:flex}.t0KTeq_toolbar h2,.t0KTeq_navigation h3,.t0KTeq_reader h3,.t0KTeq_reader h4,.t0KTeq_toolSection h4{margin:0;font-size:14px;font-weight:500;line-height:22px}.t0KTeq_toolbarActions{flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto;display:flex}.t0KTeq_scopeHint{color:var(--dsw-alias-label-secondary);flex-basis:100%;margin:0;font-size:12px}.t0KTeq_notice,.t0KTeq_progress,.t0KTeq_error{margin:0;font-size:12px}.t0KTeq_notice,.t0KTeq_progress{color:var(--dsw-alias-label-secondary)}.t0KTeq_error{color:var(--dsw-alias-state-error-primary)}.t0KTeq_mobileToggle{display:none}.t0KTeq_layout{flex:1;grid-template-columns:minmax(230px,275px) minmax(0,1fr);min-height:0;display:grid;overflow:hidden}.t0KTeq_navigation,.t0KTeq_reader{overscroll-behavior:contain;scrollbar-gutter:stable;min-height:0;overflow:auto}.t0KTeq_navigation{border-right:1px solid var(--dsw-alias-border-l3);background:var(--dsw-alias-bg-layer-2);padding:16px 12px 24px}.t0KTeq_navigation h3{padding:0 7px 12px}.t0KTeq_turnItem{margin-bottom:10px}.t0KTeq_turnButton,.t0KTeq_segmentButton,.t0KTeq_gapButton{border-radius:var(--dsw-radius-sm);width:100%;color:var(--dsw-alias-label-primary);text-align:left;font:inherit;cursor:pointer;background:0 0;border:1px solid #0000;flex-direction:column;align-items:flex-start;gap:3px;display:flex}.t0KTeq_turnButton{padding:8px}.t0KTeq_turnButton>span{-webkit-line-clamp:2;overflow-wrap:anywhere;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden}.t0KTeq_turnButton small,.t0KTeq_segmentButton small,.t0KTeq_gapButton small{color:var(--dsw-alias-label-secondary);font-size:12px}.t0KTeq_activeTurn,.t0KTeq_activeSegment{background:var(--dsw-alias-bg-layer-1);border-color:var(--dsw-alias-border-l3)}.t0KTeq_segments{border-left:1px solid var(--dsw-alias-border-l3);margin-left:13px;padding-left:8px}.t0KTeq_segmentButton,.t0KTeq_gapButton{margin:3px 0;padding:6px 8px}.t0KTeq_segmentButton{border-left:2px solid var(--dsw-alias-state-business-primary)}.t0KTeq_gapButton{color:var(--dsw-alias-label-secondary)}.t0KTeq_turnButton:hover,.t0KTeq_segmentButton:hover,.t0KTeq_gapButton:hover{background:var(--dsw-alias-bg-layer-1)}.t0KTeq_reader{padding:18px 22px 32px}.t0KTeq_readerInner{width:100%;max-width:1120px;margin:0 auto}.t0KTeq_readerHeader,.t0KTeq_readerHeading,.t0KTeq_stepHead,.t0KTeq_statusLine{flex-wrap:wrap;align-items:baseline;gap:7px 14px;display:flex}.t0KTeq_readerHeader{justify-content:space-between;margin-bottom:14px}.t0KTeq_readerHeading{justify-content:space-between;margin:20px 0 10px}.t0KTeq_request{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-2);padding:12px 14px}.t0KTeq_request h4{margin-bottom:8px}.t0KTeq_request details{margin-top:8px}.t0KTeq_search{color:var(--dsw-alias-label-secondary);align-items:center;gap:8px;display:flex}.t0KTeq_search input{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);width:220px;min-width:0;min-height:34px;color:var(--dsw-alias-label-primary);font:inherit;padding:5px 8px}.t0KTeq_textButton{color:var(--dsw-alias-state-business-primary);font:inherit;cursor:pointer;background:0 0;border:0;padding:2px 0}.t0KTeq_stepCard{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-md);background:var(--dsw-alias-bg-layer-2);margin:10px 0;padding:13px 14px}.t0KTeq_inSegment{border-left:3px solid var(--dsw-alias-state-business-primary)}.t0KTeq_focused{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px}.t0KTeq_stepHead{margin-bottom:5px}.t0KTeq_stepNumber{font-weight:500}.t0KTeq_stageLabel{color:var(--dsw-alias-state-business-primary)}.t0KTeq_statusLine{margin:6px 0;font-size:12px}.t0KTeq_muted{color:var(--dsw-alias-label-secondary)}.t0KTeq_blocks{flex-direction:column;gap:6px;margin:12px 0;display:flex}.t0KTeq_message{border-top:1px solid var(--dsw-alias-border-l3);padding:8px 0}.t0KTeq_block,.t0KTeq_tool{min-width:0}.t0KTeq_blockLabel{margin:8px 0 5px;font-weight:500;display:block}.t0KTeq_sourceText{white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0;font:12px/18px ui-monospace,SFMono-Regular,monospace}.t0KTeq_block>.t0KTeq_sourceText,.t0KTeq_block>details .t0KTeq_sourceText,.t0KTeq_toolBody .t0KTeq_sourceText,.t0KTeq_detailPanel .t0KTeq_sourceText{border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-1);padding:9px}.t0KTeq_toolSection{border-top:1px solid var(--dsw-alias-border-l3);margin-top:13px;padding-top:11px}.t0KTeq_toolSection h4{font-size:13px}.t0KTeq_tool{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);margin-top:7px;padding:7px 9px}.t0KTeq_tool summary{flex-wrap:wrap;gap:12px;display:flex}.t0KTeq_toolBody{padding-top:8px}.t0KTeq_analysisSection{border-top:1px solid var(--dsw-alias-border-l3);margin-top:12px;padding-top:9px}.t0KTeq_previousResult{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);color:var(--dsw-alias-label-secondary);flex-wrap:wrap;gap:4px 12px;margin-top:9px;padding:9px;font-size:12px;display:flex}.t0KTeq_detailPanel{padding-top:8px}.t0KTeq_empty{color:var(--dsw-alias-label-secondary);text-align:center;padding:30px 15px}.t0KTeq_loading{flex:1;justify-content:center;align-items:center;display:flex}.t0KTeq_page button:focus-visible,.t0KTeq_page input:focus-visible,.t0KTeq_page summary:focus-visible{outline:var(--dsw-focus-ring-width)solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}@media (width<=760px){.t0KTeq_toolbar{padding:10px 14px}.t0KTeq_mobileToggle{border:1px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm);color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-2);font:inherit;cursor:pointer;padding:5px 8px;display:inline-block}.t0KTeq_layout{flex-direction:column;display:flex}.t0KTeq_navigation{border-right:0;border-bottom:1px solid var(--dsw-alias-border-l3);flex:none;max-height:34%;padding:12px 12px 18px}.t0KTeq_navigationClosed{display:none}.t0KTeq_reader{flex:1;padding:14px 14px 22px}.t0KTeq_search{width:100%}.t0KTeq_search input{flex:1;width:auto}}";
 			document.head.appendChild(element);
 		}
 		var StageNavigation_module_css_default = {
-			"gapButton": "t0KTeq_gapButton",
-			"textButton": "t0KTeq_textButton",
-			"readerHeader": "t0KTeq_readerHeader",
-			"request": "t0KTeq_request",
-			"stepHead": "t0KTeq_stepHead",
-			"toolBody": "t0KTeq_toolBody",
-			"scopeHint": "t0KTeq_scopeHint",
-			"tool": "t0KTeq_tool",
-			"turnItem": "t0KTeq_turnItem",
-			"analysisSection": "t0KTeq_analysisSection",
-			"turnButton": "t0KTeq_turnButton",
-			"segmentButton": "t0KTeq_segmentButton",
-			"readerInner": "t0KTeq_readerInner",
-			"loading": "t0KTeq_loading",
-			"stepNumber": "t0KTeq_stepNumber",
-			"readerHeading": "t0KTeq_readerHeading",
-			"error": "t0KTeq_error",
-			"detailPanel": "t0KTeq_detailPanel",
-			"previousResult": "t0KTeq_previousResult",
-			"mobileToggle": "t0KTeq_mobileToggle",
-			"statusLine": "t0KTeq_statusLine",
-			"inSegment": "t0KTeq_inSegment",
-			"notice": "t0KTeq_notice",
-			"message": "t0KTeq_message",
-			"toolSection": "t0KTeq_toolSection",
-			"toolbarActions": "t0KTeq_toolbarActions",
-			"sourceText": "t0KTeq_sourceText",
-			"activeSegment": "t0KTeq_activeSegment",
-			"layout": "t0KTeq_layout",
-			"toolbar": "t0KTeq_toolbar",
 			"segments": "t0KTeq_segments",
-			"activeTurn": "t0KTeq_activeTurn",
-			"block": "t0KTeq_block",
-			"blocks": "t0KTeq_blocks",
-			"navigationClosed": "t0KTeq_navigationClosed",
-			"navigation": "t0KTeq_navigation",
-			"search": "t0KTeq_search",
+			"mobileToggle": "t0KTeq_mobileToggle",
+			"stepHead": "t0KTeq_stepHead",
+			"gapButton": "t0KTeq_gapButton",
 			"stageLabel": "t0KTeq_stageLabel",
 			"progress": "t0KTeq_progress",
-			"muted": "t0KTeq_muted",
+			"segmentButton": "t0KTeq_segmentButton",
+			"activeTurn": "t0KTeq_activeTurn",
+			"turnItem": "t0KTeq_turnItem",
+			"toolSection": "t0KTeq_toolSection",
+			"search": "t0KTeq_search",
+			"textButton": "t0KTeq_textButton",
+			"blocks": "t0KTeq_blocks",
+			"readerHeader": "t0KTeq_readerHeader",
+			"message": "t0KTeq_message",
+			"error": "t0KTeq_error",
+			"navigationClosed": "t0KTeq_navigationClosed",
+			"analysisSection": "t0KTeq_analysisSection",
+			"navigation": "t0KTeq_navigation",
 			"focused": "t0KTeq_focused",
-			"reader": "t0KTeq_reader",
-			"stepCard": "t0KTeq_stepCard",
-			"blockLabel": "t0KTeq_blockLabel",
+			"notice": "t0KTeq_notice",
+			"turnButton": "t0KTeq_turnButton",
+			"toolbar": "t0KTeq_toolbar",
+			"readerHeading": "t0KTeq_readerHeading",
 			"page": "t0KTeq_page",
-			"empty": "t0KTeq_empty"
+			"muted": "t0KTeq_muted",
+			"block": "t0KTeq_block",
+			"detailPanel": "t0KTeq_detailPanel",
+			"activeSegment": "t0KTeq_activeSegment",
+			"loading": "t0KTeq_loading",
+			"sourceText": "t0KTeq_sourceText",
+			"stepCard": "t0KTeq_stepCard",
+			"toolbarActions": "t0KTeq_toolbarActions",
+			"readerInner": "t0KTeq_readerInner",
+			"request": "t0KTeq_request",
+			"previousResult": "t0KTeq_previousResult",
+			"empty": "t0KTeq_empty",
+			"reader": "t0KTeq_reader",
+			"blockLabel": "t0KTeq_blockLabel",
+			"toolBody": "t0KTeq_toolBody",
+			"statusLine": "t0KTeq_statusLine",
+			"scopeHint": "t0KTeq_scopeHint",
+			"stepNumber": "t0KTeq_stepNumber",
+			"tool": "t0KTeq_tool",
+			"inSegment": "t0KTeq_inSegment",
+			"layout": "t0KTeq_layout"
 		};
 		//#endregion
 		//#region src/client/StageNavigation.tsx
@@ -10201,7 +10201,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		//#region src/client/mount.ts
 		const NS = "jev.plugin";
 		const STAGE_NS = "jev.stage";
-		const PACKAGE = "@dsh-jev/plugin";
+		const PACKAGE = "@himetuki/dsh-neohorse-jev-4b-plugin";
 		const ENTRY = "jev";
 		const SELECTION_ENTRY = "jev-selection";
 		const OUTPUT_ENTRY = "jev-output-admission";

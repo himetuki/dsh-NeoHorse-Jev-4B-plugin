@@ -60,6 +60,19 @@ https://github.com/himetuki/dsh-NeoHorse-Jev-4B-plugin
 
 Jev 连接配置：服务地址 `https://tokenrhythm.studio/v1/systemone`，模型 `NeoHorse-Jev-4B`，凭据引用自选。API Key 通过页面的密钥控件保存，不要写入源码或仓库 URL。
 
+### 在 DSH Desktop 端安装
+
+本复刻**针对 DSH Desktop（Electron 应用）0.2.0-rc.2 改造并验证**：DSH peer 固定为 `0.2.0-rc.2`，`runtime/` 已提交预构建产物，安装后不在本机编译源码。Desktop 端即本项目的适配与验证环境。
+
+1. 打开 DSH Desktop，进入 **侧边栏「插件」→「添加插件」**。
+2. 在 **「包名或地址」** 粘贴本文档给出的 GitHub 仓库地址，点击 **「安装」**。Desktop 使用自带的 pnpm 完成依赖安装。
+3. 安装完成后点击 **「立即启用」**；若提示下次启动加载，重启 DSH Desktop。
+4. 进入 **Jev** 页面填写服务地址、模型与凭据引用，再按需开启功能。
+
+- Desktop 的 `desktop` profile 由 Electron 应用独占管理，命令行 `dsh --profile desktop` 会被拒绝；请在应用内的插件页安装、启用与移除。
+- 本机无需另装 Node 或 pnpm（Desktop 自带运行环境），但需要能访问 GitHub。
+- 若此前用本地目录（`link:`）装过开发版，先移除该条目再按仓库地址安装，避免同名依赖仍指向本地目录。
+
 ## 从源码安装（开发者）
 
 需要修改代码或自行构建时，再使用以下步骤。已有 DSH Web 的普通用户直接使用上面的 GitHub 地址安装即可。
@@ -98,7 +111,7 @@ pnpm -C packages/jev pack --pack-destination "$PWD/dist"
 
 ```sh
 dsh --profile jev --from-default-profile web --dump-default-config > /dev/null
-dsh plugin --profile jev add ./dist/dsh-jev-plugin-0.1.0.tgz
+dsh plugin --profile jev add ./dist/himetuki-dsh-neohorse-jev-4b-plugin-0.1.0.tgz
 dsh --profile jev
 ```
 
@@ -144,7 +157,7 @@ dsh --profile jev
 
 ## 开发
 
-项目名称为 `dsh-NeoHorse-Jev-4B-plugin`；内部安装包与导入标识保留 `@dsh-jev/plugin`，与已有 profile 的插件配置一致。
+项目名称为 `dsh-NeoHorse-Jev-4B-plugin`；包标识为 `@himetuki/dsh-neohorse-jev-4b-plugin`，DSH 的插件列表与安装命令都用这个名字。
 
 仓库根目录是 GitHub 安装入口，`packages/jev` 保留开发源码；`pnpm run build` 会同步生成 `runtime/`，发布源码改动时应一并提交这些生成文件。
 

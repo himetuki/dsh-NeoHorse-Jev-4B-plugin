@@ -1,5 +1,5 @@
 /** Browser entry for Jev's external Remote and Plugins bundle page. */
-import jevRemote from '@dsh-jev/plugin/remote';
+import jevRemote from '@himetuki/dsh-neohorse-jev-4b-plugin/remote';
 import { mountJevUi } from "./mount.js";
 export { inject } from "./mount.js";
 /** Activate Jev's browser contribution. */

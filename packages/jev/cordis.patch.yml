@@ -1,20 +1,20 @@
 # One Host row owns Jev's service, Remote methods, and matching Web Client half.
 - insert:
     - id: jev
-      name: '@dsh-jev/plugin'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin'
     - id: jev-selection
-      name: '@dsh-jev/plugin/selection'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/selection'
     - id: jev-supervision
-      name: '@dsh-jev/plugin/supervision'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/supervision'
     - id: jev-instructions
-      name: '@dsh-jev/plugin/instructions'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/instructions'
     - id: jev-shared-findings
-      name: '@dsh-jev/plugin/shared-findings'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/shared-findings'
     - id: jev-interjection-routing
-      name: '@dsh-jev/plugin/interjection'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/interjection'
     - id: jev-output-admission
-      name: '@dsh-jev/plugin/output-admission'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/output-admission'
     - id: jev-workspace-approval
-      name: '@dsh-jev/plugin/workspace-approval'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/workspace-approval'
     - id: jev-stage-navigation
-      name: '@dsh-jev/plugin/stage-navigation'
+      name: '@himetuki/dsh-neohorse-jev-4b-plugin/stage-navigation'

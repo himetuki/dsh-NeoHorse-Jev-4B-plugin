@@ -3,7 +3,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
-import type {} from '@dsh-jev/plugin/remote'
+import type {} from '@himetuki/dsh-neohorse-jev-4b-plugin/remote'
 import type { JevPageRemote } from './JevPage.tsx'
 import type { StageNavigationRemote } from './StageNavigation.tsx'
 

@@ -60,6 +60,19 @@ This fork pins the DSH peers to **0.2.0-rc.2** and adds the TokenRhythm decision
 
 Configure the Jev page with the endpoint `https://tokenrhythm.studio/v1/systemone`, the model `NeoHorse-Jev-4B`, and a credential reference of your choice. The API key itself is saved through the page's key control, never in source files or a repository URL.
 
+### Install in DSH Desktop
+
+This fork is **adapted and verified on DSH Desktop (the Electron application) 0.2.0-rc.2**: the DSH peers are pinned to `0.2.0-rc.2`, prebuilt files are committed under `runtime/`, and installation does not compile source on your machine. The Desktop installation is the environment this adaptation targets.
+
+1. Open DSH Desktop and go to **Plugins in the sidebar → Add plugin**.
+2. Paste the GitHub repository URL from this document into **Package name or address**, then click **Install**. Desktop installs dependencies with its bundled pnpm.
+3. Click **Enable now** when installation finishes; restart DSH Desktop if it says the plugin loads on the next start.
+4. Open the **Jev** page, set the endpoint, model, and credential reference, then enable the features you need.
+
+- The Desktop `desktop` profile is managed exclusively by the Electron application, and the CLI refuses `dsh --profile desktop`. Install, enable, and remove the plugin from the in-app plugin page.
+- You do not need a separate Node or pnpm installation (Desktop ships its runtime), but the machine must reach GitHub.
+- If you previously installed a development copy from a local directory (`link:`), remove that entry before installing from the repository URL so the same dependency name does not keep pointing at the local folder.
+
 ## Install from source (developers)
 
 Use the following steps when modifying or building the plugin yourself. Existing DSH Web users can install using the GitHub URL above.
@@ -98,7 +111,7 @@ Use a **new, unused profile name** for a first trial; the example uses `jev`. In
 
 ```sh
 dsh --profile jev --from-default-profile web --dump-default-config > /dev/null
-dsh plugin --profile jev add ./dist/dsh-jev-plugin-0.1.0.tgz
+dsh plugin --profile jev add ./dist/himetuki-dsh-neohorse-jev-4b-plugin-0.1.0.tgz
 dsh --profile jev
 ```
 
@@ -144,7 +157,7 @@ Disable individual features in the Jev page. For package removal, consult `dsh p
 
 ## Development
 
-The project is named `dsh-NeoHorse-Jev-4B-plugin`; its internal package and import identifier remains `@dsh-jev/plugin`, matching existing profile plugin configurations.
+The project is named `dsh-NeoHorse-Jev-4B-plugin`; its package identifier is `@himetuki/dsh-neohorse-jev-4b-plugin`, the name DSH lists and installs.
 
 The repository root is the GitHub install entry; `packages/jev` retains development sources. `pnpm run build` also regenerates `runtime/`; commit these generated files when releasing source changes.
 

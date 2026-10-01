@@ -9,5 +9,5 @@ export default defineConfig({
   fixedExtension: false,
   dts: false,
   clean: false,
-  external: [/^@deepseek-ai\//, /^@dsh-jev\//, /^react(?:-dom)?(?:\/.*)?$/],
+  external: [/^@deepseek-ai\//, /^@himetuki\/dsh-neohorse-jev-4b-plugin\//, /^react(?:-dom)?(?:\/.*)?$/],
 })

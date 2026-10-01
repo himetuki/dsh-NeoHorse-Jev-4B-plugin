@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { transform } from 'lightningcss'
 import type { TsdownPlugin, UserConfig } from 'tsdown'
 
-const PACKAGE = '@dsh-jev/plugin'
+const PACKAGE = '@himetuki/dsh-neohorse-jev-4b-plugin'
 const ROOT = dirname(fileURLToPath(import.meta.url))
 const CSS_PREFIX = '\0jev-css:'
 const CSS_SUFFIX = '.mjs'

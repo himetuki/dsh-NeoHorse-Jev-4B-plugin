@@ -3,8 +3,8 @@ import type {
   RemoteResult,
   TypertRemoteContribution,
 } from '@deepseek-ai/dsh-typert-protocol'
-import type { StageAnalysisRecord, StageAnalysisRequest, StageBatchState, StageNavigationSnapshot } from '@dsh-jev/plugin/stage-types'
-import type { JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail, JevRecordFilter, JevRecordPage } from '@dsh-jev/plugin/types'
+import type { StageAnalysisRecord, StageAnalysisRequest, StageBatchState, StageNavigationSnapshot } from '@himetuki/dsh-neohorse-jev-4b-plugin/stage-types'
+import type { JevCredentialStatus, JevFeatureView, JevProbeResult, JevRecordDetail, JevRecordFilter, JevRecordPage } from '@himetuki/dsh-neohorse-jev-4b-plugin/types'
 
 declare module '@deepseek-ai/dsh-typert-protocol' {
   interface TypertRemoteNamespace$6a6576 {

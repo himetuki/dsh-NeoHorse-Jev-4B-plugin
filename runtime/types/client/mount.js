@@ -9,7 +9,7 @@ import { en, zh } from "./locales.js";
 import { jevPageRemote, jevStageRemote } from "./remote-adapter.js";
 const NS = 'jev.plugin';
 const STAGE_NS = 'jev.stage';
-const PACKAGE = '@dsh-jev/plugin';
+const PACKAGE = '@himetuki/dsh-neohorse-jev-4b-plugin';
 const ENTRY = 'jev';
 const SELECTION_ENTRY = 'jev-selection';
 const OUTPUT_ENTRY = 'jev-output-admission';
