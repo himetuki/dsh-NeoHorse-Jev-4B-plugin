@@ -148,7 +148,7 @@ const inject = [
 	"settings"
 ];
 /** Maximum serialized judgment input; oversized originals remain stored and require manual resolution. */
-const Config = s.object({ maxRequestChars: s.number().step(1).min(2048).max(Number.MAX_SAFE_INTEGER).default(48e3).volatile() });
+const Config = s.object({ maxRequestChars: s.number().step(1).min(2048).max(Number.MAX_SAFE_INTEGER).default(8e3).volatile() });
 const FEATURE = "shared-findings";
 function textOf(message) {
 	return message.content.filter((block) => block.type === "text").map((block) => block.text).join("\n");

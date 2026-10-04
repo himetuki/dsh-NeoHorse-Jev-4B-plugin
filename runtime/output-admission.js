@@ -285,7 +285,7 @@ const Config = s.object({
 	generalBlockChars: s.number().step(1).min(1).max(1e5).default(1200).volatile(),
 	maxGeneralBlocks: s.number().step(1).min(3).max(1e3).default(48).volatile(),
 	maxTestCandidates: s.number().step(1).min(1).max(1e3).default(24).volatile(),
-	maxRequestChars: s.number().step(1).min(1).max(1e6).default(48e3).volatile(),
+	maxRequestChars: s.number().step(1).min(1).max(1e6).default(1e4).volatile(),
 	maxTaskChars: s.number().step(1).min(1).max(1e6).default(12e3).volatile(),
 	waitMs: s.number().step(1).min(1).max(3e5).default(4e3).volatile(),
 	omitProbability: s.number().min(0).max(1).default(.8).volatile(),

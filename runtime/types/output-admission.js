@@ -8,7 +8,7 @@ export const Config = s.object({
     generalBlockChars: s.number().step(1).min(1).max(100_000).default(1200).volatile(),
     maxGeneralBlocks: s.number().step(1).min(3).max(1000).default(48).volatile(),
     maxTestCandidates: s.number().step(1).min(1).max(1000).default(24).volatile(),
-    maxRequestChars: s.number().step(1).min(1).max(1_000_000).default(48000).volatile(),
+    maxRequestChars: s.number().step(1).min(1).max(1_000_000).default(10000).volatile(),
     maxTaskChars: s.number().step(1).min(1).max(1_000_000).default(12000).volatile(),
     waitMs: s.number().step(1).min(1).max(300_000).default(4000).volatile(),
     omitProbability: s.number().min(0).max(1).default(0.8).volatile(),

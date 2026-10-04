@@ -329,11 +329,17 @@ describe('output admission through published DSH paths', () => {
   })
 
   it('keeps the three unique fastest test results when Jev keeps their candidate groups', async () => {
-    const h = await harness({ enabled: true, log: timedLog,
+    // One judgment call may carry only the provider's measured input budget, so this case uses a log
+    // that fits in a single call; the candidate-group decisions it guards are unchanged.
+    const cases = 120
+    const shortFastest = [17, 42, 63] as const
+    const shortLog = `PASS fixture.test.ts\n${Array.from({ length: cases }, (_, index) =>
+      `✓ src/feature/case-${index}.test.ts > handles scenario ${index} (${index === shortFastest[0] ? 1 : index === shortFastest[1] ? 2 : index === shortFastest[2] ? 3 : index + 10}ms)\n`).join('')}Tests ${cases} passed\n`
+    const h = await harness({ enabled: true, log: shortLog, admissionConfig: { maxRequestChars: 8000 },
       script: [call('bash', { command: 'pnpm test', description: 'Run fixture tests' }), text('Fixture complete')],
       answer: wire => Object.fromEntries(Object.keys(wire.questions).map(id => {
         const candidate = wire.state.candidates.find(item => item.id === id)
-        const required = candidate !== undefined && fastest.some(index => candidate.text.includes(`case-${index}.test.ts`))
+        const required = candidate !== undefined && shortFastest.some(index => candidate.text.includes(`case-${index}.test.ts`))
         return [id, { choice: required ? 'keep' : 'omit', probabilities: required
           ? { omit: 0.01, keep: 0.98, unknown: 0.01 }
           : { omit: 0.98, keep: 0.01, unknown: 0.01 } }]
@@ -342,15 +348,15 @@ describe('output admission through published DSH paths', () => {
     h.agent.followup(user('Find the three shortest test cases and give each exact duration.'))
     await h.agent.whenIdle()
     expect(h.received).toHaveLength(1)
-    assertEvidenceMatches(timedLog, h.received[0]!)
+    assertEvidenceMatches(shortLog, h.received[0]!)
     const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
     if (result?.type !== 'tool/result') throw new Error('No durable tool result')
     const delivered = contentText(result.data.message.content)
-    for (const [order, index] of fastest.entries()) {
+    for (const [order, index] of shortFastest.entries()) {
       expect(delivered).toContain(`case-${index}.test.ts > handles scenario ${index} (${order + 1}ms)`)
     }
-    expect(delivered).toContain('Tests 180 passed')
-    expect(delivered.length).toBeLessThan(timedLog.length)
+    expect(delivered).toContain(`Tests ${cases} passed`)
+    expect(delivered.length).toBeLessThan(shortLog.length)
     expect(requestToolText(h.model.requests[1])).toBe(delivered)
   })
 

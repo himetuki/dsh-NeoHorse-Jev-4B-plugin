@@ -14,7 +14,7 @@ import type { SupervisionConfigValues } from './supervision-types.ts'
 export interface Config { driftInterval: Volatile<number>; noProgressRounds: Volatile<number>; evidenceChars: Volatile<number> }
 export const Config: s<SupervisionConfigValues, Config> = s.object({
   driftInterval: s.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER).default(6).volatile(),
-  evidenceChars: s.number().step(1).min(1).max(1_000_000).default(24_000).volatile(),
+  evidenceChars: s.number().step(1).min(1).max(1_000_000).default(8000).volatile(),
   noProgressRounds: s.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER).default(3).volatile(),
 })
 

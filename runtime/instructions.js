@@ -1,4 +1,4 @@
-import { n as JevError } from "./types-VhaqyJtK.js";
+import { n as JevError } from "./types-CO24ROI7.js";
 import "@deepseek-ai/cordis";
 import s from "@deepseek-ai/schemastery";
 import { createHash } from "node:crypto";
@@ -10,8 +10,8 @@ import { Config as Config$1, loadBaselineInstructions } from "@deepseek-ai/dsh-a
 //#region packages/jev/lib/types/instructions.js
 /** Non-blocking, current-instruction guidance on the original tool pipeline. */
 const Config = s.object({
-	maxEvidenceChars: s.number().step(1).min(1e3).max(1e5).default(24e3),
-	maxSources: s.number().step(1).min(1).max(100).default(64),
+	maxEvidenceChars: s.number().step(1).min(1e3).max(1e5).default(8e3),
+	maxSources: s.number().step(1).min(1).max(100).default(24),
 	maxOperationChars: s.number().step(1).min(100).max(2e4).default(4e3)
 });
 const FEATURE = "instruction-guidance";
@@ -260,15 +260,7 @@ function request(exec, current, config) {
 			sources: current.sources.map((source) => ({ ...source })),
 			omitted: current.omitted
 		},
-		questions: current.sources.length === 0 ? [{
-			id: "no-requirements",
-			kind: "choice",
-			prompt: "No requirements were supplied.",
-			options: [{
-				id: "not-applicable",
-				description: null
-			}]
-		}] : current.sources.map((source) => ({
+		questions: current.sources.map((source) => ({
 			id: source.id,
 			kind: "choice",
 			prompt: "Does the observed operation conflict with a currently applicable requirement in " + source.id + "? Consider every source, precedence, scope, exceptions, and amendments together.",
@@ -357,6 +349,7 @@ function apply(ctx, config) {
 				link: { sessionId: agent.session.id },
 				refresh: async () => {
 					current = await evidence(ctx, exec, config);
+					if (current.sources.length === 0) throw new JevError("UNDETERMINED", "No applicable instruction originals were supplied; no judgment sent");
 					if (current.omitted.length > 0) throw new JevError("UNDETERMINED", "Relevant evidence was omitted; no judgment sent");
 					return request(exec, current, config);
 				},

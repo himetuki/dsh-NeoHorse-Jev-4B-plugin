@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto'
 import { LlmAdapter, LlmError, attributionHeaders, type GenerateOptions, type StreamChunk } from '@deepseek-ai/dsh-llm'
 import type { Json, JevQuestion, JevRequest } from './types.ts'
+import { DEFAULT_MAX_INPUT_TOKENS, MAX_CHOICE_OPTIONS_PER_QUESTION, oversizedQuestion, requestTokens } from './budget.ts'
 import { validateRequest, wireBody } from './wire.ts'
 
 export const JEV_PROVIDER = 'jev-system-one'
@@ -28,6 +29,8 @@ export interface JevConnection {
   credentialRef: string
   apiKey: string
   timeoutMs: number
+  /** Estimated input tokens one call may carry; absent means the built-in default. */
+  maxInputTokens?: number
 }
 
 interface PendingCall { request: JevRequest; connection: JevConnection; canStart?: () => boolean }
@@ -71,6 +74,20 @@ export class JevAdapter extends LlmAdapter {
     const batches: JevQuestion[][] = []
     for (let index = 0; index < request.questions.length; index += MAX_QUESTIONS_PER_CALL) {
       batches.push(request.questions.slice(index, index + MAX_QUESTIONS_PER_CALL))
+    }
+    // The provider rejects an over-budget call with 422, which is indistinguishable from a protocol
+    // error and leaves the feature permanently skipped. Every batch carries the same state, so the
+    // budget is checked per batch here and the call fails locally with a reason the ledger explains.
+    const budget = connection.maxInputTokens ?? DEFAULT_MAX_INPUT_TOKENS
+    for (const questions of batches) {
+      const oversized = oversizedQuestion(questions)
+      if (oversized !== undefined) {
+        throw new LlmError(`Jev choice ${oversized.id} carries ${String(oversized.options.length)} options, above the local cap of ${String(MAX_CHOICE_OPTIONS_PER_QUESTION)}`, 'INPUT_TOO_LARGE')
+      }
+      const estimated = requestTokens({ state: request.state, questions })
+      if (estimated > budget) {
+        throw new LlmError(`Jev request is about ${String(Math.round(estimated))} input tokens, above the configured ${String(budget)}; reduce the feature's character budget or raise maxInputTokens`, 'INPUT_TOO_LARGE')
+      }
     }
     const answers: Record<string, Json> = {}
     let model: Json | undefined

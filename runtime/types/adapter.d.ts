@@ -7,6 +7,8 @@ export interface JevConnection {
     credentialRef: string;
     apiKey: string;
     timeoutMs: number;
+    /** Estimated input tokens one call may carry; absent means the built-in default. */
+    maxInputTokens?: number;
 }
 /** The adapter never advertises a chat model and rejects calls lacking a service-issued nonce. */
 export declare class JevAdapter extends LlmAdapter {

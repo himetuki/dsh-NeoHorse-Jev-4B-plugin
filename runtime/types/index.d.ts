@@ -15,6 +15,8 @@ export interface Config {
     model: Volatile<string>;
     credentialRef: Volatile<string>;
     timeoutMs: Volatile<number>;
+    /** Estimated input tokens one judgment call may carry; the provider rejects larger inputs with 422. */
+    maxInputTokens: Volatile<number>;
     features: Volatile<Record<string, boolean>>;
 }
 interface ConfigValues {
@@ -22,6 +24,7 @@ interface ConfigValues {
     model: string;
     credentialRef: string;
     timeoutMs: number;
+    maxInputTokens: number;
     features: Record<string, boolean>;
 }
 /** A consumer refreshes this input for every manual attempt. */

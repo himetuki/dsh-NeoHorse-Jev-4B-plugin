@@ -38,6 +38,7 @@ import s from '@deepseek-ai/schemastery';
 import { credentialRef } from '@deepseek-ai/dsh-credentials';
 import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol';
 import { JevAdapter, JEV_PROVIDER } from "./adapter.js";
+import { DEFAULT_MAX_INPUT_TOKENS } from "./budget.js";
 import { JevLedger } from "./ledger.js";
 import { parseWireResponse, validateRequest } from "./wire.js";
 export { JEV_PROVIDER } from "./adapter.js";
@@ -60,6 +61,7 @@ export const Config = s.object({
     model: s.string().pattern(/^[^\s]+$/).default('NeoHorse-Jev-4B').volatile(),
     credentialRef: s.string().pattern(/^[A-Za-z_][A-Za-z0-9_]*$/).default('JEV_API_KEY').volatile(),
     timeoutMs: s.number().step(1).min(1).max(300_000).default(30_000).volatile(),
+    maxInputTokens: s.number().step(1).min(256).max(1_000_000).default(DEFAULT_MAX_INPUT_TOKENS).volatile(),
     features: s.dict(s.boolean()).default({}).volatile(),
 });
 function safeFailure(error) {
@@ -465,7 +467,7 @@ let JevService = (() => {
                 const key = await this.ctx.credentials.resolve(credentialRef(identity.credentialRef));
                 if (key === undefined)
                     throw new JevError('CREDENTIAL_MISSING', 'Jev credential is not configured');
-                const connection = { ...identity, apiKey: key.value };
+                const connection = { ...identity, apiKey: key.value, maxInputTokens: this.config.maxInputTokens.get() };
                 const issued = this.adapter.issue(snapshot, connection, featureId === undefined ? undefined : () => this.isEnabled(featureId));
                 const timeout = AbortSignal.timeout(identity.timeoutMs);
                 const signal = AbortSignal.any([timeout, ...outerSignal === undefined ? [] : [outerSignal]]);

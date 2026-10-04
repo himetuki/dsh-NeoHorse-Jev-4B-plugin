@@ -1,4 +1,4 @@
-import { n as JevError } from "./types-VhaqyJtK.js";
+import { n as JevError } from "./types-CO24ROI7.js";
 import s from "@deepseek-ai/schemastery";
 import { credentialRef } from "@deepseek-ai/dsh-credentials";
 import { createHash, randomUUID } from "node:crypto";
@@ -384,7 +384,7 @@ const FEATURE = "stage-navigation";
 const Config = s.object({
 	previousSteps: s.number().step(1).min(0).max(20).default(2).volatile(),
 	previousChars: s.number().step(1).min(0).max(1e5).default(700).volatile(),
-	maxRequestChars: s.number().step(1).min(2048).max(1e7).default(48e3).volatile(),
+	maxRequestChars: s.number().step(1).min(2048).max(1e7).default(8e3).volatile(),
 	concurrency: s.number().step(1).min(1).max(8).default(1).volatile()
 });
 function latest(records) {

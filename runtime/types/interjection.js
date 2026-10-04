@@ -4,8 +4,8 @@ import s from '@deepseek-ai/schemastery';
 import { createUserMessage } from '@deepseek-ai/dsh-llm';
 import { JevError } from "./index.js";
 export const Config = s.object({
-    contextChars: s.number().step(1).min(1).max(1_000_000).default(12_000),
-    messageChars: s.number().step(1).min(1).max(1_000_000).default(24_000),
+    contextChars: s.number().step(1).min(1).max(1_000_000).default(6_000),
+    messageChars: s.number().step(1).min(1).max(1_000_000).default(8_000),
 });
 const FEATURE = 'interjection-routing';
 function fingerprint(message) { return createHash('sha256').update(JSON.stringify(message)).digest('hex'); }

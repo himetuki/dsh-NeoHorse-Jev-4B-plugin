@@ -11,8 +11,8 @@ import { JevError, type JevJudgeResult } from './index.ts'
 /** Bounded recorded context; a larger current message cannot be classified without a human retry. */
 export interface Config { contextChars: number; messageChars: number }
 export const Config: s<Config> = s.object({
-  contextChars: s.number().step(1).min(1).max(1_000_000).default(12_000),
-  messageChars: s.number().step(1).min(1).max(1_000_000).default(24_000),
+  contextChars: s.number().step(1).min(1).max(1_000_000).default(6_000),
+  messageChars: s.number().step(1).min(1).max(1_000_000).default(8_000),
 })
 
 type Notice = { action: 'mode'; enabled: boolean; running: boolean } | { action: 'route'; messageId: string; phase: Phase; operationId?: string }

@@ -10,6 +10,7 @@ import type {} from '@deepseek-ai/dsh-settings'
 import type {} from '@deepseek-ai/dsh-storage-domain'
 import type {} from '@deepseek-ai/dsh-user-questions'
 import { JevAdapter, JEV_PROVIDER, type JevConnection } from './adapter.ts'
+import { DEFAULT_MAX_INPUT_TOKENS } from './budget.ts'
 import { JevLedger } from './ledger.ts'
 import { parseWireResponse, validateRequest } from './wire.ts'
 import type { StageNavigationManager } from './stage-navigation.ts'
@@ -30,6 +31,8 @@ export interface Config {
   model: Volatile<string>
   credentialRef: Volatile<string>
   timeoutMs: Volatile<number>
+  /** Estimated input tokens one judgment call may carry; the provider rejects larger inputs with 422. */
+  maxInputTokens: Volatile<number>
   features: Volatile<Record<string, boolean>>
 }
 
@@ -38,6 +41,7 @@ interface ConfigValues {
   model: string
   credentialRef: string
   timeoutMs: number
+  maxInputTokens: number
   features: Record<string, boolean>
 }
 
@@ -96,6 +100,7 @@ export const Config: s<ConfigValues, Config> = s.object({
   model: s.string().pattern(/^[^\s]+$/).default('NeoHorse-Jev-4B').volatile(),
   credentialRef: s.string().pattern(/^[A-Za-z_][A-Za-z0-9_]*$/).default('JEV_API_KEY').volatile(),
   timeoutMs: s.number().step(1).min(1).max(300_000).default(30_000).volatile(),
+  maxInputTokens: s.number().step(1).min(256).max(1_000_000).default(DEFAULT_MAX_INPUT_TOKENS).volatile(),
   features: s.dict(s.boolean()).default({}).volatile(),
 })
 
@@ -462,7 +467,7 @@ export class JevService extends TypertRemoteService {
       }
       const key = await this.ctx.credentials.resolve(credentialRef(identity.credentialRef))
       if (key === undefined) throw new JevError('CREDENTIAL_MISSING', 'Jev credential is not configured')
-      const connection: JevConnection = { ...identity, apiKey: key.value }
+      const connection: JevConnection = { ...identity, apiKey: key.value, maxInputTokens: this.config.maxInputTokens.get() }
       const issued = this.adapter.issue(snapshot, connection,
         featureId === undefined ? undefined : () => this.isEnabled(featureId))
       const timeout = AbortSignal.timeout(identity.timeoutMs)

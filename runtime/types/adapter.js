@@ -1,6 +1,7 @@
 /** Dedicated System One adapter used only by JevService's typed one-shot calls. */
 import { randomUUID } from 'node:crypto';
 import { LlmAdapter, LlmError, attributionHeaders } from '@deepseek-ai/dsh-llm';
+import { DEFAULT_MAX_INPUT_TOKENS, MAX_CHOICE_OPTIONS_PER_QUESTION, oversizedQuestion, requestTokens } from "./budget.js";
 import { validateRequest, wireBody } from "./wire.js";
 export const JEV_PROVIDER = 'jev-system-one';
 /**
@@ -55,6 +56,20 @@ export class JevAdapter extends LlmAdapter {
         const batches = [];
         for (let index = 0; index < request.questions.length; index += MAX_QUESTIONS_PER_CALL) {
             batches.push(request.questions.slice(index, index + MAX_QUESTIONS_PER_CALL));
+        }
+        // The provider rejects an over-budget call with 422, which is indistinguishable from a protocol
+        // error and leaves the feature permanently skipped. Every batch carries the same state, so the
+        // budget is checked per batch here and the call fails locally with a reason the ledger explains.
+        const budget = connection.maxInputTokens ?? DEFAULT_MAX_INPUT_TOKENS;
+        for (const questions of batches) {
+            const oversized = oversizedQuestion(questions);
+            if (oversized !== undefined) {
+                throw new LlmError(`Jev choice ${oversized.id} carries ${String(oversized.options.length)} options, above the local cap of ${String(MAX_CHOICE_OPTIONS_PER_QUESTION)}`, 'INPUT_TOO_LARGE');
+            }
+            const estimated = requestTokens({ state: request.state, questions });
+            if (estimated > budget) {
+                throw new LlmError(`Jev request is about ${String(Math.round(estimated))} input tokens, above the configured ${String(budget)}; reduce the feature's character budget or raise maxInputTokens`, 'INPUT_TOO_LARGE');
+            }
         }
         const answers = {};
         let model;

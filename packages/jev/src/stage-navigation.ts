@@ -24,7 +24,7 @@ export interface Config { previousSteps: Volatile<number>; previousChars: Volati
 export const Config: s<StageNavigationConfigValues, Config> = s.object({
   previousSteps: s.number().step(1).min(0).max(20).default(2).volatile(),
   previousChars: s.number().step(1).min(0).max(100_000).default(700).volatile(),
-  maxRequestChars: s.number().step(1).min(2048).max(10_000_000).default(48_000).volatile(),
+  maxRequestChars: s.number().step(1).min(2048).max(10_000_000).default(8000).volatile(),
   concurrency: s.number().step(1).min(1).max(8).default(1).volatile(),
 })
 

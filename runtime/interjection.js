@@ -1,12 +1,12 @@
-import { n as JevError } from "./types-VhaqyJtK.js";
+import { n as JevError } from "./types-CO24ROI7.js";
 import s from "@deepseek-ai/schemastery";
 import { createHash } from "node:crypto";
 import { createUserMessage } from "@deepseek-ai/dsh-llm";
 //#region packages/jev/lib/types/interjection.js
 /** Semantic routing of running root-Agent user input through public inbox hooks. */
 const Config = s.object({
-	contextChars: s.number().step(1).min(1).max(1e6).default(12e3),
-	messageChars: s.number().step(1).min(1).max(1e6).default(24e3)
+	contextChars: s.number().step(1).min(1).max(1e6).default(6e3),
+	messageChars: s.number().step(1).min(1).max(1e6).default(8e3)
 });
 const FEATURE = "interjection-routing";
 function fingerprint(message) {

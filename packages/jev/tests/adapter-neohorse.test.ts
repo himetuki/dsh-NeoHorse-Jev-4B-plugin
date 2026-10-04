@@ -79,11 +79,21 @@ describe('NeoHorse-Jev-4B System One adapter', () => {
     expect(merged.model).toBe('NeoHorse-Jev-4B')
   })
 
-  it('fails before dispatch when one request body exceeds the provider 1 MiB limit', async () => {
+  it('fails before dispatch when the input is far above the upstream token budget', async () => {
     const http = await fixture(() => ({ payload: { answers: {} } }))
     const request: JevRequest = { state: 'x'.repeat(1_200_000), questions: [noul('only')] }
     await expect(judge(http.url, request)).rejects.toMatchObject({
-      code: 'BAD_REQUEST', message: expect.stringContaining('1 MiB'),
+      code: 'INPUT_TOO_LARGE', message: expect.stringContaining('input tokens'),
+    })
+    expect(http.received).toHaveLength(0)
+  })
+
+  it('fails before dispatch when one choice carries more options than the local cap', async () => {
+    const http = await fixture(() => ({ payload: { answers: {} } }))
+    const options = Array.from({ length: 80 }, (_, index) => ({ id: `line-${index}`, description: `line ${index}` }))
+    const request: JevRequest = { state: 'probe', questions: [{ id: 'basis', kind: 'choice', prompt: 'Pick one.', options }] }
+    await expect(judge(http.url, request)).rejects.toMatchObject({
+      code: 'INPUT_TOO_LARGE', message: expect.stringContaining('local cap'),
     })
     expect(http.received).toHaveLength(0)
   })

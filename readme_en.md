@@ -113,17 +113,19 @@ Open the authenticated Web address printed by DSH. Configure your main model thr
 
 ## Configure Jev
 
-1. Set the full System One compatible endpoint: `https://tokenrhythm.studio/v1/systemone`.
+1. Set the endpoint: the provider **recommends** `https://tokenrhythm.studio/v1/decision`; the System One compatible `https://tokenrhythm.studio/v1/systemone` accepts the same body (this plugin speaks the System One wire format, so both work).
 2. Set the model id: `NeoHorse-Jev-4B`.
 3. Choose a DSH credential reference, save the connection, and save your API key using the page's credential control. Do not put a key in source files or a repository URL.
-4. Review the timeout, then enable only the features you need.
+4. Review the timeout and `maxInputTokens` (the upstream input token ceiling, see Provider limits), then enable only the features you need.
 5. Inspect **Decision records** for input, answers, attempts, and actual adoption or execution receipts.
 
 The main agent's provider and the Jev judgment connection are separate. A credential marked “configured” is not a successful connectivity test. Connection tests and enabled judgments make requests to your provider.
 
 ### Provider limits
 
-The provider accepts at most 16 plain-text questions per request, so a judgment that needs more (skill and file ranking, test-log candidates) is split into ordered batches of 16 and the answers are merged back into one typed judgment. Judgments are never truncated locally: a request body above the provider's 1 MiB ceiling fails before it is sent, and one failed batch fails the whole judgment. A refused request keeps the provider's `code`, `message`, and `traceId` on the failure record for troubleshooting, with credential-shaped text removed. The default per-attempt timeout is 30 seconds because a batched judgment may take several calls.
+The provider accepts at most 16 plain-text questions per request, so a judgment that needs more (skill and file ranking, test-log candidates) is split into ordered batches of 16 and the answers are merged back into one typed judgment. A refused request keeps the provider's `code`, `message`, and `traceId` on the failure record for troubleshooting, with credential-shaped text removed. The default per-attempt timeout is 30 seconds because a batched judgment may take several calls.
+
+**The upstream also caps the encoded input tokens and answers 422 (`JEV_UPSTREAM_REJECTED`) above it.** The measured boundary is about 12,000 characters of plain text, so the plugin estimates tokens (one per CJK character, roughly four characters per token otherwise) and refuses an over-budget request **locally, before sending it**: the failure record names the estimate and the `maxInputTokens` ceiling, and the feature is skipped for that turn instead of handing the user a 422. `maxInputTokens` defaults to 2,800 and is editable on the profile's plugin row. Per-feature text budgets now default to 8,000-10,000 characters (previously 24,000-48,000, far above the upstream ceiling).
 
 Selection defaults are 5 skill summaries, at most 40 glob matches eligible for ranking, and 12 displayed ranked paths. A larger glob skips Jev rather than silently judging only the first 40. Supervision defaults are a drift check every 6 completed model steps and a pause after 3 native goal rounds without progress. These values can be changed without enabling the features.
 

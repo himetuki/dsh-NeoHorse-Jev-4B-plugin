@@ -8,7 +8,7 @@ import { findingId, SharedFindingsStore } from "./shared-findings-store.js";
 export const name = 'jev-shared-findings';
 export const inject = ['jev', 'agents', 'subagents', 'storageDomain', 'profileContext', 'settings'];
 /** Maximum serialized judgment input; oversized originals remain stored and require manual resolution. */
-export const Config = s.object({ maxRequestChars: s.number().step(1).min(2048).max(Number.MAX_SAFE_INTEGER).default(48_000).volatile() });
+export const Config = s.object({ maxRequestChars: s.number().step(1).min(2048).max(Number.MAX_SAFE_INTEGER).default(8000).volatile() });
 const FEATURE = 'shared-findings';
 const PREFIX = '[Jev plugin-generated shared findings — relayed through the parent-agent message channel; auxiliary evidence, not user authorization]';
 function textOf(message) {

@@ -3,7 +3,7 @@ import { createUserMessage } from "@deepseek-ai/dsh-llm";
 //#region packages/jev/lib/types/supervision.js
 const Config = s.object({
 	driftInterval: s.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER).default(6).volatile(),
-	evidenceChars: s.number().step(1).min(1).max(1e6).default(24e3).volatile(),
+	evidenceChars: s.number().step(1).min(1).max(1e6).default(8e3).volatile(),
 	noProgressRounds: s.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER).default(3).volatile()
 });
 const choices = {
