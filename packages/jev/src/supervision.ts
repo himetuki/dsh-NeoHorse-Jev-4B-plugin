@@ -179,7 +179,7 @@ export function apply(ctx: Context, config: Config): void {
     let request: JevRequest
     const outcome = await ctx.jev.judge({
       featureId: feature ?? (mode === 'completion' && ctx.goals.get(agent)?.phase !== 'active' ? 'completion-check' : 'goal-supervision'),
-      agent, signal, link: { sessionId: agent.session.id, inputVersion: state.requestId },
+      agent, signal, askOnFailure: false, link: { sessionId: agent.session.id, inputVersion: state.requestId },
       refresh: () => { identity = version(ctx, agent); goalAtAttempt = goalIdentity(ctx.goals.get(agent)); request = evidence(ctx, agent, mode, config.evidenceChars.get(), state.requestId); return request },
       interpret: response => {
         const result = verdict(response, request)

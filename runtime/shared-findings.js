@@ -442,6 +442,7 @@ async function apply(ctx, config) {
 		const result = await ctx.jev.judge({
 			featureId: FEATURE,
 			agent: root,
+			askOnFailure: false,
 			link: {
 				sessionId: root.id,
 				inputVersion: id

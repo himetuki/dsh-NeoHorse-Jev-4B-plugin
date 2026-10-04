@@ -136,6 +136,7 @@ Long-log and test-log admission have independent switches, both off by default. 
 - **Approvals remain single-operation.** Workspace approval neither changes the session's sandbox mode nor overrides fixed host checks. `approve` can supply `allowed-once`; `unauthorized` or `unknown` returns to the original human approval flow. Technical failures retain manual Retry/Cancel.
 - **Shared corrections have a limited scope.** They process already-shared reports and messages, not every agent's private exploration. Automatic delivery targets the live root agent and its active, continuable direct children. Duplicate corrections can still arise when the same finding appears in different report forms.
 - **Judgment success is not action success.** The ledger distinguishes an answer, its adoption, permission issuance, and execution results.
+- **A failed judgment never asks the user.** When the endpoint is unreachable, times out, rejects the credential, or answers unusably, the plugin does **not** raise a Retry/Cancel question: that feature is skipped for the turn (no correction delivered, no reminder, no ranking, native approval restored) and the session continues. The failure is recorded in the ledger as `failed`, without blocking the main flow.
 - **Log admission keeps an original reference.** It changes only eligible model-visible tool text after execution; DSH's immediate spill, tool output limits, and later context compaction still apply.
 - **Validation is scoped.** Deterministic tests establish integration, not general semantic accuracy.
 

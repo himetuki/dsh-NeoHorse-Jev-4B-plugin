@@ -1,4 +1,4 @@
-import { n as JevError } from "./types-CMAOzoV2.js";
+import { n as JevError } from "./types-VhaqyJtK.js";
 import s from "@deepseek-ai/schemastery";
 import { createHash } from "node:crypto";
 import { createUserMessage } from "@deepseek-ai/dsh-llm";
@@ -188,6 +188,7 @@ function apply(ctx, config) {
 			const result = await ctx.jev.judge({
 				featureId: FEATURE,
 				agent: state.agent,
+				askOnFailure: false,
 				signal,
 				link: {
 					sessionId: state.agent.id,
@@ -218,6 +219,19 @@ function apply(ctx, config) {
 				entry.generation++;
 				entry.controller = new AbortController();
 				start(state, entry);
+				return;
+			}
+			if (result.kind === "failed") {
+				entry.destination = "next-turn";
+				routeNotice(state, entry, "queued", "判定失败，按原始路径排队 / Judgment failed; kept on the original path");
+				if (result.operationId !== void 0) track(ctx.jev.writeReceipt(result.operationId, {
+					id: "failed",
+					status: "not-adopted",
+					reason: "Jev judgment unavailable; the message stayed on the original path",
+					at: (/* @__PURE__ */ new Date()).toISOString()
+				}).then(() => {}).catch((error) => {
+					ctx.logger.warn(String(error));
+				}));
 				return;
 			}
 			if (result.kind !== "ok") {

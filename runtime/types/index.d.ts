@@ -43,6 +43,13 @@ export interface JevJudgeOptions {
     }>;
     canAdopt?: (response: JevResponse, signal: AbortSignal) => true | string | Promise<true | string>;
     signal?: AbortSignal;
+    /**
+     * Whether a failed attempt asks a human to retry or cancel. `false` returns the failure to the
+     * caller instead: a provider outage is the plugin's problem to absorb -- the feature simply
+     * stays off for that turn -- never the user's decision to make mid-conversation. Automatic
+     * hooks pass `false`; a consumer that deliberately drives a human loop leaves it `true`.
+     */
+    askOnFailure?: boolean;
 }
 /** Single-attempt consumers may read historical data without a running Agent. */
 export type JevJudgeOnceOptions = Omit<JevJudgeOptions, 'agent'> & {
@@ -61,6 +68,13 @@ export type JevJudgeResult = {
     kind: 'not-adopted';
     operationId: string;
     reason: string;
+} | {
+    kind: 'failed';
+    operationId?: string;
+    failure: {
+        code: string;
+        message: string;
+    };
 };
 /** Non-interactive attempts return failure without opening a human question. */
 export type JevJudgeOnceResult = JevJudgeResult | {

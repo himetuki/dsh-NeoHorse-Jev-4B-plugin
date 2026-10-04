@@ -225,7 +225,7 @@ export function apply(ctx, config) {
         const initial = makeRequest();
         let first = true;
         const outcome = await ctx.jev.judge({
-            featureId: 'skill-selection', agent, signal, link: { sessionId: agent.session.id },
+            featureId: 'skill-selection', agent, signal, askOnFailure: false, link: { sessionId: agent.session.id },
             refresh: async (retrySignal) => {
                 if (first) {
                     first = false;
@@ -244,6 +244,8 @@ export function apply(ctx, config) {
             interpret: response => validAnswers(current, response)
                 ? { usable: true } : { usable: false, reason: 'Jev returned an incomplete skill ranking' },
         });
+        if (outcome.kind === 'failed')
+            return decision;
         if (outcome.kind !== 'ok')
             throw new JevError('CANCELLED', 'Skill selection was cancelled or could not be adopted');
         const chosen = ranked(current, outcome.response).slice(0, currentLimit);
@@ -287,7 +289,7 @@ export function apply(ctx, config) {
             }, questions: value.paths.map((path, index) => question(index, 'Is this path relevant to the task? Path: ' + path)) });
         const initial = makeRequest();
         const outcome = await ctx.jev.judge({
-            featureId: 'file-ranking', agent, signal: exec.signal, link: { sessionId: agent.session.id },
+            featureId: 'file-ranking', agent, signal: exec.signal, askOnFailure: false, link: { sessionId: agent.session.id },
             refresh: () => {
                 if (first) {
                     first = false;
@@ -307,6 +309,8 @@ export function apply(ctx, config) {
             throw error;
         });
         if (outcome === undefined)
+            return result;
+        if (outcome.kind === 'failed')
             return result;
         if (outcome.kind !== 'ok')
             throw new JevError('CANCELLED', 'File ranking was cancelled or could not be adopted');

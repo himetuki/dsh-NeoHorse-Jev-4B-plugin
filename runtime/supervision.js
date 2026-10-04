@@ -233,6 +233,7 @@ function apply(ctx, config) {
 			featureId: feature ?? (mode === "completion" && ctx.goals.get(agent)?.phase !== "active" ? "completion-check" : "goal-supervision"),
 			agent,
 			signal,
+			askOnFailure: false,
 			link: {
 				sessionId: agent.session.id,
 				inputVersion: state.requestId

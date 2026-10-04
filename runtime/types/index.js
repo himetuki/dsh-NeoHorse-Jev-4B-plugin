@@ -329,12 +329,18 @@ let JevService = (() => {
                 throw new JevError('FEATURE_DISABLED', 'Jev feature is disabled');
             if (this.disposing)
                 throw new JevError('UNAVAILABLE', 'Jev service is stopping');
+            // `false` (the automatic-hook setting): a failure returns to the caller, never a human question.
+            const askOnFailure = options.askOnFailure !== false;
             const operation = await this.records().create(options.featureId, options.link);
             try {
                 for (;;) {
                     if (lifetime.aborted)
                         return this.cancel(operation.id);
                     if (!this.isEnabled(options.featureId)) {
+                        if (!askOnFailure) {
+                            await this.records().setStatus(operation.id, 'failed');
+                            return { kind: 'failed', operationId: operation.id, failure: { code: 'FEATURE_DISABLED', message: 'Jev feature is disabled' } };
+                        }
                         const choice = await this.ask(options.agent, lifetime, 'Jev feature is disabled. Enable it to retry or cancel.');
                         if (choice === 'cancel')
                             return this.cancel(operation.id);
@@ -358,10 +364,17 @@ let JevService = (() => {
                         }
                         return { kind: 'ok', operationId: operation.id, attemptId: attempted.attemptId, response: attempted.response };
                     }
-                    await this.records().setStatus(operation.id, 'waiting');
-                    const choice = await this.ask(options.agent, lifetime, `${attempted.failure.message}. Retry with current input or cancel?`);
-                    if (choice === 'cancel')
-                        return this.cancel(operation.id);
+                    if (!attempted.ok) {
+                        if (!askOnFailure) {
+                            // Nobody is waiting: the ledger records the failure the caller absorbs.
+                            await this.records().setStatus(operation.id, 'failed');
+                            return { kind: 'failed', operationId: operation.id, failure: attempted.failure };
+                        }
+                        await this.records().setStatus(operation.id, 'waiting');
+                        const choice = await this.ask(options.agent, lifetime, `${attempted.failure.message}. Retry with current input or cancel?`);
+                        if (choice === 'cancel')
+                            return this.cancel(operation.id);
+                    }
                 }
             }
             catch (error) {

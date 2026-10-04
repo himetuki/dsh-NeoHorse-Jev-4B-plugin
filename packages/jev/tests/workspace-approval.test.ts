@@ -244,7 +244,7 @@ it('leaves an invalid native write with its fixed validation failure before appr
   expect(h.outcomes()).toHaveLength(0)
 })
 
-it('retries only after a human choice and refreshes the direct script', async () => {
+it('hands a failed Jev answer to the native approval flow without a human retry', async () => {
   const h = await fixture([call('retry-script', 'bash', { command: 'python scripts/fix.py', description: 'Run direct script', sandbox_permissions: 'danger-full-access', justification: 'Write build cache' }), text('done')],
     [{ invalid: true }, { choice: 'approve' }], { shell: true })
   await mkdir(join(h.workspace, 'scripts'))
@@ -252,17 +252,20 @@ it('retries only after a human choice and refreshes the direct script', async ()
   let questions = 0
   h.ctx.on('user-questions/request', async () => {
     questions++
-    expect(h.shell?.modes).toEqual([])
-    await writeFile(join(h.workspace, 'scripts/fix.py'), 'revised script\n')
     return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] }
   })
+  const native = vi.fn(() => Promise.resolve<ApprovalOutcome>('rejected'))
+  h.ctx.on('approval/request', native)
   await h.send()
-  expect(questions).toBe(1)
-  expect(h.received.map(item => item.state.script.content)).toEqual(['original script\n', 'revised script\n'])
-  expect(h.shell?.modes).toEqual(['danger-full-access'])
+  expect(questions).toBe(0)
+  expect(native).toHaveBeenCalledTimes(1)
+  expect(h.received).toHaveLength(1)
+  expect(h.received.map(item => item.state.script.content)).toEqual(['original script\n'])
+  expect(h.shell?.modes).toEqual([])
+  expect(h.outcomes()).toEqual(['rejected'])
 })
 
-it('cancels the native call after a failed Jev answer and human Cancel', async () => {
+it('records a failed Jev answer as failed instead of asking a human to cancel', async () => {
   const h = await fixture([call('cancel-script', 'bash', { command: 'python scripts/missing.py', description: 'Run direct script', sandbox_permissions: 'danger-full-access', justification: 'Write build cache' }), text('done')],
     [{ invalid: true }], { shell: true })
   let questions = 0
@@ -270,11 +273,15 @@ it('cancels the native call after a failed Jev answer and human Cancel', async (
     questions++
     return Promise.resolve({ answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] })
   })
+  h.ctx.on('approval/request', () => Promise.resolve<ApprovalOutcome>('rejected'))
   await h.send()
-  expect(questions).toBe(1)
+  expect(questions).toBe(0)
   expect(h.received).toHaveLength(1)
-  expect(h.outcomes()).toEqual(['cancelled'])
+  expect(h.outcomes()).toEqual(['rejected'])
   expect(h.shell?.modes).toEqual([])
+  const id = (await h.ctx.jev.listRecords({ featureId: 'workspace-approval' })).items[0]?.id
+  if (id === undefined) throw new Error('Jev operation was not recorded')
+  expect((await h.ctx.jev.getRecord(id))?.status).toBe('failed')
 })
 
 it('passes an unreadable direct script fact to Jev and hands unknown to the human', async () => {

@@ -117,64 +117,47 @@ async function setup(url: string) {
 }
 
 describe('glob selection with the real Jev service failure flow', () => {
-  it('waits after an invalid response, then uses the current display setting on manual retry', async () => {
+  it('keeps the original glob result when the judge fails, without asking a human', async () => {
     const http = await localJev([
       { status: 200, body: { answers: {} } },
       { status: 200, body: { answers: {
         'candidate-0': { noul: 0.1 }, 'candidate-1': { noul: 0.9 },
       } } },
     ])
-    const { ctx, glob, fileLimit, spills } = await setup(http.url)
-    let answerQuestion: ((value: { answers: { id: string; selected: string[] }[] }) => void) | undefined
-    const asked = new Promise<void>(resolve => {
-      ctx.on('user-questions/request', () => {
-        resolve()
-        return new Promise(answer => { answerQuestion = answer })
-      })
+    const { ctx, glob, fileLimit } = await setup(http.url)
+    let questions = 0
+    ctx.on('user-questions/request', async () => {
+      questions++
+      return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
     })
-    const pending = glob()
-    await asked
-    expect(http.received).toHaveLength(1)
-    expect((await ctx.jev.listRecords({})).items[0]?.status).toBe('waiting')
     updateVolatile(fileLimit, createVolatile(2))
-    answerQuestion?.({ answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] })
-    const result = await pending
+    const result = await glob()
+    expect(questions).toBe(0)
     expect(result.isError).toBe(false)
-    expect(result.value).toEqual({ root: '.', paths: ['a.ts', 'b.ts'] })
-    expect(result.content[0]).toMatchObject({ type: 'text' })
-    expect((result.content[0] as { text: string }).text).toContain('showing 2')
-    expect(spills).toHaveLength(0)
-    expect(http.received).toHaveLength(2)
-    expect(http.received[0]).toMatchObject({ state: { pattern: '*.ts' } })
+    expect(result.value).toEqual({ root: '.', paths: ['b.ts', 'a.ts'] })
+    expect(http.received).toHaveLength(1)
     const id = (await ctx.jev.listRecords({})).items[0]?.id
     if (id === undefined) throw new Error('Jev operation was not recorded')
-    expect((await ctx.jev.getRecord(id))?.attemptRecords.map(attempt => attempt.status))
-      .toEqual(['failed', 'succeeded'])
+    expect((await ctx.jev.getRecord(id))?.status).toBe('failed')
   })
 
-  it('keeps a transport failure pending until the user cancels, without releasing glob paths', async () => {
+  it('keeps the original glob result when the transport fails, without asking a human', async () => {
     const http = await localJev([{ status: 503, body: { error: 'local fixture unavailable' } }])
     const { ctx, glob } = await setup(http.url)
-    let answerQuestion: ((value: { answers: { id: string; selected: string[] }[] }) => void) | undefined
-    const asked = new Promise<void>(resolve => {
-      ctx.on('user-questions/request', () => {
-        resolve()
-        return new Promise(answer => { answerQuestion = answer })
-      })
+    let questions = 0
+    ctx.on('user-questions/request', async () => {
+      questions++
+      return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
     })
-    const pending = glob()
-    await asked
-    expect(http.received).toHaveLength(1)
-    answerQuestion?.({ answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] })
-    const result = await pending
-    expect(result.isError).toBe(true)
-    expect(result.value).toBeUndefined()
-    expect(result.additionalContexts).toBeUndefined()
-    expect(JSON.stringify(result.content)).not.toContain('b.ts')
+    const result = await glob()
+    expect(questions).toBe(0)
+    expect(result.isError).toBe(false)
+    expect(result.value).toEqual({ root: '.', paths: ['b.ts', 'a.ts'] })
+    expect(JSON.stringify(result.content)).toContain('b.ts')
     expect(http.received).toHaveLength(1)
     const id = (await ctx.jev.listRecords({})).items[0]?.id
     if (id === undefined) throw new Error('Jev operation was not recorded')
-    expect((await ctx.jev.getRecord(id))?.status).toBe('cancelled')
+    expect((await ctx.jev.getRecord(id))?.status).toBe('failed')
     expect((await ctx.jev.getRecord(id))?.attemptRecords[0]?.failure?.code).toBe('SERVER')
   })
 })

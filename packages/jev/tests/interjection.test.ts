@@ -233,15 +233,21 @@ describe('interjection business routing through published AgentLoop and HTTP Jev
     expect(deliveryTurn(h.agent, b.id)).toBe(2)
   })
 
-  it('cancels only the failed message after a real human-resolution response', async () => {
+  it('keeps a failed message on the original path without asking a human, and still delivers the other one', async () => {
     const h = await running([{ answers: {} }, answer('queue')])
-    h.ctx.on('user-questions/request', async () => ({ answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }))
+    let prompts = 0
+    h.ctx.on('user-questions/request', async () => {
+      prompts++
+      return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
+    })
     const bad = input('Unclassifiable input'), good = input('Later request')
     h.agent.steer(bad); h.agent.followup(good)
     h.release.resolve(); await h.agent.whenIdle()
-    expect(committed(h.agent, bad.id)).toHaveLength(0)
-    expect(committed(h.agent, good.id)).toHaveLength(1)
+    expect(prompts).toBe(0)
     expect(h.errors).toEqual([])
+    expect(committed(h.agent, bad.id)).toHaveLength(1)
+    expect(committed(h.agent, good.id)).toHaveLength(1)
+    expect(h.requests).toHaveLength(2)
   })
 
   it('records synchronous enablement intervals before subsequent running user input', async () => {
@@ -328,25 +334,18 @@ describe('interjection business routing through published AgentLoop and HTTP Jev
     expect(h.requests).toHaveLength(0)
   })
 
-  it('requires re-enablement before a failed message can be retried, and cancellation removes just that message', async () => {
+  it('keeps a failed message on the original path without a retry loop, even when the feature is disabled meanwhile', async () => {
     const h = await running([{ answers: {} }])
     let prompts = 0
     h.ctx.on('user-questions/request', async () => {
       prompts++
-      if (prompts === 1) {
-        const own: Context = Object.create(h.common.ctx)
-        own[Context.filter] = owner => owner.fiber === h.common
-        updateVolatile(h.features, createVolatile({ 'interjection-routing': false }))
-        h.common.ctx.emit(own, 'loader/volatile-update', [['features']])
-        return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] }
-      }
       return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
     })
     const message = input('Uncertain request')
     h.agent.followup(message); h.release.resolve(); await h.agent.whenIdle()
-    expect(prompts).toBe(2)
+    expect(prompts).toBe(0)
     expect(h.requests).toHaveLength(1)
-    expect(committed(h.agent, message.id)).toHaveLength(0)
+    expect(committed(h.agent, message.id)).toHaveLength(1)
   })
 
   it('lets an already-issued classification finish after feature disablement', async () => {

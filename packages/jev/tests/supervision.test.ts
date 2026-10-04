@@ -237,42 +237,55 @@ describe('supervision through real AgentLoop, goal driver, tools and HTTP Jev', 
     expect(h.ctx.goals.get(h.agent)?.phase).toBe('complete')
   })
 
-  it('keeps a failed completion check waiting and refreshes recorded evidence after manual retry', async () => {
-    const h = await harness([text('done')], [{ answers: {} }, answer('complete')], { 'completion-check': true })
-    let resolve!: (value: { answers: { id: string; selected: string[] }[] }) => void
-    const asked = new Promise<void>(ready => { h.ctx.on('user-questions/request', () => { ready(); return new Promise(answer => { resolve = answer }) }) })
-    h.send('Do it'); await asked
+  it('records a failed completion check without asking a human or retrying', async () => {
+    const h = await harness([text('done')], [{ answers: {} }], { 'completion-check': true })
+    let prompts = 0
+    h.ctx.on('user-questions/request', async () => {
+      prompts++
+      return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] }
+    })
+    h.send('Do it'); await h.agent.whenIdle()
+    expect(prompts).toBe(0)
     expect(visible(h.agent)).toContain('done')
-    expect(h.agent.status).toBe('running')
-    resolve({ answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] })
-    await h.agent.whenIdle()
-    expect(h.requests).toHaveLength(2)
-    expect((await h.ctx.jev.getRecord((await h.records()).items[0]!.id))?.attemptRecords).toHaveLength(2)
+    expect(h.requests).toHaveLength(1)
+    const record = await h.ctx.jev.getRecord((await h.records()).items[0]!.id)
+    expect(record?.status).toBe('failed')
+    expect(record?.attemptRecords).toHaveLength(1)
   })
   it('does not turn cropped evidence into a successful completion', async () => {
     const h = await harness([text('done')], [answer('complete')], { 'completion-check': true }, { evidenceChars: 30 })
-    h.ctx.on('user-questions/request', async () => ({ answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }))
+    let prompts = 0
+    h.ctx.on('user-questions/request', async () => {
+      prompts++
+      return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
+    })
     h.send('Implement the full requirement with current tests'); await h.agent.whenIdle()
+    expect(prompts).toBe(0)
     expect(h.requests[0].state.completeEvidence).toBe(false)
     expect(h.requests[0].state.omittedMessages).toBeGreaterThan(0)
     const record = await h.ctx.jev.getRecord((await h.records()).items[0]!.id)
-    expect(record?.status).toBe('cancelled')
+    expect(record?.status).toBe('failed')
     expect(record?.attemptRecords[0]?.failure?.code).toBe('UNDETERMINED')
     expect(record?.receipts).toHaveLength(0)
   })
 
-  it('cancels a failed goal check, pauses native continuation, and keeps another queued user request', async () => {
-    const h = await harness([text('goal answer'), text('queued user answer')], [{ answers: {} }], { 'goal-supervision': true })
-    let resolve!: (value: { answers: { id: string; selected: string[] }[] }) => void
-    const asked = new Promise<void>(ready => { h.ctx.on('user-questions/request', () => { ready(); return new Promise(answer => { resolve = answer }) }) })
+  it('leaves a failed goal check unpaused and keeps another queued user request', async () => {
+    const h = await harness([text('goal answer'), text('independent answer')], [{ answers: {} }], { 'goal-supervision': true })
+    let prompts = 0
+    h.ctx.on('user-questions/request', async () => {
+      prompts++
+      return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
+    })
     h.ctx.goals.create(h.agent, { objective: 'Test all changes', maxGoalRounds: 8 })
-    await asked
+    await vi.waitFor(() => expect(h.requests.length).toBeGreaterThanOrEqual(1))
+    const judged = h.requests.length
     h.send('An independent user request')
-    resolve({ answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] })
     await h.agent.whenIdle()
-    expect(h.ctx.goals.get(h.agent)?.phase).toBe('paused')
-    expect(h.model.requests).toHaveLength(2)
-    expect(visible(h.agent)).toContain('queued user answer')
+    expect(prompts).toBe(0)
+    expect(h.ctx.goals.get(h.agent)?.phase).not.toBe('paused')
+    expect(JSON.stringify(h.model.requests)).toContain('An independent user request')
+    // A failed check is never retried for the same fence: the count only grows with new fences.
+    expect(h.requests.length).toBeGreaterThanOrEqual(judged)
   })
 
   it('does not allow a stale completion answer to change an edited goal', async () => {
@@ -301,19 +314,15 @@ describe('supervision through real AgentLoop, goal driver, tools and HTTP Jev', 
     expect(h.requests[0].state.mode).toBe('completion')
   })
 
-  it('keeps a disabled interactive check waiting until cancellation without another request', async () => {
+  it('ends a failed interactive check without a retry request or a human prompt', async () => {
     const h = await harness([text('done')], [{ answers: {} }], { 'completion-check': true })
     let prompts = 0
     h.ctx.on('user-questions/request', async () => {
       prompts++
-      if (prompts === 1) {
-        updateVolatile(h.features, createVolatile({ 'completion-check': false }))
-        return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] }
-      }
       return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
     })
     h.send('Do it'); await h.agent.whenIdle()
-    expect(prompts).toBe(2)
+    expect(prompts).toBe(0)
     expect(h.requests).toHaveLength(1)
     expect(h.model.requests).toHaveLength(1)
   })

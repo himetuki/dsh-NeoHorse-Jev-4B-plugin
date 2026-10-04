@@ -419,23 +419,20 @@ it('observes a foreground report only after the real native subagent tool return
   expect(f.relations()).toHaveLength(1)
 })
 
-it('uses the live root for failure decisions and cancellation does not resume dependent input or cancel unrelated work', async () => {
+it('keeps an unresolved relation on a failed judgment and does not cancel unrelated work', async () => {
   const f = await fixture('unknown')
   const a = await f.child('a')
   await f.send(a.agent, f.root, 'Old unresolved evidence')
   await f.root.whenIdle()
-  const answer = deferred()
-  const asked: string[] = []
-  f.ctx.on('user-questions/request', async request => {
-    asked.push(request.agent!.id)
-    await answer.promise
+  let asks = 0
+  f.ctx.on('user-questions/request', async () => {
+    asks++
     return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
   })
   await f.send(a.agent, f.root, 'New unresolved evidence')
-  await vi.waitFor(() => expect(asked).toEqual(['root']))
-  expect(f.root.session.deriveMessages().some(message => JSON.stringify(message).includes('New unresolved evidence'))).toBe(false)
-  answer.resolve()
   await f.root.whenIdle()
+  expect(asks).toBe(0)
+  expect(f.root.session.deriveMessages().some(message => JSON.stringify(message).includes('New unresolved evidence'))).toBe(false)
   expect(f.relations()[0]!.state).toBe('unresolved')
   expect(f.relations()[0]!.deliveries).toHaveLength(0)
   expect(f.findings().every(item => item.supersededBy === undefined)).toBe(true)
@@ -445,24 +442,19 @@ it('uses the live root for failure decisions and cancellation does not resume de
   expect(JSON.stringify(f.model.requests)).not.toContain('New unresolved evidence')
 })
 
-it('requires enabling before a manual retry and does not issue a disabled retry', async () => {
+it('does not retry or ask a human when the relation judgment fails', async () => {
   const f = await fixture('unknown')
   const a = await f.child('a')
   await f.send(a.agent, f.root, 'Old finding')
   await f.root.whenIdle()
-  const decision = deferred()
   let asks = 0
   f.ctx.on('user-questions/request', async () => {
     asks++
-    if (asks === 1) { await decision.promise; return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] } }
-    return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
+    return { answers: [{ id: 'jev-resolution', selected: ['重试 / Retry'] }] }
   })
   await f.send(a.agent, f.root, 'New finding')
-  await vi.waitFor(() => expect(asks).toBe(1))
-  updateVolatile(f.common.config.features, createVolatile({ 'shared-findings': false }))
-  decision.resolve()
   await f.root.whenIdle()
-  expect(asks).toBe(2)
+  expect(asks).toBe(0)
   expect(f.requests).toHaveLength(1)
   expect(f.relations()[0]!.state).toBe('unresolved')
 })
@@ -547,20 +539,20 @@ it('does not adopt a judgment when a direct user correction is pending in the ro
   expect(f.findings().every(item => item.supersededBy === undefined)).toBe(true)
 })
 
-it('retains oversized originals but never adopts a truncated relation and asks the root', async () => {
+it('retains oversized originals but never adopts a truncated relation, without asking the root', async () => {
   const f = await fixture('unknown')
   const a = await f.child('a')
   await f.send(a.agent, f.root, 'Old finding')
   await f.root.whenIdle()
-  const asked: string[] = []
-  f.ctx.on('user-questions/request', async request => {
-    asked.push(request.agent!.id)
+  let asks = 0
+  f.ctx.on('user-questions/request', async () => {
+    asks++
     return { answers: [{ id: 'jev-resolution', selected: ['取消 / Cancel'] }] }
   })
   const report = 'Evidence line\n'.repeat(8000)
   await f.send(a.agent, f.root, report)
   await f.root.whenIdle()
-  expect(asked).toEqual(['root'])
+  expect(asks).toBe(0)
   expect(JSON.stringify(f.requests[0]).length).toBeLessThan(48_000)
   expect(JSON.stringify(f.requests[0])).toContain('originalsOmitted')
   expect(f.findings()[1]!.original).toContain(report)

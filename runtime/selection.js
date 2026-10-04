@@ -1,4 +1,4 @@
-import { n as JevError } from "./types-CMAOzoV2.js";
+import { n as JevError } from "./types-VhaqyJtK.js";
 import s from "@deepseek-ai/schemastery";
 import { createHash } from "node:crypto";
 import { createUserMessage } from "@deepseek-ai/dsh-llm";
@@ -278,6 +278,7 @@ function apply(ctx, config) {
 			featureId: "skill-selection",
 			agent,
 			signal,
+			askOnFailure: false,
 			link: { sessionId: agent.session.id },
 			refresh: async (retrySignal) => {
 				if (first) {
@@ -304,6 +305,7 @@ function apply(ctx, config) {
 				reason: "Jev returned an incomplete skill ranking"
 			}
 		});
+		if (outcome.kind === "failed") return decision;
 		if (outcome.kind !== "ok") throw new JevError("CANCELLED", "Skill selection was cancelled or could not be adopted");
 		const chosen = ranked(current, outcome.response).slice(0, currentLimit);
 		const existing = injectedSkillNames(agent);
@@ -351,6 +353,7 @@ function apply(ctx, config) {
 			featureId: "file-ranking",
 			agent,
 			signal: exec.signal,
+			askOnFailure: false,
 			link: { sessionId: agent.session.id },
 			refresh: () => {
 				if (first) {
@@ -370,6 +373,7 @@ function apply(ctx, config) {
 			throw error;
 		});
 		if (outcome === void 0) return result;
+		if (outcome.kind === "failed") return result;
 		if (outcome.kind !== "ok") throw new JevError("CANCELLED", "File ranking was cancelled or could not be adopted");
 		const scores = ranked(value.paths, outcome.response);
 		await ctx.jev.writeReceipt(outcome.operationId, {

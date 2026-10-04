@@ -50,6 +50,13 @@ export interface JevJudgeOptions {
   interpret?: (response: JevResponse, signal: AbortSignal) => { usable: true } | { usable: false; reason: string } | Promise<{ usable: true } | { usable: false; reason: string }>
   canAdopt?: (response: JevResponse, signal: AbortSignal) => true | string | Promise<true | string>
   signal?: AbortSignal
+  /**
+   * Whether a failed attempt asks a human to retry or cancel. `false` returns the failure to the
+   * caller instead: a provider outage is the plugin's problem to absorb -- the feature simply
+   * stays off for that turn -- never the user's decision to make mid-conversation. Automatic
+   * hooks pass `false`; a consumer that deliberately drives a human loop leaves it `true`.
+   */
+  askOnFailure?: boolean
 }
 
 /** Single-attempt consumers may read historical data without a running Agent. */
@@ -60,6 +67,7 @@ export type JevJudgeResult =
   | { kind: 'ok'; operationId: string; attemptId: string; response: JevResponse }
   | { kind: 'cancelled'; operationId: string }
   | { kind: 'not-adopted'; operationId: string; reason: string }
+  | { kind: 'failed'; operationId?: string; failure: { code: string; message: string } }
 
 /** Non-interactive attempts return failure without opening a human question. */
 export type JevJudgeOnceResult = JevJudgeResult
@@ -323,11 +331,17 @@ export class JevService extends TypertRemoteService {
     if (!this.features.has(options.featureId)) throw new JevError('UNKNOWN_FEATURE', 'Jev feature is not registered')
     if (!this.isEnabled(options.featureId)) throw new JevError('FEATURE_DISABLED', 'Jev feature is disabled')
     if (this.disposing) throw new JevError('UNAVAILABLE', 'Jev service is stopping')
+    // `false` (the automatic-hook setting): a failure returns to the caller, never a human question.
+    const askOnFailure = options.askOnFailure !== false;
     const operation = await this.records().create(options.featureId, options.link)
     try {
       for (;;) {
       if (lifetime.aborted) return this.cancel(operation.id)
       if (!this.isEnabled(options.featureId)) {
+        if (!askOnFailure) {
+          await this.records().setStatus(operation.id, 'failed')
+          return { kind: 'failed', operationId: operation.id, failure: { code: 'FEATURE_DISABLED', message: 'Jev feature is disabled' } }
+        }
         const choice = await this.ask(options.agent, lifetime, 'Jev feature is disabled. Enable it to retry or cancel.')
         if (choice === 'cancel') return this.cancel(operation.id)
         continue
@@ -348,9 +362,16 @@ export class JevService extends TypertRemoteService {
         }
         return { kind: 'ok', operationId: operation.id, attemptId: attempted.attemptId, response: attempted.response }
       }
-      await this.records().setStatus(operation.id, 'waiting')
-      const choice = await this.ask(options.agent, lifetime, `${attempted.failure.message}. Retry with current input or cancel?`)
-      if (choice === 'cancel') return this.cancel(operation.id)
+      if (!attempted.ok) {
+        if (!askOnFailure) {
+          // Nobody is waiting: the ledger records the failure the caller absorbs.
+          await this.records().setStatus(operation.id, 'failed')
+          return { kind: 'failed', operationId: operation.id, failure: attempted.failure }
+        }
+        await this.records().setStatus(operation.id, 'waiting')
+        const choice = await this.ask(options.agent, lifetime, `${attempted.failure.message}. Retry with current input or cancel?`)
+        if (choice === 'cancel') return this.cancel(operation.id)
+      }
       }
     } catch (error) {
       if (!(error instanceof JevError && (error.code === 'LOG_WRITE_FAILED' || error.code === 'RECEIPT_NOT_SAVED'))) {

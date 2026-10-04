@@ -250,7 +250,7 @@ export function apply(ctx: Context, config: Config): void {
     let basis: Snapshot | undefined
     let judged: Awaited<ReturnType<typeof ctx.jev.judge>>
     try {
-      judged = await ctx.jev.judge({ featureId: FEATURE, agent: req.agent, signal: AbortSignal.any([req.signal!, lifetime.signal]),
+      judged = await ctx.jev.judge({ featureId: FEATURE, agent: req.agent, askOnFailure: false, signal: AbortSignal.any([req.signal!, lifetime.signal]),
         link: { sessionId: req.agent.session.id, runId: String(entry.exec.callId), stepId: String(entry.exec.rootCallId) },
         refresh: async signal => { basis = await snapshot(ctx, fs, entry, req, () => epoch, () => config.maxScriptBytes.get(), signal); return basis.request },
         canAdopt: async (_response, signal) => {
@@ -261,7 +261,9 @@ export function apply(ctx: Context, config: Config): void {
       })
     } catch { return lifetime.signal.aborted || req.signal?.aborted ? 'cancelled' : 'unavailable' }
     if (judged.kind === 'cancelled' || req.signal?.aborted || entry.exec.signal.aborted || stopped) return 'cancelled'
-    if (judged.kind === 'not-adopted' || !eligible(req.agent, req.signal) || !entries.has(entry)) return handoff(req, next, leave)
+    // A failure (service down, timeout, key) is not a verdict: the request goes back to the native
+    // approval flow unchanged, so a Jev outage can never stall or silently authorize an operation.
+    if (judged.kind !== 'ok' || !eligible(req.agent, req.signal) || !entries.has(entry)) return handoff(req, next, leave)
     const choice = decision(judged.response)
     if (choice !== 'approve') {
       await track(ctx.jev.writeReceipt(judged.operationId, { id: 'approval-routing', status: 'observed', reason: `${choice}: delegated to native answerer`, at: new Date().toISOString() })).catch(() => {})

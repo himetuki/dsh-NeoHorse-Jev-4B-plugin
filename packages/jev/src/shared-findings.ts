@@ -218,7 +218,7 @@ export async function apply(ctx: Context, config: Config): Promise<void> {
     judgments.set(root.id, judgment)
     const death = rootDeaths.get(root.id) ?? new AbortController()
     rootDeaths.set(root.id, death)
-    const result = await ctx.jev.judge({ featureId: FEATURE, agent: root, link: { sessionId: root.id, inputVersion: id }, signal: AbortSignal.any([lifetime.signal, death.signal, judgment.signal]),
+    const result = await ctx.jev.judge({ featureId: FEATURE, agent: root, askOnFailure: false, link: { sessionId: root.id, inputVersion: id }, signal: AbortSignal.any([lifetime.signal, death.signal, judgment.signal]),
       refresh: () => {
         if (!isRootLive(root)) throw new Error('The live root no longer exists')
         task = currentTask(root)

@@ -300,6 +300,7 @@ function apply(ctx, config) {
 			judged = await ctx.jev.judge({
 				featureId: FEATURE,
 				agent: req.agent,
+				askOnFailure: false,
 				signal: AbortSignal.any([req.signal, lifetime.signal]),
 				link: {
 					sessionId: req.agent.session.id,
@@ -319,7 +320,7 @@ function apply(ctx, config) {
 			return lifetime.signal.aborted || req.signal?.aborted ? "cancelled" : "unavailable";
 		}
 		if (judged.kind === "cancelled" || req.signal?.aborted || entry.exec.signal.aborted || stopped) return "cancelled";
-		if (judged.kind === "not-adopted" || !eligible(req.agent, req.signal) || !entries.has(entry)) return handoff(req, next, leave);
+		if (judged.kind !== "ok" || !eligible(req.agent, req.signal) || !entries.has(entry)) return handoff(req, next, leave);
 		const choice = decision(judged.response);
 		if (choice !== "approve") {
 			await track(ctx.jev.writeReceipt(judged.operationId, {

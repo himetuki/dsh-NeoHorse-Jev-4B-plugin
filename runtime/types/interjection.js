@@ -112,7 +112,7 @@ export function apply(ctx, config) {
         const task = (async () => {
             let identity = '';
             let usable = false;
-            const result = await ctx.jev.judge({ featureId: FEATURE, agent: state.agent, signal,
+            const result = await ctx.jev.judge({ featureId: FEATURE, agent: state.agent, askOnFailure: false, signal,
                 link: { sessionId: state.agent.id, inputVersion: entry.id, stepId: String(generation) },
                 refresh: () => {
                     const message = pending(state, entry.id);
@@ -140,6 +140,19 @@ export function apply(ctx, config) {
                 entry.generation++;
                 entry.controller = new AbortController();
                 start(state, entry);
+                return;
+            }
+            if (result.kind === 'failed') {
+                // A judgment failure is not a verdict: the message is never dropped. It stays on the
+                // original path (delivered as the user's own message in a later turn) and the turn
+                // continues, so a provider outage degrades routing instead of breaking the session.
+                entry.destination = 'next-turn';
+                routeNotice(state, entry, 'queued', '判定失败，按原始路径排队 / Judgment failed; kept on the original path');
+                if (result.operationId !== undefined) {
+                    track(ctx.jev.writeReceipt(result.operationId, { id: 'failed', status: 'not-adopted',
+                        reason: 'Jev judgment unavailable; the message stayed on the original path', at: new Date().toISOString() })
+                        .then(() => { }).catch(error => { ctx.logger.warn(String(error)); }));
+                }
                 return;
             }
             if (result.kind !== 'ok') {

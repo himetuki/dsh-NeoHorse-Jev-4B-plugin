@@ -6788,7 +6788,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 206,
+						"line": 214,
 						"column": 3
 					}
 				},
@@ -6806,7 +6806,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 216,
+						"line": 224,
 						"column": 9
 					}
 				},
@@ -6833,7 +6833,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 178,
+						"line": 186,
 						"column": 9
 					}
 				},
@@ -6883,7 +6883,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 210,
+						"line": 218,
 						"column": 3
 					}
 				},
@@ -6911,7 +6911,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 194,
+						"line": 202,
 						"column": 3
 					}
 				},
@@ -6929,7 +6929,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 162,
+						"line": 170,
 						"column": 9
 					}
 				},
@@ -6956,7 +6956,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 169,
+						"line": 177,
 						"column": 9
 					}
 				},
@@ -6983,7 +6983,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 223,
+						"line": 231,
 						"column": 9
 					}
 				},
@@ -7010,7 +7010,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 200,
+						"line": 208,
 						"column": 3
 					}
 				},
@@ -7029,7 +7029,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					sourceLocation: {
 						"file": "packages/jev/src/index.ts",
-						"line": 231,
+						"line": 239,
 						"column": 9
 					}
 				}
@@ -7046,34 +7046,34 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			document.head.appendChild(element);
 		}
 		var JevPage_module_css_default = {
-			"record": "qwH4Ha_record",
 			"detail": "qwH4Ha_detail",
-			"heading": "qwH4Ha_heading",
-			"featureBody": "qwH4Ha_featureBody",
-			"panel": "qwH4Ha_panel",
 			"recordHead": "qwH4Ha_recordHead",
-			"meta": "qwH4Ha_meta",
-			"featureTitle": "qwH4Ha_featureTitle",
-			"empty": "qwH4Ha_empty",
-			"success": "qwH4Ha_success",
-			"detailLabel": "qwH4Ha_detailLabel",
-			"detailBlock": "qwH4Ha_detailBlock",
-			"row": "qwH4Ha_row",
 			"actions": "qwH4Ha_actions",
-			"list": "qwH4Ha_list",
 			"page": "qwH4Ha_page",
-			"description": "qwH4Ha_description",
+			"featureBody": "qwH4Ha_featureBody",
+			"empty": "qwH4Ha_empty",
 			"section": "qwH4Ha_section",
-			"filters": "qwH4Ha_filters",
-			"notice": "qwH4Ha_notice",
-			"tabs": "qwH4Ha_tabs",
-			"toolbar": "qwH4Ha_toolbar",
-			"form": "qwH4Ha_form",
-			"field": "qwH4Ha_field",
-			"code": "qwH4Ha_code",
+			"success": "qwH4Ha_success",
+			"record": "qwH4Ha_record",
 			"hint": "qwH4Ha_hint",
+			"description": "qwH4Ha_description",
+			"code": "qwH4Ha_code",
+			"detailBlock": "qwH4Ha_detailBlock",
+			"meta": "qwH4Ha_meta",
+			"detailLabel": "qwH4Ha_detailLabel",
+			"field": "qwH4Ha_field",
+			"form": "qwH4Ha_form",
+			"tabs": "qwH4Ha_tabs",
+			"panel": "qwH4Ha_panel",
+			"heading": "qwH4Ha_heading",
+			"toolbar": "qwH4Ha_toolbar",
 			"feature": "qwH4Ha_feature",
-			"loading": "qwH4Ha_loading"
+			"loading": "qwH4Ha_loading",
+			"featureTitle": "qwH4Ha_featureTitle",
+			"notice": "qwH4Ha_notice",
+			"filters": "qwH4Ha_filters",
+			"row": "qwH4Ha_row",
+			"list": "qwH4Ha_list"
 		};
 		//#endregion
 		//#region src/client/JevPage.tsx
@@ -8743,52 +8743,52 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			document.head.appendChild(element);
 		}
 		var StageNavigation_module_css_default = {
+			"sourceText": "t0KTeq_sourceText",
+			"analysisSection": "t0KTeq_analysisSection",
+			"textButton": "t0KTeq_textButton",
+			"empty": "t0KTeq_empty",
+			"navigationClosed": "t0KTeq_navigationClosed",
+			"notice": "t0KTeq_notice",
+			"readerInner": "t0KTeq_readerInner",
+			"activeSegment": "t0KTeq_activeSegment",
+			"inSegment": "t0KTeq_inSegment",
+			"blocks": "t0KTeq_blocks",
+			"block": "t0KTeq_block",
+			"stepHead": "t0KTeq_stepHead",
+			"stepCard": "t0KTeq_stepCard",
+			"toolBody": "t0KTeq_toolBody",
+			"page": "t0KTeq_page",
+			"stageLabel": "t0KTeq_stageLabel",
+			"statusLine": "t0KTeq_statusLine",
+			"progress": "t0KTeq_progress",
+			"loading": "t0KTeq_loading",
+			"error": "t0KTeq_error",
+			"search": "t0KTeq_search",
+			"turnButton": "t0KTeq_turnButton",
+			"activeTurn": "t0KTeq_activeTurn",
+			"tool": "t0KTeq_tool",
+			"segmentButton": "t0KTeq_segmentButton",
+			"navigation": "t0KTeq_navigation",
 			"segments": "t0KTeq_segments",
 			"mobileToggle": "t0KTeq_mobileToggle",
-			"stepHead": "t0KTeq_stepHead",
-			"gapButton": "t0KTeq_gapButton",
-			"stageLabel": "t0KTeq_stageLabel",
-			"progress": "t0KTeq_progress",
-			"segmentButton": "t0KTeq_segmentButton",
-			"activeTurn": "t0KTeq_activeTurn",
-			"turnItem": "t0KTeq_turnItem",
-			"toolSection": "t0KTeq_toolSection",
-			"search": "t0KTeq_search",
-			"textButton": "t0KTeq_textButton",
-			"blocks": "t0KTeq_blocks",
-			"readerHeader": "t0KTeq_readerHeader",
-			"message": "t0KTeq_message",
-			"error": "t0KTeq_error",
-			"navigationClosed": "t0KTeq_navigationClosed",
-			"analysisSection": "t0KTeq_analysisSection",
-			"navigation": "t0KTeq_navigation",
-			"focused": "t0KTeq_focused",
-			"notice": "t0KTeq_notice",
-			"turnButton": "t0KTeq_turnButton",
-			"toolbar": "t0KTeq_toolbar",
-			"readerHeading": "t0KTeq_readerHeading",
-			"page": "t0KTeq_page",
-			"muted": "t0KTeq_muted",
-			"block": "t0KTeq_block",
 			"detailPanel": "t0KTeq_detailPanel",
-			"activeSegment": "t0KTeq_activeSegment",
-			"loading": "t0KTeq_loading",
-			"sourceText": "t0KTeq_sourceText",
-			"stepCard": "t0KTeq_stepCard",
+			"toolSection": "t0KTeq_toolSection",
+			"readerHeading": "t0KTeq_readerHeading",
 			"toolbarActions": "t0KTeq_toolbarActions",
-			"readerInner": "t0KTeq_readerInner",
-			"request": "t0KTeq_request",
+			"muted": "t0KTeq_muted",
 			"previousResult": "t0KTeq_previousResult",
-			"empty": "t0KTeq_empty",
 			"reader": "t0KTeq_reader",
-			"blockLabel": "t0KTeq_blockLabel",
-			"toolBody": "t0KTeq_toolBody",
-			"statusLine": "t0KTeq_statusLine",
-			"scopeHint": "t0KTeq_scopeHint",
+			"message": "t0KTeq_message",
 			"stepNumber": "t0KTeq_stepNumber",
-			"tool": "t0KTeq_tool",
-			"inSegment": "t0KTeq_inSegment",
-			"layout": "t0KTeq_layout"
+			"gapButton": "t0KTeq_gapButton",
+			"blockLabel": "t0KTeq_blockLabel",
+			"readerHeader": "t0KTeq_readerHeader",
+			"turnItem": "t0KTeq_turnItem",
+			"layout": "t0KTeq_layout",
+			"toolbar": "t0KTeq_toolbar",
+			"request": "t0KTeq_request",
+			"focused": "t0KTeq_focused",
+			"scopeHint": "t0KTeq_scopeHint"
 		};
 		//#endregion
 		//#region src/client/StageNavigation.tsx
