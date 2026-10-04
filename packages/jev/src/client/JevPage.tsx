@@ -151,6 +151,7 @@ const OUTPUT_FIELDS: readonly { key: OutputField; label: JevLocaleKey; ratio?: t
   { key: 'generalMinChars', label: 'generalMinChars' }, { key: 'testMinChars', label: 'testMinChars' },
   { key: 'generalBlockChars', label: 'generalBlockChars' }, { key: 'maxGeneralBlocks', label: 'maxGeneralBlocks' },
   { key: 'maxTestCandidates', label: 'maxTestCandidates' }, { key: 'maxRequestChars', label: 'maxRequestChars' },
+  { key: 'maxChunks', label: 'maxChunks' },
   { key: 'maxTaskChars', label: 'maxTaskChars' }, { key: 'waitMs', label: 'admissionWaitMs' },
   { key: 'omitProbability', label: 'omitProbability', ratio: true }, { key: 'minSavedChars', label: 'minSavedChars' },
   { key: 'minSavedRatio', label: 'minSavedRatio', ratio: true }, { key: 'slowTestMs', label: 'slowTestMs' },

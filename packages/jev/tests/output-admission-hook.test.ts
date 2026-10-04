@@ -88,7 +88,7 @@ async function fixture(log = ordinary, answer?: (options: JevJudgeOptions) => Pr
   execute: args => ({ text: log, job: { kind: args.kind, status: 'completed', label: 'fixture build' } }),
   }))
   const config = Object.fromEntries(Object.entries({ generalMinChars: 6000, testMinChars: 4000,
-    generalBlockChars: 1200, maxGeneralBlocks: 48, maxTestCandidates: 24, maxRequestChars: 48000,
+    generalBlockChars: 1200, maxGeneralBlocks: 48, maxTestCandidates: 24, maxRequestChars: 48000, maxChunks: 4,
     maxTaskChars: 12000, waitMs, omitProbability: 0.8, minSavedChars: 300, minSavedRatio: 0.1,
     slowTestMs: 300, duplicateMinLines: 6, duplicateMinChars: 200,
   }).map(([key, value]) => [key, createVolatile(value)])) as Config
@@ -266,6 +266,8 @@ describe('output admission Hook failures and rule records', () => {
   it('keeps unsent candidates and skips semantic judgment when complete retained evidence cannot fit', async () => {
     const shrunk = await fixture()
     updateVolatile(shrunk.limits.maxRequestChars, createVolatile(4000))
+    // One call only: this case covers the candidates a single over-budget request must leave out.
+    updateVolatile(shrunk.limits.maxChunks, createVolatile(1))
     const output = await shrunk.run()
     expect(shrunk.calls).toHaveLength(1)
     const request = await shrunk.calls[0]!.refresh(new AbortController().signal)
@@ -282,6 +284,7 @@ describe('output admission Hook failures and rule records', () => {
 
     const insufficient = await fixture()
     updateVolatile(insufficient.limits.maxRequestChars, createVolatile(1000))
+    updateVolatile(insufficient.limits.maxChunks, createVolatile(1))
     expect(await insufficient.run()).toBe(ordinary)
     expect(insufficient.calls).toEqual([])
   })

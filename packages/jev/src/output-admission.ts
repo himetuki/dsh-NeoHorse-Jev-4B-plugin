@@ -20,6 +20,9 @@ export const Config: s<OutputAdmissionConfigValues, Config> = s.object({
   maxGeneralBlocks: s.number().step(1).min(3).max(1000).default(48).volatile(),
   maxTestCandidates: s.number().step(1).min(1).max(1000).default(24).volatile(),
   maxRequestChars: s.number().step(1).min(1).max(1_000_000).default(10000).volatile(),
+  // A long log needs several calls because the provider caps one call's input; this bounds how many
+  // calls one result may spend, and 1 restores the single-call behavior that drops candidates.
+  maxChunks: s.number().step(1).min(1).max(16).default(4).volatile(),
   maxTaskChars: s.number().step(1).min(1).max(1_000_000).default(12000).volatile(),
   waitMs: s.number().step(1).min(1).max(300_000).default(4000).volatile(),
   omitProbability: s.number().min(0).max(1).default(0.8).volatile(),
@@ -159,6 +162,30 @@ function requestFor(branch: Branch, task: Task, intent: string, exec: ToolExecut
   }
 }
 
+/**
+ * Split candidates into ordered chunks whose request body stays within `maxRequestChars`.
+ *
+ * The provider caps the encoded input well below what one long tool log needs, so a single call
+ * cannot carry every candidate. Chunks are judged in order and their decisions are merged. A chunk
+ * that cannot fit even on its own ends the sequence; when the retained evidence alone exceeds the
+ * budget no candidate is judged, exactly as before.
+ */
+function candidateChunks(build: (candidates: readonly LogSpan[]) => JevRequest,
+  candidates: readonly LogSpan[], maxRequestChars: number, maxChunks: number): LogSpan[][] {
+  // A manually assembled config may omit the limit; one call is the behavior that never surprises.
+  const limit = Number.isFinite(maxChunks) && maxChunks >= 1 ? Math.floor(maxChunks) : 1
+  const chunks: LogSpan[][] = []
+  let rest = [...candidates]
+  while (rest.length > 0 && chunks.length < limit) {
+    let take = rest
+    while (take.length > 0 && codePoints(JSON.stringify(build(take))) > maxRequestChars) take = take.slice(0, -1)
+    if (take.length === 0) break
+    chunks.push(take)
+    rest = rest.slice(take.length)
+  }
+  return chunks
+}
+
 function valid(response: JevResponse, count: number): boolean {
   return response.answers.length === count && response.answers.every((answer, index) =>
     answer.id === `candidate-${index}` && answer.kind === 'choice'
@@ -181,7 +208,7 @@ function configValues(config: Config): OutputAdmissionConfigValues {
   return {
     generalMinChars: config.generalMinChars.get(), testMinChars: config.testMinChars.get(),
     generalBlockChars: config.generalBlockChars.get(), maxGeneralBlocks: config.maxGeneralBlocks.get(),
-    maxTestCandidates: config.maxTestCandidates.get(), maxRequestChars: config.maxRequestChars.get(),
+    maxTestCandidates: config.maxTestCandidates.get(), maxRequestChars: config.maxRequestChars.get(), maxChunks: config.maxChunks.get(),
     maxTaskChars: config.maxTaskChars.get(), waitMs: config.waitMs.get(), omitProbability: config.omitProbability.get(),
     minSavedChars: config.minSavedChars.get(), minSavedRatio: config.minSavedRatio.get(),
     slowTestMs: config.slowTestMs.get(), duplicateMinLines: config.duplicateMinLines.get(),
@@ -265,15 +292,12 @@ export function apply(ctx: Context, config: Config): void {
     if (semantic.length && task.hasGoal && intent.trim() && codePoints(task.text) + codePoints(intent) <= settings.maxTaskChars) {
       const evidence = retainedEvidenceFor(current.raw, allSemantic, rules, branch, anchored, settings.slowTestMs)
       if (evidence.chunks.some(chunk => chunk.text.trim().length > 0)) {
-        let candidates = semantic
-        let request = requestFor(branch, task, intent, exec, candidates, allSemantic, evidence, current)
-        while (candidates.length && codePoints(JSON.stringify(request)) > settings.maxRequestChars) {
-          candidates = candidates.slice(0, -1)
-          request = requestFor(branch, task, intent, exec, candidates, allSemantic, evidence, current)
-        }
-        if (candidates.length) {
+        const groups = candidateChunks(take => requestFor(branch, task, intent, exec, take, allSemantic, evidence, current), semantic, settings.maxRequestChars, settings.maxChunks)
+        if (groups.length) {
         const timeout = AbortSignal.timeout(settings.waitMs)
         const signal = AbortSignal.any([exec.signal, timeout, lifetime.signal])
+        for (const candidates of groups) {
+        const request = requestFor(branch, task, intent, exec, candidates, allSemantic, evidence, current)
         const outcome = await ctx.jev.judgeOnce({ featureId: branch, agent, signal,
           link: { sessionId: agent.session.id, inputVersion: String(exec.callId) },
           refresh: () => request,
@@ -289,10 +313,13 @@ export function apply(ctx: Context, config: Config): void {
             ctx.logger.warn(`Jev output admission timeout note failed: ${String(error)}`)
           })
         }
-        if (exec.signal.aborted || timeout.aborted || lifetime.signal.aborted || outcome.kind === 'cancelled') return decision
-        if (outcome.kind === 'failed' || outcome.kind === 'not-adopted') return decision
-        operationId = outcome.operationId
-        omitted = selected(outcome.response, candidates, settings.omitProbability)
+        // A judged chunk keeps its decisions: an expired or refused later chunk only ends the
+        // sequence, because each answer was adopted while the task text was still unchanged.
+        if (exec.signal.aborted || timeout.aborted || lifetime.signal.aborted || outcome.kind === 'cancelled') break
+        if (outcome.kind === 'failed' || outcome.kind === 'not-adopted') break
+        operationId ??= outcome.operationId
+        omitted.push(...selected(outcome.response, candidates, settings.omitProbability))
+        }
         }
       }
     }

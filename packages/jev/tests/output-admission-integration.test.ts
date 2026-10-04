@@ -165,7 +165,7 @@ interface HarnessOptions {
   log?: string
   script?: ModelEntry[]
   failSpill?: boolean
-  admissionConfig?: { maxRequestChars?: number }
+  admissionConfig?: { maxRequestChars?: number; maxChunks?: number }
 }
 
 async function harness(options: HarnessOptions = {}) {
@@ -292,7 +292,7 @@ describe('output admission through published DSH paths', () => {
     const h = await harness({ enabled: true, realBashExit: 0 })
     await h.run()
     expect(h.calls()).toBe(1)
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     assertEvidenceMatches(rawLog, h.received[0]!)
     expect(h.received[0]!.state.retainedEvidence?.chunks.some(chunk => chunk.text.includes('DISTINCT EVIDENCE: package complete'))).toBe(true)
     const result = h.agent.session.snapshotEvents().filter(event => event.type === 'tool/result')
@@ -314,7 +314,7 @@ describe('output admission through published DSH paths', () => {
   it('selects the test-log branch for a long passing runner result and keeps its summary', async () => {
     const h = await harness({ enabled: true, log: passingLog })
     await h.run()
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     assertEvidenceMatches(passingLog, h.received[0]!)
     expect(h.received[0]!.state.retainedEvidence?.chunks.some(chunk => chunk.text.includes('Tests 180 passed'))).toBe(true)
     expect(JSON.stringify(h.received[0])).toContain('test-log-admission')
@@ -326,6 +326,38 @@ describe('output admission through published DSH paths', () => {
     expect(delivered.length).toBeLessThan(passingLog.length)
     expect(requestToolText(h.model.requests[1])).toBe(delivered)
     expect(await readFile(h.savePaths[0]!, 'utf8')).toBe(passingLog)
+  })
+
+  it('judges a log longer than one request in ordered chunks and merges their decisions', async () => {
+    const h = await harness({ enabled: true, log: passingLog })
+    await h.run()
+    // The provider caps one call's input, so a log of this size must be judged in several calls
+    // whose answers are merged instead of dropping the candidates that did not fit.
+    expect(h.received.length).toBeGreaterThanOrEqual(2)
+    const judged = h.received.flatMap(wire => wire.state.candidates.map(candidate => candidate.firstLine))
+    expect(new Set(judged).size).toBe(judged.length)
+    expect(h.received.every(wire => JSON.stringify(wire).length <= 10_000)).toBe(true)
+    const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
+    if (result?.type !== 'tool/result') throw new Error('No durable tool result')
+    expect(contentText(result.data.message.content).length).toBeLessThan(passingLog.length)
+  })
+
+  it('keeps the decisions of completed chunks when a later chunk is refused', async () => {
+    let calls = 0
+    const h = await harness({ enabled: true, log: passingLog, answer: (body) => {
+      calls++
+      return calls === 1
+        ? Object.fromEntries(Object.keys(body.questions).map(id => [id, { choice: 'omit', probabilities: { omit: 0.99, keep: 0.005, unknown: 0.005 } }]))
+        : { code: 'JEV_INVALID_REQUEST', message: 'JEV 请求参数不符合协议', traceId: 'trace-chunk-2' }
+    } })
+    await h.run()
+    expect(h.received.length).toBeGreaterThanOrEqual(2)
+    const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
+    if (result?.type !== 'tool/result') throw new Error('No durable tool result')
+    const delivered = contentText(result.data.message.content)
+    // The first chunk's omissions still reduce the log; the refused chunk only stops the sequence.
+    expect(delivered).toContain('Jev omitted')
+    expect(delivered.length).toBeLessThan(passingLog.length)
   })
 
   it('keeps the three unique fastest test results when Jev keeps their candidate groups', async () => {
@@ -347,7 +379,7 @@ describe('output admission through published DSH paths', () => {
     })
     h.agent.followup(user('Find the three shortest test cases and give each exact duration.'))
     await h.agent.whenIdle()
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     assertEvidenceMatches(shortLog, h.received[0]!)
     const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
     if (result?.type !== 'tool/result') throw new Error('No durable tool result')
@@ -375,7 +407,8 @@ describe('output admission through published DSH paths', () => {
   })
 
   it('retains unshown candidate lines when the request budget removes candidates', async () => {
-    const h = await harness({ enabled: true, admissionConfig: { maxRequestChars: 6000 } })
+    // One call only: this case covers the dropping behavior a single over-budget request still has.
+    const h = await harness({ enabled: true, admissionConfig: { maxRequestChars: 6000, maxChunks: 1 } })
     await h.run()
     expect(h.received).toHaveLength(1)
     const wire = h.received[0]!
@@ -403,7 +436,7 @@ describe('output admission through published DSH paths', () => {
   it('lets native spill bound the already-admitted text', async () => {
     const h = await harness({ enabled: true, maxInlineTokens: 100 })
     await h.run()
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     expect(h.saves).toHaveLength(2)
     expect(h.saves[0]?.content).toBe(rawLog)
     expect(h.saves[1]?.content.length).toBeLessThan(rawLog.length)
@@ -416,7 +449,7 @@ describe('output admission through published DSH paths', () => {
   it('passes the complete result onward when Jev original storage fails', async () => {
     const h = await harness({ enabled: true, failSpill: true })
     await h.run()
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     expect(h.spillAttempts()).toBe(1)
     expect(h.saves).toHaveLength(0)
     const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
@@ -433,7 +466,7 @@ describe('output admission through published DSH paths', () => {
     await h.run()
     const elapsed = performance.now() - started
     expect(elapsed).toBeGreaterThanOrEqual(3800)
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     expect(h.model.requests).toHaveLength(2)
     expect(h.saves).toHaveLength(0)
     const result = h.agent.session.snapshotEvents().find(event => event.type === 'tool/result')
@@ -482,10 +515,11 @@ describe('output admission through published DSH paths', () => {
   })
 
   it('filters only the PTC outer logs while preserving the program value and result display', async () => {
-    const h = await harness({ enabled: true, ptc: true })
+    // One call only: this case covers PTC log handling, not how a long log is chunked.
+    const h = await harness({ enabled: true, ptc: true, admissionConfig: { maxChunks: 1 } })
     await h.run()
     expect(h.calls()).toBe(1)
-    expect(h.received).toHaveLength(1)
+    expect(h.received.length).toBeGreaterThanOrEqual(1)
     assertEvidenceMatches(rawLog, h.received[0]!)
     expect(h.received[0]!.state.outerResultSuffix).toMatchObject({ source: 'run_code-rendered-result-after-logs' })
     expect(h.saves[0]?.content).toBe(rawLog + h.received[0]!.state.outerResultSuffix?.text)
@@ -522,7 +556,8 @@ describe('output admission through published DSH paths', () => {
     const started = Promise.withResolvers<void>()
     const release = Promise.withResolvers<void>()
     cleanups.push(async () => { release.resolve() })
-    const h = await harness({ enabled: true, answer: async wire => {
+    // One call only: this case is about a stopped Agent, not about chunking a long log.
+    const h = await harness({ enabled: true, admissionConfig: { maxChunks: 1 }, answer: async wire => {
       started.resolve()
       await release.promise
       return Object.fromEntries(Object.keys(wire.questions).map(id => [id, {

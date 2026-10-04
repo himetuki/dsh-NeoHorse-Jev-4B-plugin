@@ -131,6 +131,8 @@ Selection defaults are 5 skill summaries, at most 40 glob matches eligible for r
 
 Long-log and test-log admission have independent switches, both off by default. Generic command logs start at 6,000 Unicode code points and recognized test logs at 4,000. The default omit-probability threshold is 0.8 and the judgment wait limit is 4 seconds. The settings page exposes these and the other admission budgets without enabling either feature.
 
+**A log too long for one call is judged in ordered chunks whose decisions are merged.** Candidates are split so each request stays within `maxRequestChars`; a refused chunk or an expired wait only ends the remaining chunks, and the omissions already decided stay in effect. `maxChunks` (default 4) bounds the calls one result may spend, and 1 restores the older single-call behavior that leaves unjudged candidates untouched.
+
 ## Behavior and limitations
 
 - **Reminders are advisory.** Drift and instruction guidance do not block or cancel tools, and do not force the main model to comply.

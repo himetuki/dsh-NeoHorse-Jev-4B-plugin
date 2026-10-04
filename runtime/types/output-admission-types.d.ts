@@ -6,6 +6,7 @@ export interface OutputAdmissionConfigValues {
     maxGeneralBlocks: number;
     maxTestCandidates: number;
     maxRequestChars: number;
+    maxChunks: number;
     maxTaskChars: number;
     waitMs: number;
     omitProbability: number;

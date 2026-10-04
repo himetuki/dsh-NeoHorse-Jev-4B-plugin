@@ -26,7 +26,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks() })
 
 const limits: OutputAdmissionConfigValues = {
   generalMinChars: 6000, testMinChars: 4000, generalBlockChars: 1200,
-  maxGeneralBlocks: 48, maxTestCandidates: 24, maxRequestChars: 48000,
+  maxGeneralBlocks: 48, maxTestCandidates: 24, maxRequestChars: 48000, maxChunks: 4,
   maxTaskChars: 12000, waitMs: 4000, omitProbability: 0.8,
   minSavedChars: 300, minSavedRatio: 0.1, slowTestMs: 300,
   duplicateMinLines: 6, duplicateMinChars: 200,
